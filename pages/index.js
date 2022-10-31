@@ -102,6 +102,26 @@ export default function Home() {
             </Box>
           </Grid>
         </Grid>
+        <Grid container className={classNames(styles.features)}>
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            className={classNames(styles.feature)}
+          >
+            <Image
+              src="/images/01.jpg"
+              width={480}
+              height={480}
+              className={classNames(styles.thumbnail)}
+            ></Image>
+            <Grid className={classNames(styles.description)}>
+              <Typography variant="h3">Title</Typography>
+              <Typography variant="h6">Detail Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium accusamus et iusto dolor eaque </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
       </main>
     </>
   );

@@ -170,6 +170,20 @@
       }
     }
   }
+
+  .features {
+    padding: 80px 120px;
+
+    .feature {
+      .thumbnail {
+        border-radius: 50%;
+      }
+
+      .description {
+        max-width: 687px;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 1200px) {
