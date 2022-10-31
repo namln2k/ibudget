@@ -172,16 +172,35 @@
   }
 
   .features {
-    padding: 80px 120px;
+    padding: 120px 160px 200px 160px;
 
     .feature {
       .thumbnail {
-        border-radius: 50%;
+        .image {
+          border-radius: 50%;
+        }
       }
 
       .description {
-        max-width: 687px;
+        width: calc(68% - 120px);
+        max-height: 280px;
+        overflow: hidden;
+        text-overflow: hidden;
+        text-align: justify;
       }
+
+      & + .feature {
+        margin-top: 120px;
+      }
+    }
+  }
+
+  .footer {
+    height: 120px;
+    background: rgba(0, 0, 0, 0.8);
+
+    .copyright {
+      color: #fff;
     }
   }
 }
@@ -190,6 +209,15 @@
   .landingPage {
     .header {
       padding: 0 128px;
+    }
+
+    .features {
+      .feature {
+        .description {
+          width: calc(68% - 60px);
+          max-height: 180px;
+        }
+      }
     }
   }
 }
@@ -207,6 +235,34 @@
         display: block;
       }
     }
+
+    .features {
+      padding: 100px 120px 160px 120px;
+
+      .feature {
+        display: flex;
+        flex-direction: column;
+
+        .thumbnail {
+          width: 80%;
+        }
+
+        .description {
+          width: 100%;
+          margin-top: 32px;
+        }
+      }
+
+      .feature:nth-child(even) {
+        .item:nth-child(1) {
+          order: 2;
+        }
+
+        .item:nth-child(2) {
+          order: 1;
+        }
+      }
+    }
   }
 }
 
@@ -221,6 +277,21 @@
 
       .menuBtn {
         display: block;
+      }
+    }
+
+    .features {
+      padding: 60px 60px 100px 60px;
+
+      .feature {
+        .thumbnail {
+          width: 90%;
+        }
+
+        .description {
+          width: 100%;
+          margin-top: 24px;
+        }
       }
     }
   }

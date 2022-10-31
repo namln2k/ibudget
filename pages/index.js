@@ -36,7 +36,6 @@ export default function Home() {
                 width={142}
                 height={48}
                 alt="logo"
-                priority
               ></Image>
               <Image
                 className={classNames(styles.logoIcon)}
@@ -44,7 +43,6 @@ export default function Home() {
                 width={48}
                 height={48}
                 alt="logo"
-                priority
               ></Image>
             </Grid>
             <Grid className={classNames(styles.actions)}>
@@ -110,17 +108,129 @@ export default function Home() {
             alignItems="center"
             className={classNames(styles.feature)}
           >
-            <Image
-              src="/images/01.jpg"
-              width={480}
-              height={480}
-              className={classNames(styles.thumbnail)}
-            ></Image>
-            <Grid className={classNames(styles.description)}>
+            <Grid
+              sx={{
+                width: '32%',
+                aspectRatio: '1/1',
+                position: 'relative'
+              }}
+              container
+              className={classNames(styles.item, styles.thumbnail)}
+            >
+              <Image
+                src="/images/01.jpg"
+                fill
+                className={classNames(styles.image)}
+                alt="feature-thumbnail"
+              ></Image>
+            </Grid>
+            <Grid className={classNames(styles.item, styles.description)}>
               <Typography variant="h3">Title</Typography>
-              <Typography variant="h6">Detail Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium accusamus et iusto dolor eaque </Typography>
+              <Typography variant="h6">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
+                dolore repudiandae a pariatur, aperiam culpa iusto fuga
+                asperiores id facilis placeat maiores officiis at quis animi
+                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
+                sint. Repellat ratione, amet earum similique sunt hic quis modi.
+                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
+                repellat at sunt placeat porro adipisci! Adipisci minus porro
+                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
+                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
+                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
+                tenetur!
+              </Typography>
             </Grid>
           </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            className={classNames(styles.feature)}
+          >
+            <Grid className={classNames(styles.item, styles.description)}>
+              <Typography variant="h3">Title</Typography>
+              <Typography variant="h6">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
+                dolore repudiandae a pariatur, aperiam culpa iusto fuga
+                asperiores id facilis placeat maiores officiis at quis animi
+                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
+                sint. Repellat ratione, amet earum similique sunt hic quis modi.
+                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
+                repellat at sunt placeat porro adipisci! Adipisci minus porro
+                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
+                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
+                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
+                tenetur!
+              </Typography>
+            </Grid>
+            <Grid
+              sx={{
+                width: '32%',
+                aspectRatio: '1/1',
+                position: 'relative'
+              }}
+              container
+              className={classNames(styles.item, styles.thumbnail)}
+            >
+              <Image
+                src="/images/01.jpg"
+                fill
+                className={classNames(styles.image)}
+                alt="feature-thumbnail"
+              ></Image>
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            className={classNames(styles.feature)}
+          >
+            <Grid
+              sx={{
+                width: '32%',
+                aspectRatio: '1/1',
+                position: 'relative'
+              }}
+              container
+              className={classNames(styles.item, styles.thumbnail)}
+            >
+              <Image
+                src="/images/01.jpg"
+                fill
+                className={classNames(styles.image)}
+                alt="feature-thumbnail"
+              ></Image>
+            </Grid>
+            <Grid className={classNames(styles.item, styles.description)}>
+              <Typography variant="h3">Title</Typography>
+              <Typography variant="h6">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
+                dolore repudiandae a pariatur, aperiam culpa iusto fuga
+                asperiores id facilis placeat maiores officiis at quis animi
+                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
+                sint. Repellat ratione, amet earum similique sunt hic quis modi.
+                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
+                repellat at sunt placeat porro adipisci! Adipisci minus porro
+                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
+                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
+                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
+                tenetur!
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          className={classNames(styles.footer)}
+        >
+          <Typography className={classNames(styles.copyright)}>
+            Copyright © Your Website 2022
+          </Typography>
         </Grid>
       </main>
     </>
