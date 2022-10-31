@@ -12,45 +12,32 @@ import {
   Link
 } from '@mui/material';
 import classNames from 'classnames';
-import styles from './Login.module.scss';
+import styles from './Signup.module.scss';
 
-export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export default function Signup() {
+  // TODO: Manage inputs with useState
 
   const router = useRouter();
 
-  const usernameRef = useRef();
+  const firstnameRef = useRef();
 
   useEffect(() => {
-    usernameRef.current.querySelectorAll('input')[0].focus();
+    firstnameRef.current.querySelectorAll('input')[0].focus();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post('/api/auth/login', {
-      username,
-      password
-    });
-    const responseData = response.data;
-
-    if (responseData.statusCode === 400) {
-      alert(responseData.message);
-    } else if (responseData.statusCode === 200) {
-      router.push('/dashboard/user');
-    } else {
-      alert('Something went wrong!');
-    }
+    // TODO: Handle form submit with axios ajax
   };
 
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>Signup</title>
       </Head>
       <Grid
-        className={classNames(styles.login)}
+        className={classNames(styles.signup)}
         sx={{
           display: 'flex',
           justifyContent: 'center',
@@ -61,7 +48,7 @@ export default function Login() {
           container
           justifyContent="center"
           alignItems="center"
-          className={classNames(styles.loginWrapper)}
+          className={classNames(styles.signupWrapper)}
         >
           <Grid className={classNames(styles.part, styles.form)}>
             <Grid className={classNames(styles.formWrapper)}>
@@ -74,7 +61,7 @@ export default function Login() {
                 </Grid>
               </Grid>
               <Typography sx={{ marginTop: '24px' }}>
-                Please login to continue
+                Create a free account
               </Typography>
               <form
                 className={classNames(styles.form)}
@@ -87,14 +74,38 @@ export default function Login() {
                   variant="standard"
                   className={classNames(styles.formControl)}
                 >
+                  <InputLabel htmlFor="firstname">First name</InputLabel>
+                  <Input
+                    id="firstname"
+                    autoComplete="off"
+                    aria-describedby="firstname"
+                    ref={firstnameRef}
+                  />
+                </FormControl>
+                <FormControl
+                  fullWidth
+                  required
+                  variant="standard"
+                  className={classNames(styles.formControl)}
+                >
+                  <InputLabel htmlFor="lastname">Last name</InputLabel>
+                  <Input
+                    id="lastname"
+                    autoComplete="off"
+                    aria-describedby="lastname"
+                  />
+                </FormControl>
+                <FormControl
+                  fullWidth
+                  required
+                  variant="standard"
+                  className={classNames(styles.formControl)}
+                >
                   <InputLabel htmlFor="username">Username</InputLabel>
                   <Input
                     id="username"
                     autoComplete="off"
                     aria-describedby="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    ref={usernameRef}
                   />
                 </FormControl>
                 <FormControl
@@ -106,10 +117,22 @@ export default function Login() {
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <Input
                     id="password"
-                    autoComplete="off"
                     aria-describedby="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                  />
+                </FormControl>
+                <FormControl
+                  fullWidth
+                  required
+                  variant="standard"
+                  className={classNames(styles.formControl)}
+                >
+                  <InputLabel htmlFor="re-password">
+                    Confirm password
+                  </InputLabel>
+                  <Input
+                    id="re-password"
+                    aria-describedby="re-password"
                     type="password"
                   />
                 </FormControl>
@@ -119,12 +142,12 @@ export default function Login() {
                     color="warning"
                     size="large"
                     type="submit"
-                    className={classNames(styles.btnLogin)}
+                    className={classNames(styles.btnSignup)}
                     sx={{
                       marginTop: '32px'
                     }}
                   >
-                    Login
+                    Signup
                   </Button>
                 </FormControl>
               </form>
@@ -140,10 +163,10 @@ export default function Login() {
                 }}
               >
                 <Typography textAlign="right">
-                  Don't have an account?
+                  Already have an account?
                 </Typography>
-                <Button variant="outlined" color="error" href="/signup">
-                  Create new
+                <Button variant="outlined" color="error" href="/login">
+                  Login now
                 </Button>
               </Grid>
             </Grid>

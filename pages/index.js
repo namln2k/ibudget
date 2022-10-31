@@ -174,7 +174,7 @@ export default function Home() {
               className={classNames(styles.item, styles.thumbnail)}
             >
               <Image
-                src="/images/01.jpg"
+                src="/images/02.jpg"
                 fill
                 className={classNames(styles.image)}
                 alt="feature-thumbnail"
@@ -198,7 +198,7 @@ export default function Home() {
               className={classNames(styles.item, styles.thumbnail)}
             >
               <Image
-                src="/images/01.jpg"
+                src="/images/03.jpg"
                 fill
                 className={classNames(styles.image)}
                 alt="feature-thumbnail"
