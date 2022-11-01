@@ -1,14 +1,14 @@
 import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
 import * as jose from 'jose';
-import * as userHelper from '../../../../helper/user';
+import * as User from '../../../../model/User';
 
 const secret = process.env.JWT_SECRET;
 
 export default async function (req, res) {
   const { username, password } = req.body;
 
-  const user = await userHelper.getOneByUsername(username);
+  const user = await User.getOneByUsername(username);
 
   if (user) {
     const isPasswordMatch = await bcrypt.compare(password, user.password);

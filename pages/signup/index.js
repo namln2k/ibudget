@@ -9,13 +9,28 @@ import {
   FormControl,
   InputLabel,
   Input,
-  Link
+  Link,
+  Stack,
+  Snackbar
 } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import classNames from 'classnames';
 import styles from './Signup.module.scss';
+import * as userHelper from '../../helper/user';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={24} ref={ref} variant="filled" {...props} />;
+});
 
 export default function Signup() {
-  // TODO: Manage inputs with useState
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
+  const [counter, setCounter] = useState(5);
+  const [intervalId, setIntervalId] = useState(null);
+  const [messageOpen, setMessageOpen] = React.useState(false);
 
   const router = useRouter();
 
@@ -25,10 +40,76 @@ export default function Signup() {
     firstnameRef.current.querySelectorAll('input')[0].focus();
   }, []);
 
+  useEffect(() => {
+    if (counter <= 0) {
+      clearInterval(intervalId);
+      router.push('login');
+    }
+  }, [counter]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // TODO: Handle form submit with axios ajax
+    if (password != rePassword) {
+      alert('Password confirmatin does not match. Please double check!');
+    }
+
+    /**
+     * TODO:
+     * Validate info:
+     * 1. Is username, firstname, lastname valid (Containing only characters and digits)
+     * 2. Is password match
+     * 3. Is password strong enough
+     */
+    try {
+      userHelper.validateSignupInfo({
+        firstname,
+        lastname,
+        username,
+        password
+      });
+    } catch (e) {
+      alert(e);
+      return;
+    }
+
+    setMessageOpen(true);
+
+    if (counter >= 0) {
+      const id = setInterval(() => setCounter((counter) => counter - 1), 1000);
+      setIntervalId(id);
+    }
+
+    const response = await axios.post('/api/auth/signup', {
+      firstname,
+      lastname,
+      username,
+      password
+    });
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      alert(responseData.message);
+    } else if (responseData.statusCode === 200) {
+      /**
+       * TODO:
+       * Show success alert popup that tells user to login
+       * Redirect to login page after 5 seconds
+       */
+      while (counter > 0) {
+        setTimeout(() => setCounter(counter - 1), 1000);
+      }
+    } else {
+      alert('Something went wrong!');
+    }
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setMessageOpen(false);
   };
 
   return (
@@ -50,6 +131,21 @@ export default function Signup() {
           alignItems="center"
           className={classNames(styles.signupWrapper)}
         >
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={messageOpen}
+            autoHideDuration={5000}
+            onClose={handleClose}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="success"
+              sx={{ width: '100%' }}
+            >
+              Your account has been created! You will be automatically redirect
+              to login page in {counter} {counter === 1 ? 'second' : 'seconds'}!
+            </Alert>
+          </Snackbar>
           <Grid className={classNames(styles.part, styles.form)}>
             <Grid className={classNames(styles.formWrapper)}>
               <Grid className={classNames(styles.imageWrapper)}>
@@ -79,6 +175,8 @@ export default function Signup() {
                     id="firstname"
                     autoComplete="off"
                     aria-describedby="firstname"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
                     ref={firstnameRef}
                   />
                 </FormControl>
@@ -93,6 +191,8 @@ export default function Signup() {
                     id="lastname"
                     autoComplete="off"
                     aria-describedby="lastname"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -106,6 +206,8 @@ export default function Signup() {
                     id="username"
                     autoComplete="off"
                     aria-describedby="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -118,6 +220,8 @@ export default function Signup() {
                   <Input
                     id="password"
                     aria-describedby="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     type="password"
                   />
                 </FormControl>
@@ -133,6 +237,8 @@ export default function Signup() {
                   <Input
                     id="re-password"
                     aria-describedby="re-password"
+                    value={rePassword}
+                    onChange={(e) => setRePassword(e.target.value)}
                     type="password"
                   />
                 </FormControl>

@@ -26,8 +26,17 @@ export default function Login() {
     usernameRef.current.querySelectorAll('input')[0].focus();
   }, []);
 
+  const getInitialProps = (context) => {
+    console.log(context);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    /**
+     * TODO:
+     * Show error message (Alert popup)
+     */
 
     const response = await axios.post('/api/auth/login', {
       username,
