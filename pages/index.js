@@ -125,19 +125,14 @@ export default function Home() {
               ></Image>
             </Grid>
             <Grid className={classNames(styles.item, styles.description)}>
-              <Typography variant="h3">Title</Typography>
+              <Typography variant="h3" sx={{ marginBottom: '20px' }}>
+                For those about to rock
+              </Typography>
               <Typography variant="h6">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
-                dolore repudiandae a pariatur, aperiam culpa iusto fuga
-                asperiores id facilis placeat maiores officiis at quis animi
-                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
-                sint. Repellat ratione, amet earum similique sunt hic quis modi.
-                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
-                repellat at sunt placeat porro adipisci! Adipisci minus porro
-                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
-                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
-                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
-                tenetur!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
             </Grid>
           </Grid>
@@ -149,19 +144,14 @@ export default function Home() {
             className={classNames(styles.feature)}
           >
             <Grid className={classNames(styles.item, styles.description)}>
-              <Typography variant="h3">Title</Typography>
+              <Typography variant="h3" sx={{ marginBottom: '20px' }}>
+                We salute you!
+              </Typography>
               <Typography variant="h6">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
-                dolore repudiandae a pariatur, aperiam culpa iusto fuga
-                asperiores id facilis placeat maiores officiis at quis animi
-                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
-                sint. Repellat ratione, amet earum similique sunt hic quis modi.
-                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
-                repellat at sunt placeat porro adipisci! Adipisci minus porro
-                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
-                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
-                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
-                tenetur!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
             </Grid>
             <Grid
@@ -205,19 +195,14 @@ export default function Home() {
               ></Image>
             </Grid>
             <Grid className={classNames(styles.item, styles.description)}>
-              <Typography variant="h3">Title</Typography>
+              <Typography variant="h3" sx={{ marginBottom: '20px' }}>
+                Let there be rock!
+              </Typography>
               <Typography variant="h6">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis
-                dolore repudiandae a pariatur, aperiam culpa iusto fuga
-                asperiores id facilis placeat maiores officiis at quis animi
-                deleniti. Impedit, vero saepe? Eaque nulla corrupti voluptas eos
-                sint. Repellat ratione, amet earum similique sunt hic quis modi.
-                Ipsa voluptas non eos dolore veniam, a, repellendus, corporis
-                repellat at sunt placeat porro adipisci! Adipisci minus porro
-                consequuntur, itaque nostrum, aliquid rem et obcaecati veritatis
-                eius tempora deleniti sapiente sint voluptatem atque iusto amet?
-                Libero, cupiditate rerum? Excepturi, repellat. Hic ea error iure
-                tenetur!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
             </Grid>
           </Grid>

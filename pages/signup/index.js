@@ -43,7 +43,7 @@ export default function Signup() {
   useEffect(() => {
     if (counter <= 0) {
       clearInterval(intervalId);
-      router.push('login');
+      router.push('/login');
     }
   }, [counter]);
 
@@ -54,13 +54,6 @@ export default function Signup() {
       alert('Password confirmatin does not match. Please double check!');
     }
 
-    /**
-     * TODO:
-     * Validate info:
-     * 1. Is username, firstname, lastname valid (Containing only characters and digits)
-     * 2. Is password match
-     * 3. Is password strong enough
-     */
     try {
       userHelper.validateSignupInfo({
         firstname,
@@ -73,13 +66,6 @@ export default function Signup() {
       return;
     }
 
-    setMessageOpen(true);
-
-    if (counter >= 0) {
-      const id = setInterval(() => setCounter((counter) => counter - 1), 1000);
-      setIntervalId(id);
-    }
-
     const response = await axios.post('/api/auth/signup', {
       firstname,
       lastname,
@@ -89,15 +75,16 @@ export default function Signup() {
     const responseData = response.data;
 
     if (responseData.statusCode === 400) {
-      alert(responseData.message);
+      alert(responseData.error);
     } else if (responseData.statusCode === 200) {
-      /**
-       * TODO:
-       * Show success alert popup that tells user to login
-       * Redirect to login page after 5 seconds
-       */
-      while (counter > 0) {
-        setTimeout(() => setCounter(counter - 1), 1000);
+      setMessageOpen(true);
+
+      if (counter >= 0) {
+        const id = setInterval(
+          () => setCounter((counter) => counter - 1),
+          1000
+        );
+        setIntervalId(id);
       }
     } else {
       alert('Something went wrong!');

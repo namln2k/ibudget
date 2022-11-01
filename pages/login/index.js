@@ -26,10 +26,6 @@ export default function Login() {
     usernameRef.current.querySelectorAll('input')[0].focus();
   }, []);
 
-  const getInitialProps = (context) => {
-    console.log(context);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,7 +41,7 @@ export default function Login() {
     const responseData = response.data;
 
     if (responseData.statusCode === 400) {
-      alert(responseData.message);
+      alert(responseData.error);
     } else if (responseData.statusCode === 200) {
       router.push('/dashboard/user');
     } else {

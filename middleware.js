@@ -23,7 +23,6 @@ export default async function middleware(req) {
 
       return NextResponse.next();
     } catch (e) {
-      console.log(e);
       const url = req.nextUrl.clone();
       url.pathname = '/login';
       return NextResponse.redirect(url);
