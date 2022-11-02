@@ -13,14 +13,10 @@ import {
   Stack,
   Snackbar
 } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import classNames from 'classnames';
 import styles from './Signup.module.scss';
 import * as userHelper from '../../helper/user';
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={24} ref={ref} variant="filled" {...props} />;
-});
+import MessageDialog from '../../components/MessageDialog';
 
 export default function Signup() {
   const [firstname, setFirstname] = useState('');
@@ -28,9 +24,8 @@ export default function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
-  const [counter, setCounter] = useState(5);
-  const [intervalId, setIntervalId] = useState(null);
-  const [messageOpen, setMessageOpen] = React.useState(false);
+  const [success, setSuccess] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
 
   const router = useRouter();
 
@@ -41,17 +36,24 @@ export default function Signup() {
   }, []);
 
   useEffect(() => {
-    if (counter <= 0) {
-      clearInterval(intervalId);
-      router.push('/login');
+    let timeoutId;
+
+    if (success) {
+      timeoutId = setTimeout(() => {
+        setMessageOpen(false);
+        router.push('/login');
+      }, 5000);
     }
-  }, [counter]);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [success]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password != rePassword) {
-      console.log(password, rePassword);
       alert('Password confirmatin does not match. Please double check!');
       return;
     }
@@ -79,26 +81,10 @@ export default function Signup() {
     if (responseData.statusCode === 400) {
       alert(responseData.error);
     } else if (responseData.statusCode === 200) {
-      setMessageOpen(true);
-
-      if (counter >= 0) {
-        const id = setInterval(
-          () => setCounter((counter) => counter - 1),
-          1000
-        );
-        setIntervalId(id);
-      }
+      setSuccess(true);
     } else {
       alert('Something went wrong!');
     }
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setMessageOpen(false);
   };
 
   return (
@@ -114,27 +100,16 @@ export default function Signup() {
           alignItems: 'center'
         }}
       >
+        <MessageDialog type="success" open={success}>
+          Your account has been created! You will be automatically redirect to
+          login page in 5 seconds
+        </MessageDialog>
         <Grid
           container
           justifyContent="center"
           alignItems="center"
           className={classNames(styles.signupWrapper)}
         >
-          <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            open={messageOpen}
-            autoHideDuration={5000}
-            onClose={handleClose}
-          >
-            <Alert
-              onClose={handleClose}
-              severity="success"
-              sx={{ width: '100%' }}
-            >
-              Your account has been created! You will be automatically redirect
-              to login page in {counter} {counter === 1 ? 'second' : 'seconds'}!
-            </Alert>
-          </Snackbar>
           <Grid className={classNames(styles.part, styles.form)}>
             <Grid className={classNames(styles.formWrapper)}>
               <Grid className={classNames(styles.imageWrapper)}>
