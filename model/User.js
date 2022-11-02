@@ -12,7 +12,7 @@ export async function getAll() {
     return users;
   } catch (error) {
     if (error instanceof MongoServerError) {
-      throw new Error(error.codeName);
+      throw new Error(error.toString());
     }
 
     throw new Error('Something went wrong!');
@@ -33,7 +33,7 @@ export async function getOneByUsername(username) {
     }
   } catch (error) {
     if (error instanceof MongoServerError) {
-      throw new Error(error.codeName);
+      throw new Error(error.toString());
     }
 
     throw new Error('Something went wrong!');
@@ -47,7 +47,7 @@ export async function createNew(user) {
     await db.collection(COLLECTION).insertOne(user);
   } catch (error) {
     if (error instanceof MongoServerError) {
-      throw new Error(error.codeName);
+      throw new Error(error.toString());
     }
 
     throw new Error('Something went wrong!');

@@ -51,7 +51,9 @@ export default function Signup() {
     e.preventDefault();
 
     if (password != rePassword) {
+      console.log(password, rePassword);
       alert('Password confirmatin does not match. Please double check!');
+      return;
     }
 
     try {

@@ -10,7 +10,7 @@ const validateUsername = (username) => {
 };
 
 const validatePassword = (password) => {
-  return usernameRegex.test(password);
+  return password.length > 7;
 };
 
 /**
