@@ -17,6 +17,7 @@ import classNames from 'classnames';
 import styles from './Signup.module.scss';
 import * as userHelper from '../../helper/user';
 import MessageDialog from '../../components/MessageDialog';
+import FullScreenLoader from '../../components/FullScreenLoader';
 
 export default function Signup() {
   const [firstname, setFirstname] = useState('');
@@ -24,8 +25,9 @@ export default function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [messageOpen, setMessageOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -38,9 +40,10 @@ export default function Signup() {
   useEffect(() => {
     let timeoutId;
 
-    if (success) {
+    if (successMessage != '') {
+      setErrorMessage('');
       timeoutId = setTimeout(() => {
-        setMessageOpen(false);
+        setSuccessMessage('');
         router.push('/login');
       }, 5000);
     }
@@ -48,13 +51,14 @@ export default function Signup() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [success]);
+  }, [successMessage]);
 
   const handleSubmit = async (e) => {
+    setErrorMessage('');
     e.preventDefault();
 
     if (password != rePassword) {
-      alert('Password confirmatin does not match. Please double check!');
+      setErrorMessage('Password confirmation does not match. Please double check and try again!');
       return;
     }
 
@@ -66,10 +70,11 @@ export default function Signup() {
         password
       });
     } catch (e) {
-      alert(e);
+      setErrorMessage(e.toString());
       return;
     }
 
+    setIsLoading(true);
     const response = await axios.post('/api/auth/signup', {
       firstname,
       lastname,
@@ -77,13 +82,19 @@ export default function Signup() {
       password
     });
     const responseData = response.data;
+    setIsLoading(false);
 
     if (responseData.statusCode === 400) {
-      alert(responseData.error);
+      setErrorMessage(responseData.error.toString());
+      setIsLoading(false);
     } else if (responseData.statusCode === 200) {
-      setSuccess(true);
+      setSuccessMessage(
+        'Your account has been created! You will automatically be redirected to login page in 5 seconds'
+      );
+      setIsLoading(false);
     } else {
-      alert('Something went wrong!');
+      setErrorMessage('Something went wrong!');
+      setIsLoading(false);
     }
   };
 
@@ -100,10 +111,13 @@ export default function Signup() {
           alignItems: 'center'
         }}
       >
-        <MessageDialog type="success" open={success}>
-          Your account has been created! You will be automatically redirect to
-          login page in 5 seconds
+        <MessageDialog type="success" open={successMessage != ''}>
+          {successMessage}
         </MessageDialog>
+        <MessageDialog type="error" open={errorMessage != ''}>
+          {errorMessage}
+        </MessageDialog>
+        <FullScreenLoader open={isLoading}></FullScreenLoader>
         <Grid
           container
           justifyContent="center"

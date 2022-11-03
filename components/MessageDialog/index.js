@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
@@ -14,6 +14,23 @@ export default function MessageDialog(props) {
 
   const autoHideDuration = 5000;
 
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (props.open) {
+      setOpen(true);
+      timeoutId = setTimeout(() => {
+        setOpen(false);
+      }, autoHideDuration);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [props.open]);
+
   return (
     <>
       <Snackbar
@@ -21,8 +38,7 @@ export default function MessageDialog(props) {
           vertical: defaultPosition.vertical,
           horizontal: defaultPosition.horizontal
         }}
-        open={props.open}
-        autoHideDuration={autoHideDuration}
+        open={open}
       >
         <Alert severity={props.type} sx={{ width: '100%' }}>
           {props.children}

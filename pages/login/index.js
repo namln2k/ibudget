@@ -29,11 +29,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    /**
-     * TODO:
-     * Show error message (Alert popup)
-     */
-
     const response = await axios.post('/api/auth/login', {
       username,
       password
