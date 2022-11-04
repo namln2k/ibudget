@@ -86,16 +86,14 @@ export default function Signup() {
 
     if (responseData.statusCode === 400) {
       setErrorMessage(responseData.error.toString());
-      setIsLoading(false);
     } else if (responseData.statusCode === 200) {
       setSuccessMessage(
         'Your account has been created! You will automatically be redirected to login page in 5 seconds'
       );
-      setIsLoading(false);
     } else {
       setErrorMessage('Something went wrong!');
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   return (

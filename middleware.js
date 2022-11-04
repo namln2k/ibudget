@@ -3,12 +3,14 @@ import * as jose from 'jose';
 
 const secret = process.env.JWT_SECRET;
 
+const PROTECT_ROUTES = ['/dashboard'];
+
 export default async function middleware(req) {
   const { cookies } = req;
   const jwt = cookies.get('JWT_TOKEN');
   const url = req.url;
 
-  if (url.includes('/dashboard')) {
+  if (PROTECT_ROUTES.some((protectedRoute) => url.includes(protectedRoute))) {
     if (jwt === undefined) {
       const url = req.nextUrl.clone();
       url.pathname = '/login';
@@ -16,10 +18,7 @@ export default async function middleware(req) {
     }
 
     try {
-      const verify = await jose.jwtVerify(
-        jwt,
-        new TextEncoder().encode(secret)
-      );
+      await jose.jwtVerify(jwt, new TextEncoder().encode(secret));
 
       return NextResponse.next();
     } catch (e) {
@@ -28,6 +27,4 @@ export default async function middleware(req) {
       return NextResponse.redirect(url);
     }
   }
-
-  return NextResponse.next();
 }

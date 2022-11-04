@@ -40,12 +40,12 @@ export default async function (req, res) {
 
         res.json({ statusCode: 200, data: user });
       } else {
-        res.json({ statusCode: 400, error: 'Invalid credentials!' });
+        res.json({ statusCode: 400, error: 'Invalid login credentials! Please double check your username and password then try again!' });
       }
     } else {
       res.json({
         statusCode: 400,
-        error: 'Can not find any user with provided username!'
+        error: 'Invalid login credentials! Please double check your username and password then try again!'
       });
     }
   } catch (error) {

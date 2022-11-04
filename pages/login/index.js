@@ -13,10 +13,14 @@ import {
 } from '@mui/material';
 import classNames from 'classnames';
 import styles from './Login.module.scss';
+import MessageDialog from '../../components/MessageDialog';
+import FullScreenLoader from '../../components/FullScreenLoader';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -27,8 +31,10 @@ export default function Login() {
   }, []);
 
   const handleSubmit = async (e) => {
+    setErrorMessage('');
     e.preventDefault();
 
+    setIsLoading(true);
     const response = await axios.post('/api/auth/login', {
       username,
       password
@@ -36,12 +42,13 @@ export default function Login() {
     const responseData = response.data;
 
     if (responseData.statusCode === 400) {
-      alert(responseData.error);
+      setErrorMessage(responseData.error.toString());
     } else if (responseData.statusCode === 200) {
       router.push('/dashboard/user');
     } else {
-      alert('Something went wrong!');
+      setErrorMessage('Something went wrong!');
     }
+    setIsLoading(false);
   };
 
   return (
@@ -49,6 +56,10 @@ export default function Login() {
       <Head>
         <title>Login</title>
       </Head>
+      <MessageDialog type="error" open={errorMessage != ''}>
+        {errorMessage}
+      </MessageDialog>
+      <FullScreenLoader open={isLoading}></FullScreenLoader>
       <Grid
         className={classNames(styles.login)}
         sx={{
