@@ -1,0 +1,110 @@
+.login {
+  height: 100vh;
+  padding: 0 20%;
+
+  .loginWrapper {
+    height: 86vh;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+
+    .part {
+      width: 50%;
+    }
+
+    .part.form {
+      padding: 80px;
+
+      .formWrapper {
+        width: 100%;
+
+        .imageWrapper {
+          width: 100%;
+
+          .image {
+            height: 120px;
+            position: relative;
+            background-image: url('/images/logo.png');
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-size: contain;
+          }
+        }
+
+        .form {
+          margin-top: 12px;
+          width: 100%;
+
+          .formControl + .formControl {
+            margin-top: 12px;
+          }
+
+          .btnLogin {
+            background: linear-gradient(
+              270deg,
+              #ee0979 0%,
+              #f42951 33.07%,
+              #f94929 66.41%,
+              #ff6a00 100%
+            );
+          }
+        }
+      }
+    }
+
+    .info {
+      height: 100%;
+      background: linear-gradient(
+        270deg,
+        #ee0979 0%,
+        #f42951 33.07%,
+        #f94929 66.41%,
+        #ff6a00 100%
+      );
+
+      .wrapper {
+        max-height: 256px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .login {
+    padding: 0 12%;
+
+    .loginWrapper {
+      height: 72vh;
+
+      .part {
+        width: 100%;
+      }
+
+      .part.form {
+        height: 100%;
+      }
+
+      .info {
+        height: unset;
+        padding: 120px 0;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .login {
+    padding: 0 36px;
+
+    .loginWrapper {
+      height: 72vh;
+
+      .part.form {
+        padding: 36px 24px;
+      }
+    }
+  }
+}
+
