@@ -1,4 +1,4 @@
-import * as User from '../../../../model/User';
+import * as User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
 
 export default async function (req, res) {

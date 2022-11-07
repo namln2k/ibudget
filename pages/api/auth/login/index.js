@@ -1,7 +1,7 @@
 import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
 import * as jose from 'jose';
-import * as User from '../../../../model/User';
+import * as User from '../../../../models/User';
 
 const secret = process.env.JWT_SECRET;
 
@@ -28,7 +28,7 @@ export default async function (req, res) {
           .setNotBefore(iat)
           .sign(new TextEncoder().encode(secret));
 
-        const serialised = serialize('JWT_TOKEN', token, {
+        const serialised = serialize('JWT', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV !== 'development',
           sameSite: 'strict',

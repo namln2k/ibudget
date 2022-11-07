@@ -1,5 +1,5 @@
 import { MongoServerError } from 'mongodb';
-import dbConnection from '../helper/db';
+import dbConnection from '../helpers/db';
 
 const COLLECTION = 'users';
 

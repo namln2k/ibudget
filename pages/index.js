@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
 import styles from '../styles/Home.module.scss';
 import classNames from 'classnames';
+import Footer from '../components/Footer';
 
 export default function Home() {
   return (
@@ -207,16 +208,7 @@ export default function Home() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          className={classNames(styles.footer)}
-        >
-          <Typography className={classNames(styles.copyright)}>
-            Copyright © Your Website 2022
-          </Typography>
-        </Grid>
+        <Footer sx={{ background: 'rgba(0, 0, 0, 0.8)' }}></Footer>
       </main>
     </>
   );

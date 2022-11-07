@@ -7,7 +7,7 @@ const PROTECT_ROUTES = ['/dashboard'];
 
 export default async function middleware(req) {
   const { cookies } = req;
-  const jwt = cookies.get('JWT_TOKEN');
+  const jwt = cookies.get('JWT');
   const url = req.url;
 
   if (PROTECT_ROUTES.some((protectedRoute) => url.includes(protectedRoute))) {
