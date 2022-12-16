@@ -24,3 +24,9 @@ export function stringAvatar(name) {
     children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
   };
 }
+
+export function separateByThousand(amount) {
+  return Math.abs(amount)
+  .toString()
+  .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

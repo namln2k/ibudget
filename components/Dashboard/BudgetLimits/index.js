@@ -1,10 +1,10 @@
-import { Grid, Typography, Box, Divider } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import classNames from 'classnames';
 import { useState } from 'react';
-import styles from './GoalsBudget.module.scss';
+import styles from './BudgetLimits.module.scss';
 import Item from './Item';
 
-export default function GoalsBudget() {
+export default function BudgetLimits() {
   const [items, setItems] = useState([
     { title: 'Budget category 1', progress: 25 },
     { title: 'Budget category 2', progress: 100 },
@@ -16,9 +16,9 @@ export default function GoalsBudget() {
 
   return (
     <>
-      <Grid className={classNames(styles.section, styles.goalsBudget)}>
+      <Grid className={classNames(styles.section, styles.budgetLimits)}>
         <Typography className={classNames(styles.title)}>
-          Goals Budget
+          Budget Limits
         </Typography>
         <Grid className={classNames(styles.container)}>
           {items.map((item, index) => (
