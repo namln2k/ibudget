@@ -6,7 +6,7 @@ import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
 import styles from './Dashboard.module.scss';
 import Totals from '../../components/Dashboard/Totals';
-import GoalsBudget from '../../components/Dashboard/GoalsBudget';
+import BudgetLimits from '../../components/Dashboard/BudgetLimits';
 import SpendingHistory from '../../components/Dashboard/SpendingHistory';
 import QuickAccess from '../../components/Dashboard/QuickAccess';
 
@@ -30,7 +30,7 @@ export default function Dashboard(params) {
             <Totals></Totals>
             <QuickAccess></QuickAccess>
           </Grid>
-          <GoalsBudget></GoalsBudget>
+          <BudgetLimits></BudgetLimits>
           <SpendingHistory></SpendingHistory>
         </Grid>
       </main>

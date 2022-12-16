@@ -7,6 +7,7 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import styles from './Totals.module.scss';
 import Select from '../../Select';
+import * as utilHelper from '../../../helpers/util';
 
 export default function Totals() {
   const filterOptions = [
@@ -55,7 +56,7 @@ export default function Totals() {
             </Box>
             <Grid className={classNames(styles.amount)}>
               <Typography className={classNames(styles.number)}>
-                1234567
+                {utilHelper.separateByThousand(1234567)}
               </Typography>
               <Typography className={classNames(styles.currency)}>$</Typography>
             </Grid>
@@ -77,7 +78,7 @@ export default function Totals() {
             </Box>
             <Grid className={classNames(styles.amount)}>
               <Typography className={classNames(styles.number)}>
-                1234
+              {utilHelper.separateByThousand(1234)}
               </Typography>
               <Typography className={classNames(styles.currency)}>$</Typography>
             </Grid>

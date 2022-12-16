@@ -3,12 +3,10 @@ import { Grid, Typography } from '@mui/material';
 import classNames from 'classnames';
 import styles from './Item.module.scss';
 import Icon from './Icon';
+import * as utilHelper from '../../../../helpers/util';
 
 const renderAmount = (amount) => {
-  const amountToString =
-    Math.abs(amount)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' $';
+  const amountToString = utilHelper.separateByThousand(amount) + ' $';
 
   if (amount > 0) {
     return (

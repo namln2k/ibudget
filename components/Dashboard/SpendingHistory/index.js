@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styles from './SpendingHistory.module.scss';
 import Item from './Item';
 
-export default function GoalsBudget() {
+export default function BudgetLimits() {
   const [items, setItems] = useState([
     {
       amount: 12,
@@ -14,13 +14,11 @@ export default function GoalsBudget() {
     },
     {
       amount: -6243,
-      description: 'Short, brief description',
-      detail:
-        'Long, detailed information about the transaction, but will be displayed briefly here'
+      description: 'Short, brief description'
     },
     {
       amount: 32992,
-      description: 'Short, brief description',
+      description: 'Rather long and detailed description',
       detail:
         'Long, detailed information about the transaction, but will be displayed briefly here'
     },
@@ -32,18 +30,14 @@ export default function GoalsBudget() {
     },
     {
       amount: 92475,
-      description: 'Short, brief description',
-      detail:
-        'Long, detailed information about the transaction, but will be displayed briefly here'
+      description: 'Short, brief description'
     },
     {
-      amount: 92475,
-      description: 'Short, brief description',
-      detail:
-        'Long, detailed information about the transaction, but will be displayed briefly here'
+      amount: -92475,
+      description: 'Short, brief description'
     },
     {
-      amount: 92475,
+      amount: -92475,
       description: 'Short, brief description',
       detail:
         'Long, detailed information about the transaction, but will be displayed briefly here'
