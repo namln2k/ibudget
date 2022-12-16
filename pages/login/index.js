@@ -15,6 +15,7 @@ import classNames from 'classnames';
 import styles from './Login.module.scss';
 import MessageDialog from '../../components/MessageDialog';
 import FullScreenLoader from '../../components/FullScreenLoader';
+import { useUserContext } from '../../contexts/user';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -25,6 +26,8 @@ export default function Login() {
   const router = useRouter();
 
   const usernameRef = useRef();
+
+  const [user, setUser] = useUserContext();
 
   useEffect(() => {
     usernameRef.current.querySelectorAll('input')[0].focus();
@@ -44,7 +47,8 @@ export default function Login() {
     if (responseData.statusCode === 400) {
       setErrorMessage(responseData.error.toString());
     } else if (responseData.statusCode === 200) {
-      router.push('/dashboard/user');
+      setUser(responseData.data);
+      router.push('/dashboard');
     } else {
       setErrorMessage('Something went wrong!');
     }

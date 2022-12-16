@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import classNames from 'classnames';
 import styles from './Signup.module.scss';
-import * as userHelper from '../../helper/user';
+import * as userHelper from '../../helpers/user';
 import MessageDialog from '../../components/MessageDialog';
 import FullScreenLoader from '../../components/FullScreenLoader';
 
