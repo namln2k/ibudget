@@ -7,7 +7,7 @@ function Sidebar() {
   return (
     <Grid className={classNames(styles.sidebar)}>
       <Grid className={classNames(styles.wrapper)}>
-        <SidebarItem label="Dashboard"></SidebarItem>
+        <SidebarItem label="Dashboard" to="/dashboard"></SidebarItem>
         <SidebarItem label="Trends (Charts)"></SidebarItem>
         <SidebarItem label="Account settings"></SidebarItem>
         <SidebarItem label="Team spending">
@@ -17,8 +17,18 @@ function Sidebar() {
         </SidebarItem>
         <SidebarItem label="Personal budget">
           <SidebarItem label="Plan new budget"></SidebarItem>
-          <SidebarItem label="View all records"></SidebarItem>
-          <SidebarItem label="Add an expense"></SidebarItem>
+          <SidebarItem
+            label="All transactions"
+            to="/transactions"
+            as="/transactions"
+            options={{ action: 'no-action' }}
+          ></SidebarItem>
+          <SidebarItem
+            label="Add an expense"
+            as="/transactions"
+            to="/transactions"
+            options={{ action: 'add' }}
+          ></SidebarItem>
           <SidebarItem label="Add an income"></SidebarItem>
         </SidebarItem>
       </Grid>

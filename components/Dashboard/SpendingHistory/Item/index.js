@@ -75,14 +75,25 @@ const renderAmount = (amount) => {
   }
 };
 
-export default function Item({ amount, description, detail }) {
+export default function Item({
+  amount,
+  title,
+  detail,
+  callback,
+  itemId
+}) {
   return (
     <>
-      <Grid className={classNames(styles.item)} flex={true} flexDirection="row">
+      <Grid
+        className={classNames(styles.item)}
+        flex={true}
+        flexDirection="row"
+        onClick={() => callback && callback(itemId)}
+      >
         <Grid>{renderAmount(amount)}</Grid>
         <Grid className={classNames(styles.content)}>
-          <Typography className={classNames(styles.description)}>
-            {description}
+          <Typography className={classNames(styles.title)}>
+            {title}
           </Typography>
           <Typography className={classNames(styles.detail)}>
             {detail}

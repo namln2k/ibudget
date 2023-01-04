@@ -19,5 +19,17 @@
     padding: 0 30px;
     max-height: calc(100vh - 400px);
     overflow: auto;
+
+    .noItem {
+      width: 500px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      box-shadow: 3px 5px 0 rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
   }
 }

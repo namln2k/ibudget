@@ -27,6 +27,12 @@ export function stringAvatar(name) {
 
 export function separateByThousand(amount) {
   return Math.abs(amount)
-  .toString()
-  .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export function mongoDateToString(date) {
+  const tempDate = new Date(date);
+
+  return tempDate.toDateString();
 }
