@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { Box, Grid, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -8,6 +9,8 @@ import classNames from 'classnames';
 import Footer from '../components/Footer';
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <>
       <Head>
@@ -50,11 +53,18 @@ export default function Home() {
               <Button
                 variant="text"
                 className={classNames(styles.btn)}
-                href="/signup"
+                onClick={() => {
+                  router.push('/signup');
+                }}
               >
                 Signup
               </Button>
-              <Button className={classNames(styles.btn)} href="/login">
+              <Button
+                className={classNames(styles.btn)}
+                onClick={() => {
+                  router.push('/login');
+                }}
+              >
                 Login
               </Button>
             </Grid>
