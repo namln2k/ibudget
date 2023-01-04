@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Autocomplete from '@mui/material/Autocomplete';
-import styles from './AddIncome.module.scss';
+import styles from './AddTransaction.module.scss';
 import FullScreenLoader from '../../FullScreenLoader';
 import * as utilHelper from '../../../helpers/util';
 
@@ -31,12 +31,10 @@ const categories = [
   'Others'
 ];
 
-export default function FormAddIncome() {
+export default function FormAddTransaction(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [transaction, setTransaction] = useState({});
-
-  console.log(transaction);
 
   return (
     <>

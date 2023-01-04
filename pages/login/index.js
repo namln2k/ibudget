@@ -81,12 +81,10 @@ export default function Login() {
           <Grid className={classNames(styles.part, styles.form)}>
             <Grid className={classNames(styles.formWrapper)}>
               <Grid className={classNames(styles.imageWrapper)}>
-                <Grid className={classNames(styles.image)}>
-                  <Link
-                    sx={{ display: 'block', width: '100%', height: '100%' }}
-                    href="/"
-                  ></Link>
-                </Grid>
+                <Grid
+                  className={classNames(styles.image)}
+                  onClick={() => router.push('/')}
+                ></Grid>
               </Grid>
               <Typography sx={{ marginTop: '24px' }}>
                 Please login to continue
@@ -157,7 +155,11 @@ export default function Login() {
                 <Typography textAlign="right">
                   Don't have an account?
                 </Typography>
-                <Button variant="outlined" color="error" href="/signup">
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => router.push('/signup')}
+                >
                   Create new
                 </Button>
               </Grid>

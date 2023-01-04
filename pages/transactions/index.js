@@ -9,7 +9,7 @@ import Footer from '../../components/Footer';
 import styles from './Transactions.module.scss';
 import SpendingHistory from '../../components/Dashboard/SpendingHistory';
 import TransactionDetail from '../../components/Transactions/Detail';
-import FormAddIncome from '../../components/Transactions/AddIncome'; 
+import FormAddTransaction from '../../components/Transactions/AddTransaction';
 
 export default function Transactions(props) {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function Transactions(props) {
       case 'add-income':
         return (
           <Grid className={styles.splash}>
-            <FormAddIncome></FormAddIncome>
+            <FormAddTransaction type="income"></FormAddTransaction>
           </Grid>
         );
       default:
@@ -64,27 +64,27 @@ export default function Transactions(props) {
       <Header></Header>
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
-          <Grid className={classNames(styles.sections)}>
-            <SpendingHistory callback={viewTransactionDetail}></SpendingHistory>
-            <Grid>{renderAction(action, transactionIdToView)}</Grid>
-            <Grid className={classNames(styles.actions)}>
-              <Grid
-                sx={{ display: 'flex', gap: '20px' }}
-                onClick={viewNewIncomeForm}
-              >
-                <Grid className={classNames(styles.btn, styles.btnIncome)}>
-                  <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
-                    Add an income
-                  </Typography>
-                </Grid>
-                <Grid className={classNames(styles.btn, styles.btnExpense)}>
-                  <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
-                    Add an expense
-                  </Typography>
-                </Grid>
+        <Grid className={classNames(styles.sections)}>
+          <SpendingHistory callback={viewTransactionDetail}></SpendingHistory>
+          <Grid>{renderAction(action, transactionIdToView)}</Grid>
+          <Grid className={classNames(styles.actions)}>
+            <Grid
+              sx={{ display: 'flex', gap: '20px' }}
+              onClick={viewNewIncomeForm}
+            >
+              <Grid className={classNames(styles.btn, styles.btnIncome)}>
+                <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
+                  Add an income
+                </Typography>
+              </Grid>
+              <Grid className={classNames(styles.btn, styles.btnExpense)}>
+                <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
+                  Add an expense
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
+        </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>
     </>

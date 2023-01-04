@@ -58,7 +58,9 @@ export default function Signup() {
     e.preventDefault();
 
     if (password != rePassword) {
-      setErrorMessage('Password confirmation does not match. Please double check and try again!');
+      setErrorMessage(
+        'Password confirmation does not match. Please double check and try again!'
+      );
       return;
     }
 
@@ -125,12 +127,10 @@ export default function Signup() {
           <Grid className={classNames(styles.part, styles.form)}>
             <Grid className={classNames(styles.formWrapper)}>
               <Grid className={classNames(styles.imageWrapper)}>
-                <Grid className={classNames(styles.image)}>
-                  <Link
-                    sx={{ display: 'block', width: '100%', height: '100%' }}
-                    href="/"
-                  ></Link>
-                </Grid>
+                <Grid
+                  className={classNames(styles.image)}
+                  onClick={() => router.push('/')}
+                ></Grid>
               </Grid>
               <Typography sx={{ marginTop: '24px' }}>
                 Create a free account
@@ -247,7 +247,11 @@ export default function Signup() {
                 <Typography textAlign="right">
                   Already have an account?
                 </Typography>
-                <Button variant="outlined" color="error" href="/login">
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => router.push('/login')}
+                >
                   Login now
                 </Button>
               </Grid>

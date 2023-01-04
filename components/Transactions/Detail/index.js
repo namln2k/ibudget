@@ -102,20 +102,24 @@ export default function TransactionDetail({ transactionId }) {
           <span></span>
           <Grid className={classNames(styles.content)}>
             {renderIcon(status)}
-            <Typography>{status ? 'Success' : 'Failure'}</Typography>
-            <Grid>
-              <Typography
-                className={classNames(
-                  amount > 0 ? styles.income : styles.expense
-                )}
-                variant="h4"
-                sx={{ marginTop: '20px' }}
-              >
-                {(amount > 0 ? '+ ' : '- ') +
-                  utilHelper.separateByThousand(amount) +
-                  ' $'}
-              </Typography>
-            </Grid>
+            {status && (
+              <Typography>{status ? 'Success' : 'Failure'}</Typography>
+            )}
+            {amount && (
+              <Grid>
+                <Typography
+                  className={classNames(
+                    amount > 0 ? styles.income : styles.expense
+                  )}
+                  variant="h4"
+                  sx={{ marginTop: '20px' }}
+                >
+                  {(amount > 0 ? '+ ' : '- ') +
+                    utilHelper.separateByThousand(amount) +
+                    ' $'}
+                </Typography>
+              </Grid>
+            )}
             <Grid className={classNames(styles.fakeTable)}>
               <table>
                 <tbody>
