@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
@@ -42,6 +42,9 @@ export default function Categories(props) {
         <Sidebar></Sidebar>
         <FullScreenLoader open={isLoading}></FullScreenLoader>
         <Grid className={classNames(styles.content)}>
+          <Button className={classNames(styles.btnAddCate)}>
+            <Typography variant="h6">Add a category</Typography>
+          </Button>
           <DataGrid
             rows={categories}
             columns={columns}
