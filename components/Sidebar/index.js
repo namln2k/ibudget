@@ -18,6 +18,11 @@ function Sidebar() {
         <SidebarItem label="Personal budget">
           <SidebarItem label="Plan new budget"></SidebarItem>
           <SidebarItem
+            label="All categories"
+            to="/categories"
+            as="/categories"
+          ></SidebarItem>
+          <SidebarItem
             label="All transactions"
             to="/transactions"
             as="/transactions"

@@ -1,3 +1,14 @@
 .MuiAlert-message {
   text-align: justify;
 }
+
+.MuiDialog-paperScrollPaper {
+  max-width: none;
+}
+
+.MuiDialogActions-root {
+  .MuiButton-root {
+    padding: 12px 20px;
+    border-radius: 6px;
+  }
+}
