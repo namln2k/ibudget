@@ -8,6 +8,9 @@ export default async function (req, res) {
       responseData = await Category.getOneById(req.query.id);
     } else {
       responseData = await Category.getAllByUserId(req.query.userId);
+      responseData.forEach((element, index) => {
+        element.id = index + 1;
+      });
     }
 
     res.json({ statusCode: 200, data: responseData });

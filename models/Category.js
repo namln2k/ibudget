@@ -60,3 +60,17 @@ export async function getOneById(id) {
     throw new Error('Something went wrong!');
   }
 }
+
+export async function createNew(category) {
+  try {
+    const db = await dbConnection();
+
+    await db.collection(COLLECTION).insertOne(category);
+  } catch (error) {
+    if (error instanceof MongoServerError) {
+      throw new Error(error.toString());
+    }
+
+    throw new Error('Something went wrong!');
+  }
+}
