@@ -53,10 +53,25 @@ export default function Categories(props) {
     setIsDialogOpen(false);
   };
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (successMessage != '') {
+      setErrorMessage('');
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage]);
+
   const addCategory = async () => {
     setErrorMessage('');
 
-    if (categoryToAdd.name === '') {
+    if (!categoryToAdd.name) {
       setErrorMessage('Category name is required! Please fill in!');
       return;
     }
@@ -193,8 +208,6 @@ export default function Categories(props) {
           <DataGrid
             rows={categories}
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
             checkboxSelection
           />
         </Grid>
