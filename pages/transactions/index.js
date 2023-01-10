@@ -42,6 +42,12 @@ export default function Transactions(props) {
             <FormAddTransaction type="income"></FormAddTransaction>
           </Grid>
         );
+      case 'add-expense':
+        return (
+          <Grid className={styles.splash}>
+            <FormAddTransaction type="expense"></FormAddTransaction>
+          </Grid>
+        );
       default:
         return <Grid className={styles.splash}></Grid>;
     }
@@ -56,6 +62,10 @@ export default function Transactions(props) {
     setAction('add-income');
   };
 
+  const viewNewExpenseForm = () => {
+    setAction('add-expense');
+  };
+
   return (
     <>
       <Head>
@@ -68,16 +78,19 @@ export default function Transactions(props) {
           <SpendingHistory callback={viewTransactionDetail}></SpendingHistory>
           <Grid>{renderAction(action, transactionIdToView)}</Grid>
           <Grid className={classNames(styles.actions)}>
-            <Grid
-              sx={{ display: 'flex', gap: '20px' }}
-              onClick={viewNewIncomeForm}
-            >
-              <Grid className={classNames(styles.btn, styles.btnIncome)}>
+            <Grid sx={{ display: 'flex', gap: '20px' }}>
+              <Grid
+                className={classNames(styles.btn, styles.btnIncome)}
+                onClick={viewNewIncomeForm}
+              >
                 <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
                   Add an income
                 </Typography>
               </Grid>
-              <Grid className={classNames(styles.btn, styles.btnExpense)}>
+              <Grid
+                className={classNames(styles.btn, styles.btnExpense)}
+                onClick={viewNewExpenseForm}
+              >
                 <Typography sx={{ fontWeight: 500, fontSize: '20px' }}>
                   Add an expense
                 </Typography>

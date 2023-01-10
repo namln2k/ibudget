@@ -1,5 +1,11 @@
-.MuiAlert-message {
-  text-align: justify;
+@import './fixLibraryBugs';
+
+input {
+  font-family: 'Rubik', sans-serif !important;
+}
+
+textarea {
+  font-family: 'Rubik', sans-serif !important;
 }
 
 .MuiDialog-paperScrollPaper {
