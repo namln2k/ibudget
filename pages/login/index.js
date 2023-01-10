@@ -152,7 +152,7 @@ export default function Login() {
                 }}
               >
                 <Typography textAlign="right">
-                  Don't have an account?
+                  Do not have an account?
                 </Typography>
                 <Button
                   variant="outlined"

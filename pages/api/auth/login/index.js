@@ -1,5 +1,5 @@
-import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
+import { serialize } from 'cookie';
 import * as jose from 'jose';
 import * as UserRepository from '../../../../repository/user';
 
