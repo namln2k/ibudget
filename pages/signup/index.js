@@ -1,23 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
 import {
   Button,
-  Grid,
-  Typography,
   FormControl,
-  InputLabel,
+  Grid,
   Input,
-  Link,
-  Stack,
-  Snackbar
+  InputLabel,
+  Typography
 } from '@mui/material';
+import axios from 'axios';
 import classNames from 'classnames';
-import styles from './Signup.module.scss';
-import * as userHelper from '../../helpers/user';
-import MessageDialog from '../../components/MessageDialog';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import React, { useEffect, useRef, useState } from 'react';
 import FullScreenLoader from '../../components/FullScreenLoader';
+import MessageDialog from '../../components/MessageDialog';
+import * as userHelper from '../../helpers/user';
+import styles from './Signup.module.scss';
 
 export default function Signup() {
   const [firstname, setFirstname] = useState('');
@@ -83,12 +80,14 @@ export default function Signup() {
       username,
       password
     });
+
     const responseData = response.data;
     setIsLoading(false);
 
     if (responseData.statusCode === 400) {
       setErrorMessage(responseData.error.toString());
     } else if (responseData.statusCode === 200) {
+      setErrorMessage('');
       setSuccessMessage(
         'Your account has been created! You will automatically be redirected to login page in 5 seconds'
       );
@@ -111,12 +110,16 @@ export default function Signup() {
           alignItems: 'center'
         }}
       >
-        <MessageDialog type="success" open={successMessage != ''}>
-          {successMessage}
-        </MessageDialog>
-        <MessageDialog type="error" open={errorMessage != ''}>
-          {errorMessage}
-        </MessageDialog>
+        {successMessage && (
+          <MessageDialog type="success" open={successMessage != ''}>
+            {successMessage}
+          </MessageDialog>
+        )}
+        {errorMessage && (
+          <MessageDialog type="error" open={errorMessage != ''}>
+            {errorMessage}
+          </MessageDialog>
+        )}
         <FullScreenLoader open={isLoading}></FullScreenLoader>
         <Grid
           container

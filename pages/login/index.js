@@ -1,21 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
 import {
   Button,
-  Grid,
-  Typography,
   FormControl,
-  InputLabel,
+  Grid,
   Input,
-  Link
+  InputLabel,
+  Typography
 } from '@mui/material';
+import axios from 'axios';
 import classNames from 'classnames';
-import styles from './Login.module.scss';
-import MessageDialog from '../../components/MessageDialog';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import React, { useEffect, useRef, useState } from 'react';
 import FullScreenLoader from '../../components/FullScreenLoader';
+import MessageDialog from '../../components/MessageDialog';
 import { useUserContext } from '../../contexts/user';
+import styles from './Login.module.scss';
 
 export default function Login() {
   const [username, setUsername] = useState('');

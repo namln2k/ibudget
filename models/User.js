@@ -1,55 +1,30 @@
-import { MongoServerError } from 'mongodb';
-import dbConnection from '../helpers/db';
+import mongoose from 'mongoose';
+import connectDb from '../utils/connectDb';
 
-const COLLECTION = 'users';
+connectDb();
 
-export async function getAll() {
-  try {
-    const db = await dbConnection();
+const Schema = mongoose.Schema;
 
-    const users = await db.collection(COLLECTION).find({}).toArray();
-
-    return users;
-  } catch (error) {
-    if (error instanceof MongoServerError) {
-      throw new Error(error.toString());
+const UserSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true
     }
-
-    throw new Error('Something went wrong!');
+  },
+  {
+    timestamps: {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
+    }
   }
-}
+);
 
-export async function getOneByUsername(username) {
-  try {
-    const db = await dbConnection();
-
-    const users = await db
-      .collection(COLLECTION)
-      .find({ username: username })
-      .toArray();
-
-    if (users.length === 1) {
-      return users[0];
-    }
-  } catch (error) {
-    if (error instanceof MongoServerError) {
-      throw new Error(error.toString());
-    }
-
-    throw new Error('Something went wrong!');
-  }
-}
-
-export async function createNew(user) {
-  try {
-    const db = await dbConnection();
-
-    await db.collection(COLLECTION).insertOne(user);
-  } catch (error) {
-    if (error instanceof MongoServerError) {
-      throw new Error(error.toString());
-    }
-
-    throw new Error('Something went wrong!');
-  }
-}
+export default mongoose.models.User || mongoose.model('User', UserSchema);

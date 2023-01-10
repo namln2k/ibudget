@@ -1,7 +1,7 @@
 import { serialize } from 'cookie';
 import bcrypt from 'bcryptjs';
 import * as jose from 'jose';
-import * as User from '../../../../models/User';
+import * as UserRepository from '../../../../repository/user';
 
 const secret = process.env.JWT_SECRET;
 
@@ -9,7 +9,7 @@ export default async function (req, res) {
   const { username, password } = req.body;
 
   try {
-    const user = await User.getOneByUsername(username);
+    const user = await UserRepository.findByUsername(username);
 
     if (user) {
       const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -40,12 +40,17 @@ export default async function (req, res) {
 
         res.json({ statusCode: 200, data: user });
       } else {
-        res.json({ statusCode: 400, error: 'Invalid login credentials! Please double check your username and password then try again!' });
+        res.json({
+          statusCode: 400,
+          error:
+            'Invalid login credentials! Please double check your username and password then try again!'
+        });
       }
     } else {
       res.json({
         statusCode: 400,
-        error: 'Invalid login credentials! Please double check your username and password then try again!'
+        error:
+          'Invalid login credentials! Please double check your username and password then try again!'
       });
     }
   } catch (error) {
