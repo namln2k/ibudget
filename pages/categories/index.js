@@ -1,20 +1,20 @@
-import Head from 'next/head';
-import { useEffect, useState } from 'react';
-import classNames from 'classnames';
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Header from '../../components/Header';
-import Sidebar from '../../components/Sidebar';
-import Footer from '../../components/Footer';
-import styles from './Categories.module.scss';
-import FullScreenLoader from '../../components/FullScreenLoader';
+import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
+import classNames from 'classnames';
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import Footer from '../../components/Footer';
+import FullScreenLoader from '../../components/FullScreenLoader';
+import Header from '../../components/Header';
 import MessageDialog from '../../components/MessageDialog';
+import Sidebar from '../../components/Sidebar';
 import { useUserContext } from '../../contexts/user';
+import styles from './Categories.module.scss';
 
 const columns = [
   { field: 'id', headerName: 'Index', width: 100 },
@@ -53,10 +53,25 @@ export default function Categories(props) {
     setIsDialogOpen(false);
   };
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (successMessage != '') {
+      setErrorMessage('');
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage]);
+
   const addCategory = async () => {
     setErrorMessage('');
 
-    if (categoryToAdd.name === '') {
+    if (!categoryToAdd.name) {
       setErrorMessage('Category name is required! Please fill in!');
       return;
     }
@@ -193,8 +208,6 @@ export default function Categories(props) {
           <DataGrid
             rows={categories}
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
             checkboxSelection
           />
         </Grid>

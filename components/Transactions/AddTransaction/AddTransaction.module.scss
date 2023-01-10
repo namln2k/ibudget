@@ -7,34 +7,143 @@
   padding-bottom: 20px;
 
   .fakeTable {
-    display: block;
-    width: 100%;
-    max-height: calc(100% - 40px);
+    height: calc(100% - 40px);
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    table {
+      width: 100%;
+      max-height: 90%;
+    }
 
     td {
-      height: 52px;
+      height: 75px;
+      width: calc(100% - 320px);
       margin: 10px 0;
-
-      h6 {
-        display: block;
-        height: 100%;
-      }
+      vertical-align: middle;
 
       &:first-child {
-        width: 300px;
+        width: 220px;
       }
 
-      .timePicker {
-        height: 52px;
+      &:not(:last-child) {
+        height: auto;
+      }
+    }
 
-        div {
+    .extraShortField {
+      width: 25%;
+    }
+
+    .shortField {
+      width: 40%;
+    }
+
+    .longField {
+      width: 75%;
+    }
+
+    .extraLongField {
+      width: 95%;
+    }
+
+    .timePicker {
+      height: 52px;
+
+      div {
+        height: 100%;
+
+        input {
           height: 100%;
+          padding: 0 10px;
+        }
+      }
+    }
 
+    .textField {
+      div {
+        input {
+          padding-left: 10px;
+          padding-right: 10px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .textArea {
+      padding: 16px 16px 16px 12px;
+      font-size: 16px;
+    }
+
+    .fieldDetail {
+      margin-top: 16px;
+    }
+
+    .fieldAmount {
+      &.income {
+        div {
           input {
-            height: 100%;
-            padding: 0 10px;
+            color: #008000;
           }
+        }
+      }
+
+      &.expense {
+        div {
+          input {
+            color: #ff0000;
+          }
+        }
+      }
+    }
+
+    .btn {
+      cursor: pointer;
+      transition: 0.4s;
+      border: 6px solid rgb(0, 0, 0);
+      border-radius: 4px;
+      box-shadow: 1px 3px #888888;
+      display: flex;
+      justify-self: center;
+      align-items: center;
+      height: fit-content;
+      padding: 6px 16px;
+      margin-top: 24px;
+
+      &.income {
+        border: 2px solid #0c8605;
+        background-color: rgb(144, 213, 141, 0.5);
+      }
+
+      &.expense {
+        border: 2px solid #e31d1d;
+        background-color: rgba(213, 148, 141, 0.5);
+      }
+
+      &:hover {
+        color: #fff;
+
+        &.income {
+          background-color: rgba(12, 134, 5, 0.6);
+        }
+
+        &.expense {
+          background-color: rgba(227, 29, 29, 0.6);
+        }
+      }
+
+      &:active {
+        box-shadow: none;
+        transform: translate(1px, 3px);
+        &.income {
+          background-color: rgb(3, 102, 19);
+        }
+
+        &.expense {
+          background-color: rgb(195, 40, 5);
         }
       }
     }
@@ -338,30 +447,6 @@
         width: 48px;
         left: 16px;
         top: 38px;
-      }
-    }
-  }
-
-  .income {
-    color: #008000;
-  }
-
-  .expense {
-    color: #ff0000;
-  }
-
-  .fakeTable {
-    display: block;
-    width: 100%;
-    margin-top: 20px;
-    max-height: calc(100% - 40px);
-    overflow: auto;
-  }
-
-  tr {
-    td {
-      &:first-child {
-        width: 180px;
       }
     }
   }
