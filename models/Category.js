@@ -5,28 +5,21 @@ connectDb();
 
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema(
+const CategorySchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true
-    },
-    password: {
+    name: {
       type: String,
       required: true,
       trim: true
     },
-    firstname: {
+    description: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
-    lastname: {
-      type: String,
-      required: true,
-      trim: true
+    user_id: {
+      type: Schema.Types.ObjectId,
+      required: true
     }
   },
   {
@@ -37,4 +30,5 @@ const UserSchema = new Schema(
   }
 );
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+export default mongoose.models.Category ||
+  mongoose.model('Category', CategorySchema);

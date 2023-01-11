@@ -12,7 +12,7 @@ export default function MessageDialog(props) {
     horizontal: 'center'
   };
 
-  const autoHideDuration = 5000;
+  const autoHideDuration = 3000;
 
   const [open, setOpen] = useState(false);
 
@@ -33,17 +33,19 @@ export default function MessageDialog(props) {
 
   return (
     <>
-      <Snackbar
-        anchorOrigin={{
-          vertical: defaultPosition.vertical,
-          horizontal: defaultPosition.horizontal
-        }}
-        open={open}
-      >
-        <Alert severity={props.type} sx={{ width: '100%' }}>
-          {props.children}
-        </Alert>
-      </Snackbar>
+      {open && (
+        <Snackbar
+          anchorOrigin={{
+            vertical: defaultPosition.vertical,
+            horizontal: defaultPosition.horizontal
+          }}
+          open={open}
+        >
+          <Alert severity={props.type} sx={{ width: '100%' }}>
+            {props.children}
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 }
