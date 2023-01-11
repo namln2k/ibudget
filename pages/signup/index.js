@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import MessageDialog from '../../components/MessageDialog';
+import { useLoadingContext } from '../../contexts/loading';
 import * as userHelper from '../../helpers/user';
 import styles from './Signup.module.scss';
 
@@ -22,9 +23,11 @@ export default function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
+
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [loading, setLoading] = useLoadingContext();
 
   const router = useRouter();
 
@@ -42,7 +45,7 @@ export default function Signup() {
       timeoutId = setTimeout(() => {
         setSuccessMessage('');
         router.push('/login');
-      }, 5000);
+      }, 3000);
     }
 
     return () => {
@@ -73,7 +76,7 @@ export default function Signup() {
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     const response = await axios.post('/api/auth/signup', {
       firstname,
       lastname,
@@ -82,7 +85,7 @@ export default function Signup() {
     });
 
     const responseData = response.data;
-    setIsLoading(false);
+    setLoading(false);
 
     if (responseData.statusCode === 400) {
       setErrorMessage(responseData.error.toString());
@@ -94,7 +97,7 @@ export default function Signup() {
     } else {
       setErrorMessage('Something went wrong!');
     }
-    setIsLoading(false);
+    setLoading(false);
   };
 
   return (
@@ -110,17 +113,13 @@ export default function Signup() {
           alignItems: 'center'
         }}
       >
-        {successMessage && (
-          <MessageDialog type="success" open={successMessage != ''}>
-            {successMessage}
-          </MessageDialog>
-        )}
-        {errorMessage && (
-          <MessageDialog type="error" open={errorMessage != ''}>
-            {errorMessage}
-          </MessageDialog>
-        )}
-        <FullScreenLoader open={isLoading}></FullScreenLoader>
+        <MessageDialog type="success" open={successMessage != ''}>
+          {successMessage}
+        </MessageDialog>
+        <MessageDialog type="error" open={errorMessage != ''}>
+          {errorMessage}
+        </MessageDialog>
+        <FullScreenLoader open={loading}></FullScreenLoader>
         <Grid
           container
           justifyContent="center"

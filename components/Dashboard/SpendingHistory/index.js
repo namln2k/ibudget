@@ -1,22 +1,24 @@
 import { Grid, Typography } from '@mui/material';
-import classNames from 'classnames';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './SpendingHistory.module.scss';
-import Item from './Item';
+import classNames from 'classnames';
+import { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../../contexts/loading';
 import { useUserContext } from '../../../contexts/user';
 import FullScreenLoader from '../../FullScreenLoader';
+import Item from './Item';
+import styles from './SpendingHistory.module.scss';
 
 export default function SpendingHistory(props) {
   const [items, setItems] = useState([]);
 
   const [user, setUser] = useUserContext();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useLoadingContext();
 
   useEffect(() => {
     async function persistUserAndGetTransactions() {
       if (!!user) {
+        setLoading(true);
         const response = await axios.post('/api/auth/persist-user');
         const responseData = response.data;
 
@@ -28,7 +30,7 @@ export default function SpendingHistory(props) {
           );
 
           setItems(response.data.data);
-          setIsLoading(false);
+          setLoading(false);
         }
       }
     }
@@ -38,7 +40,7 @@ export default function SpendingHistory(props) {
 
   return (
     <>
-      <FullScreenLoader open={isLoading}></FullScreenLoader>
+      <FullScreenLoader open={loading}></FullScreenLoader>
       <Grid className={classNames(styles.section, styles.spendingHistory)}>
         <Typography className={classNames(styles.title)}>
           Spending History

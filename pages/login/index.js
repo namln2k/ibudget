@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import MessageDialog from '../../components/MessageDialog';
+import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import styles from './Login.module.scss';
 
@@ -20,13 +21,14 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   const usernameRef = useRef();
 
   const [user, setUser] = useUserContext();
+
+  const [loading, setLoading] = useLoadingContext();
 
   useEffect(() => {
     usernameRef.current.querySelectorAll('input')[0].focus();
@@ -36,7 +38,7 @@ export default function Login() {
     setErrorMessage('');
     e.preventDefault();
 
-    setIsLoading(true);
+    setLoading(true);
     const response = await axios.post('/api/auth/login', {
       username,
       password
@@ -51,7 +53,7 @@ export default function Login() {
     } else {
       setErrorMessage('Something went wrong!');
     }
-    setIsLoading(false);
+    setLoading(false);
   };
 
   return (
@@ -62,7 +64,7 @@ export default function Login() {
       <MessageDialog type="error" open={errorMessage != ''}>
         {errorMessage}
       </MessageDialog>
-      <FullScreenLoader open={isLoading}></FullScreenLoader>
+      <FullScreenLoader open={loading}></FullScreenLoader>
       <Grid
         className={classNames(styles.login)}
         sx={{

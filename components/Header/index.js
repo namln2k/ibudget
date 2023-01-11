@@ -13,6 +13,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import FullScreenLoader from '../../components/FullScreenLoader';
+import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import * as utilHelper from '../../helpers/util';
 import SearchBox from '../SearchBox';
@@ -21,7 +22,7 @@ import styles from './Header.module.scss';
 export default function Header() {
   const [searchText, setSearchText] = useState('');
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useLoadingContext();
 
   const router = useRouter();
 
@@ -38,11 +39,10 @@ export default function Header() {
   const { firstname, lastname } = user;
   const userFullName = firstname + ' ' + lastname;
 
-  console.log(user);
-
   useEffect(() => {
     async function persistUser() {
       if (!!user) {
+        setLoading(true);
         const response = await axios.post('/api/auth/persist-user');
         const responseData = response.data;
 
@@ -51,7 +51,7 @@ export default function Header() {
         }
       }
 
-      setIsLoading(false);
+      setLoading(false);
     }
 
     persistUser();
@@ -59,7 +59,7 @@ export default function Header() {
 
   return (
     <>
-      <FullScreenLoader open={isLoading}></FullScreenLoader>
+      <FullScreenLoader open={loading}></FullScreenLoader>
       <Grid
         container
         justifyContent="space-between"
@@ -89,9 +89,9 @@ export default function Header() {
           </Typography>
           <form>
             <SearchBox
-              value={searchText}
-              onChange={(newValue) => setSearchText(newValue)}
+              onChange={setSearchText}
               placeholder="Type here to search"
+              value={searchText}
             />
           </form>
         </Grid>
@@ -99,7 +99,7 @@ export default function Header() {
           <Typography className={styles.pageTitle}>Dashboard</Typography>
         </Grid>
         <Grid
-          sx={{ visibility: isLoading ? 'hidden' : 'visible' }}
+          sx={{ visibility: loading ? 'hidden' : 'visible' }}
           flexDirection="row"
           alignItems="center"
           className={classNames(styles.userAccess)}

@@ -1,15 +1,18 @@
-import { IconButton, InputBase, Paper } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import React from 'react';
+import { IconButton, InputBase, Paper } from '@mui/material';
 import classNames from 'classnames';
+import React from 'react';
+import styles from './SearchBox.module.scss';
 
-export default function SearchBox(props) {
+export default function SearchBox({ placeholder, text, onChange, ...props }) {
   return (
-    <Paper>
+    <Paper className={classNames(styles.wrapper)} {...props}>
       <InputBase
-        placeholder={props.placeholder}
-        value={props.value}
-        onChange={props.onChange}
+        placeholder={placeholder}
+        value={text}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
       />
       <IconButton aria-label="search">
         <Search />

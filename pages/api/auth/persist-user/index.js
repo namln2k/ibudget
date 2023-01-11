@@ -12,7 +12,9 @@ export default async function (req, res) {
       new TextEncoder().encode(secret)
     );
 
-    const user = await UserRepository.findByUsername(payload.username);
+    let user = await UserRepository.findByUsernameExcludePassword(payload.username);
+
+    delete user.password;
 
     res.json({ statusCode: 200, data: user });
   } catch (error) {
