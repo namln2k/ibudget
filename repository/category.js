@@ -11,7 +11,7 @@ export async function create(category) {
     if (error.code === ERR_CODE_DUPLICATE_KEY) {
       throw new Error(Object.keys(error.keyPattern)[0] + ' must be unique!');
     }
-      
+
     throw new Error(error.toString());
   }
 
@@ -27,6 +27,16 @@ export async function findByUserId(userId) {
       .exec();
 
     return categories;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function deleteManyByIds(ids) {
+  try {
+    const deletedCount = CategoryModel.deleteMany({ _id: { $in: ids } });
+
+    return deletedCount;
   } catch (error) {
     throw new Error(error.toString());
   }

@@ -7,7 +7,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Footer from '../../components/Footer';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
@@ -18,7 +18,7 @@ import { useUserContext } from '../../contexts/user';
 import styles from './Categories.module.scss';
 
 const columns = [
-  { field: 'id', headerName: 'Index', width: 100 },
+  { field: 'index', headerName: 'Index', width: 100 },
   { field: 'name', headerName: 'Category name', width: 320 },
   { field: 'description', headerName: 'Description', width: 560 }
 ];
@@ -43,7 +43,7 @@ export default function Categories(props) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const [targetCategories, setTargetCategories] = useState([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
 
   const [categoryToAdd, setCategoryToAdd] = useState({});
 
@@ -127,6 +127,40 @@ export default function Categories(props) {
     }
   };
 
+  const deleteSelected = async () => {
+    if (selectedCategoryIds.length === 0) {
+      return;
+    }
+
+    setLoading(true);
+
+    const response = await axios.get(
+      `/api/categories/delete/?ids=${JSON.stringify(selectedCategoryIds)}`
+    );
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      const deletedCount = responseData.data.deletedCount;
+      if (selectedCategoryIds.length != deletedCount) {
+        setSuccessMessage('');
+        setErrorMessage('Some categories may not have been deleted!');
+      } else {
+        setErrorMessage('');
+        setSuccessMessage(
+          `Deleted ${responseData.data.deletedCount} category(s)!`
+        );
+      }
+
+      persistUserAndGetCategories();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
+
+    setLoading(false);
+  };
+
   const persistUserAndGetCategories = async () => {
     setLoading(true);
     if (!!user) {
@@ -173,12 +207,20 @@ export default function Categories(props) {
           {successMessage}
         </MessageDialog>
         <Grid className={classNames(styles.content)}>
-          <Button
-            className={classNames(styles.btnAddCate)}
-            onClick={openDialog}
-          >
-            <Typography variant="h6">Add a category</Typography>
-          </Button>
+          <Grid className={classNames(styles.actions)}>
+            <Grid
+              className={classNames(styles.btn, styles.btnDelete)}
+              onClick={deleteSelected}
+            >
+              <Typography variant="h6">Delete selected</Typography>
+            </Grid>
+            <Grid
+              className={classNames(styles.btn, styles.btnAdd)}
+              onClick={openDialog}
+            >
+              <Typography variant="h6">Add a category</Typography>
+            </Grid>
+          </Grid>
           <Dialog
             open={isDialogOpen}
             onClose={handleClose}
@@ -205,6 +247,7 @@ export default function Categories(props) {
                             name: event.target.value
                           })
                         }
+                        autoFocus
                         ref={categoryNameRef}
                         sx={{ width: '240px' }}
                       />
@@ -246,8 +289,14 @@ export default function Categories(props) {
             rows={categories}
             columns={columns}
             checkboxSelection
-            hideFooterPagination
-            pageSize={8}
+            onSelectionModelChange={(ids) => {
+              const selectedIds = new Set(ids);
+              const selectedRows = categories
+                .filter((category) => selectedIds.has(category._id))
+                .map((category) => category._id);
+
+              setSelectedCategoryIds(selectedRows);
+            }}
           />
         </Grid>
       </main>

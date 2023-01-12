@@ -14,7 +14,6 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import styles from './AddTransaction.module.scss';
 import FullScreenLoader from '../../FullScreenLoader';
-// import * as utilHelper from '../../../helpers/util';
 import { now } from 'moment';
 import { useUserContext } from '../../../contexts/user';
 import axios from 'axios';
@@ -63,13 +62,15 @@ export default function FormAddTransaction(props) {
         `/api/categories/get?userId=${user._id}`
       );
 
-      console.log(response.data.data);
-
       setCategories(response.data.data);
     }
 
     setLoading(false);
   };
+
+  const addTransaction = async () => {
+    // TODO: Add transaction
+  }
 
   useEffect(() => {
     setTransaction({});
@@ -190,6 +191,7 @@ export default function FormAddTransaction(props) {
                   props.type === 'income' && styles.income,
                   props.type === 'expense' && styles.expense
                 )}
+                onClick={addTransaction}
               >
                 <Typography variant="h6" sx={{ textTransform: 'none' }}>
                   {props.type === 'income' ? 'Add income' : 'Add expense'}
