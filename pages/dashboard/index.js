@@ -5,8 +5,8 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
 import styles from './Dashboard.module.scss';
-// import Totals from '../../components/Dashboard/Totals';
-// import BudgetLimits from '../../components/Dashboard/BudgetLimits';
+import Totals from '../../components/Dashboard/Totals';
+import BudgetLimits from '../../components/Dashboard/BudgetLimits';
 // import SpendingHistory from '../../components/Dashboard/SpendingHistory';
 import QuickAccess from '../../components/Dashboard/QuickAccess';
 
@@ -27,11 +27,11 @@ export default function Dashboard(params) {
               gap: '20px'
             }}
           >
-            {/* <Totals></Totals> */}
+            <Totals></Totals>
             <QuickAccess></QuickAccess>
           </Grid>
-          {/* <BudgetLimits></BudgetLimits>
-          <SpendingHistory></SpendingHistory> */}
+          <BudgetLimits></BudgetLimits>
+          {/* <SpendingHistory></SpendingHistory> */}
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>
