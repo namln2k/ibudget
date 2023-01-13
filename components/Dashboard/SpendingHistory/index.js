@@ -15,28 +15,28 @@ export default function SpendingHistory(props) {
 
   const [loading, setLoading] = useLoadingContext();
 
-  useEffect(() => {
-    async function persistUserAndGetTransactions() {
-      if (!!user) {
-        setLoading(true);
-        const response = await axios.post('/api/auth/persist-user');
-        const responseData = response.data;
+  const persistUserAndGetTransactions = async () => {
+    if (!!user) {
+      setLoading(true);
+      const response = await axios.post('/api/auth/persist-user');
+      const responseData = response.data;
 
-        if (responseData.statusCode === 200) {
-          setUser(responseData.data);
+      if (responseData.statusCode === 200) {
+        setUser(responseData.data);
 
-          const response = await axios.get(
-            `/api/transactions/get?userId=${responseData.data._id}`
-          );
+        const response = await axios.get(
+          `/api/transactions/get?userId=${responseData.data._id}`
+        );
 
-          setItems(response.data.data);
-          setLoading(false);
-        }
+        setItems(response.data.data);
+        setLoading(false);
       }
     }
+  };
 
+  useEffect(() => {
     persistUserAndGetTransactions();
-  }, []);
+  }, [props.needReload]);
 
   return (
     <>
@@ -50,10 +50,10 @@ export default function SpendingHistory(props) {
             items.map((item, index) => (
               <Item
                 key={item._id}
-                amount={item.amount}
+                amount={item.amount.$numberDecimal}
                 title={item.title}
                 detail={item.detail}
-                callback={props.callback}
+                callback={props.callbackViewTransaction}
                 itemId={item._id}
               ></Item>
             ))}

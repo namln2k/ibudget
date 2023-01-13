@@ -19,7 +19,8 @@ const CategorySchema = new Schema(
     },
     user_id: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
+      ref: 'User'
     }
   },
   {

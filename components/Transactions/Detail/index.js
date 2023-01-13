@@ -9,12 +9,12 @@ import * as utilHelper from '../../../helpers/util';
 const renderField = (field, content) => (
   <tr>
     <td>
-      <Typography variant="h6" sx={{ margin: '6px' }}>
+      <Typography variant="h6" sx={{ margin: '10px 6px', fontWeight: 500 }}>
         {field + ':'}
       </Typography>
     </td>
     <td>
-      <Typography variant="h6" sx={{ fontWeight: 400, margin: '6px' }}>
+      <Typography sx={{ fontWeight: 400, margin: '10px 6px' }}>
         {content}
       </Typography>
     </td>
@@ -25,16 +25,7 @@ export default function TransactionDetail({ transactionId }) {
   const checkMark = useRef();
   const cross = useRef();
   const [transaction, setTransaction] = useState({});
-  const {
-    _id,
-    user_id: userId,
-    amount,
-    detail,
-    time,
-    status,
-    title,
-    category
-  } = transaction;
+  const { _id, amount, detail, time, status, title, category } = transaction;
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -51,8 +42,11 @@ export default function TransactionDetail({ transactionId }) {
   }, [transactionId]);
 
   const renderIcon = (status) => {
-    if (status === 1) return renderCheckMark();
-    if (status === 0) return renderCross();
+    if (status === 0) {
+      return renderCross();
+    } else {
+      return renderCheckMark();
+    }
   };
 
   const renderCheckMark = () => {
@@ -109,14 +103,13 @@ export default function TransactionDetail({ transactionId }) {
               <Grid>
                 <Typography
                   className={classNames(
-                    amount > 0 ? styles.income : styles.expense
+                    amount.$numberDecimal > 0 ? styles.income : styles.expense
                   )}
                   variant="h4"
                   sx={{ marginTop: '20px' }}
                 >
-                  {(amount > 0 ? '+ ' : '- ') +
-                    utilHelper.separateByThousand(amount) +
-                    ' $'}
+                  {(amount.$numberDecimal > 0 ? '+ ' : '- ') +
+                    utilHelper.formatCurrency(amount.$numberDecimal)}
                 </Typography>
               </Grid>
             )}
@@ -125,7 +118,7 @@ export default function TransactionDetail({ transactionId }) {
                 <tbody>
                   {renderField('Transaction ID', _id)}
                   {renderField('Time', utilHelper.mongoDateToString(time))}
-                  {renderField('Category', category ?? 'None')}
+                  {renderField('Category', category?.name || 'None')}
                   {renderField('Title', title)}
                   {renderField('Detail', detail)}
                 </tbody>

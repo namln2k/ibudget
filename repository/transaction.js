@@ -16,9 +16,30 @@ export async function findByUserId(userId) {
   try {
     const transactions = await TransactionModel.find({
       user_id: userId
-    }).exec();
-
+    })
+      .populate('category')
+      .exec();
     return transactions;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function findById(transactionId) {
+  try {
+    const transaction = await TransactionModel.find({
+      _id: transactionId
+    })
+      .populate('category')
+      .exec();
+
+    if (transaction.length === 1) {
+      return transaction[0];
+    } else {
+      throw new Error(
+        'Transaction not found or has been deleted. Please refresh the page and try again!'
+      );
+    }
   } catch (error) {
     throw new Error(error.toString());
   }

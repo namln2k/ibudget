@@ -18,6 +18,8 @@ export default function Transactions(props) {
 
   const [transactionIdToView, setTransactionIdToView] = useState(null);
 
+  const [needReload, setNeedReload] = useState(false);
+
   const renderAction = (action) => {
     switch (action) {
       case 'no-action':
@@ -39,13 +41,23 @@ export default function Transactions(props) {
       case 'add-income':
         return (
           <Grid className={styles.splash}>
-            <FormAddTransaction type="income"></FormAddTransaction>
+            <FormAddTransaction
+              type="income"
+              callback={() => {
+                setNeedReload(true);
+              }}
+            ></FormAddTransaction>
           </Grid>
         );
       case 'add-expense':
         return (
           <Grid className={styles.splash}>
-            <FormAddTransaction type="expense"></FormAddTransaction>
+            <FormAddTransaction
+              type="expense"
+              callback={() => {
+                setNeedReload(true);
+              }}
+            ></FormAddTransaction>
           </Grid>
         );
       default:
@@ -75,8 +87,13 @@ export default function Transactions(props) {
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
         <Grid className={classNames(styles.sections)}>
-          <SpendingHistory callback={viewTransactionDetail}></SpendingHistory>
-          <Grid>{renderAction(action, transactionIdToView)}</Grid>
+          <SpendingHistory
+            callbackViewTransaction={viewTransactionDetail}
+            needReload={needReload}
+          ></SpendingHistory>
+          <Grid sx={{ marginLeft: '36px' }}>
+            {renderAction(action, transactionIdToView)}
+          </Grid>
           <Grid className={classNames(styles.actions)}>
             <Grid sx={{ display: 'flex', gap: '20px' }}>
               <Grid

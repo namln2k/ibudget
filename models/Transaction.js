@@ -22,9 +22,10 @@ const TransactionSchema = new Schema(
       required: false,
       trim: true
     },
-    category_id: {
+    category: {
       type: Schema.Types.ObjectId,
-      required: false
+      required: false,
+      ref: 'Category'
     },
     amount: {
       type: mongoose.Types.Decimal128,
@@ -32,7 +33,8 @@ const TransactionSchema = new Schema(
     },
     user_id: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
+      ref: 'User'
     }
   },
   {

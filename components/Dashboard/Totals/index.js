@@ -56,9 +56,8 @@ export default function Totals() {
             </Box>
             <Grid className={classNames(styles.amount)}>
               <Typography className={classNames(styles.number)}>
-                {utilHelper.separateByThousand(1234567)}
+                {utilHelper.formatCurrency(1234567)}
               </Typography>
-              <Typography className={classNames(styles.currency)}>$</Typography>
             </Grid>
             <Grid className={classNames(styles.compare)}>
               <KeyboardDoubleArrowDownIcon className={classNames(styles.icon)}></KeyboardDoubleArrowDownIcon>
@@ -78,9 +77,8 @@ export default function Totals() {
             </Box>
             <Grid className={classNames(styles.amount)}>
               <Typography className={classNames(styles.number)}>
-              {utilHelper.separateByThousand(1234)}
+              {utilHelper.formatCurrency(1234)}
               </Typography>
-              <Typography className={classNames(styles.currency)}>$</Typography>
             </Grid>
             <Grid className={classNames(styles.compare)}>
               <KeyboardDoubleArrowUpIcon className={classNames(styles.icon)}></KeyboardDoubleArrowUpIcon>

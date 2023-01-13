@@ -14,9 +14,9 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import styles from './AddTransaction.module.scss';
 import FullScreenLoader from '../../FullScreenLoader';
-import { now } from 'moment';
 import { useUserContext } from '../../../contexts/user';
 import axios from 'axios';
+import moment from 'moment';
 
 const renderField = (field, content) => (
   <tr>
@@ -32,11 +32,13 @@ const renderField = (field, content) => (
 export default function FormAddTransaction(props) {
   const [loading, setLoading] = useState(false);
 
-  const [transaction, setTransaction] = useState({});
+  const [transaction, setTransaction] = useState({ time: moment() });
 
   const [user, setUser] = useUserContext();
 
   const [categories, setCategories] = useState([]);
+
+  const fieldTransactionTime = useRef();
 
   useEffect(() => {
     persistUserAndGetCategories();
@@ -68,12 +70,31 @@ export default function FormAddTransaction(props) {
     setLoading(false);
   };
 
+  const handleSubmit = async (event) => {
+    if (event.keyCode === 13) {
+      addTransaction();
+    }
+  };
+
   const addTransaction = async () => {
-    // TODO: Add transaction
-  }
+    let transactionToAdd = transaction;
+    transactionToAdd.time = transaction.time.toDate();
+    transactionToAdd.userId = user._id;
+
+    if (props.type === 'income') {
+      transactionToAdd.amount = Math.abs(transactionToAdd.amount);
+    } else if (props.type === 'expense') {
+      transactionToAdd.amount = -Math.abs(transactionToAdd.amount);
+    }
+
+    await axios.post(`/api/transactions/add`, transactionToAdd);
+
+    setTransaction({ time: moment() });
+    props.callback();
+  };
 
   useEffect(() => {
-    setTransaction({});
+    setTransaction({ time: moment() });
   }, [props.type]);
 
   return (
@@ -81,14 +102,17 @@ export default function FormAddTransaction(props) {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid className={classNames(styles.container)}>
           <FullScreenLoader open={loading}></FullScreenLoader>
-          <Grid className={classNames(styles.fakeTable)}>
+          <Grid
+            className={classNames(styles.fakeTable)}
+            onKeyDown={handleSubmit}
+          >
             <table>
               <tbody>
                 {renderField(
                   'Transaction Time',
                   <DateTimePicker
                     className={classNames(styles.timePicker, styles.shortField)}
-                    value={transaction.time || now()}
+                    value={transaction.time}
                     onChange={(value) =>
                       setTransaction({
                         ...transaction,
@@ -96,19 +120,20 @@ export default function FormAddTransaction(props) {
                       })
                     }
                     renderInput={(params) => <TextField {...params} />}
+                    ref={fieldTransactionTime}
                     sx={{ width: '80px' }}
                   />
                 )}
                 {renderField(
                   'Category',
                   <Select
-                    value={transaction.category_id || ''}
+                    value={transaction.category || ''}
                     displayEmpty
                     label="Category"
                     onChange={(event) =>
                       setTransaction({
                         ...transaction,
-                        category_id: event.target.value
+                        category: event.target.value
                       })
                     }
                     className={classNames(styles.select, styles.shortField)}
@@ -194,7 +219,7 @@ export default function FormAddTransaction(props) {
                 onClick={addTransaction}
               >
                 <Typography variant="h6" sx={{ textTransform: 'none' }}>
-                  {props.type === 'income' ? 'Add income' : 'Add expense'}
+                  Submit
                 </Typography>
               </Button>
             )}

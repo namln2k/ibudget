@@ -25,10 +25,11 @@ export function stringAvatar(name) {
   };
 }
 
-export function separateByThousand(amount) {
-  return Math.abs(amount)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export function formatCurrency(amount) {
+  return Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(Math.abs(amount));
 }
 
 export function mongoDateToString(date) {

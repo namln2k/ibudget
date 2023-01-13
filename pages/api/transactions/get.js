@@ -3,7 +3,9 @@ import * as TransactionRepository from '../../../repository/transaction';
 export default async function (req, res) {
   try {
     if (req.query.id) {
-      // TODO: Get transaction by id
+      let responseData = await TransactionRepository.findById(req.query.id);
+
+      res.json({ statusCode: 200, data: responseData });
     } else {
       let responseData = await TransactionRepository.findByUserId(
         req.query.userId
