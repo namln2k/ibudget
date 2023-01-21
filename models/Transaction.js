@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import connectDb from '../utils/connectDb';
+import Category from './Category';
 
 connectDb();
 

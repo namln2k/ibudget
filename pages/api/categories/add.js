@@ -6,9 +6,9 @@ export default async function (req, res) {
     req.body.user_id = mongoose.Types.ObjectId(req.body.userId);
     delete req.body.userId;
 
-    await CategoryRepository.create(req.body);
+    const addedCategory = await CategoryRepository.create(req.body);
 
-    res.json({ statusCode: 200 });
+    res.json({ statusCode: 200, data: addedCategory });
   } catch (error) {
     res.json({ statusCode: 400, error: error.toString() });
   }

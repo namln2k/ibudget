@@ -17,6 +17,7 @@ import FullScreenLoader from '../../FullScreenLoader';
 import { useUserContext } from '../../../contexts/user';
 import axios from 'axios';
 import moment from 'moment';
+import { useLoadingContext } from '../../../contexts/loading';
 
 const renderField = (field, content) => (
   <tr>
@@ -30,7 +31,7 @@ const renderField = (field, content) => (
 );
 
 export default function FormAddTransaction(props) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useLoadingContext();
 
   const [transaction, setTransaction] = useState({ time: moment() });
 

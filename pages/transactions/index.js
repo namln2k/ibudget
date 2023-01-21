@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Grid, Typography } from '@mui/material';
 import Header from '../../components/Header';
@@ -64,6 +64,10 @@ export default function Transactions(props) {
         return <Grid className={styles.splash}></Grid>;
     }
   };
+
+  useEffect(() => {
+    setAction(router.query.action);
+  }, [props]);
 
   const viewTransactionDetail = (id) => {
     setAction('detail');
