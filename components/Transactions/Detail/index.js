@@ -1,10 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Grid, Typography } from '@mui/material';
-import classNames from 'classnames';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Grid, IconButton, Typography } from '@mui/material';
 import axios from 'axios';
-import styles from './Detail.module.scss';
-import FullScreenLoader from '../../FullScreenLoader';
+import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../../contexts/loading';
+import { useUserContext } from '../../../contexts/user';
 import * as utilHelper from '../../../helpers/util';
+import ConfirmDialog from '../../ConfirmDialog';
+import FullScreenLoader from '../../FullScreenLoader';
+import MessageDialog from '../../MessageDialog';
+import styles from './Detail.module.scss';
 
 const renderField = (field, content) => (
   <tr>
@@ -21,21 +26,56 @@ const renderField = (field, content) => (
   </tr>
 );
 
-export default function TransactionDetail({ transactionId }) {
-  const checkMark = useRef();
-  const cross = useRef();
+export default function TransactionDetail({ transactionId, callback }) {
   const [transaction, setTransaction] = useState({});
+
   const { _id, amount, detail, time, status, title, category } = transaction;
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [user, setUser] = useUserContext();
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [loading, setLoading] = useLoadingContext();
 
   useEffect(() => {
-    setIsLoading(true);
+    async function persistUser() {
+      if (!!user) {
+        setLoading(true);
+        const response = await axios.post('/api/auth/persist-user');
+        const responseData = response.data;
+
+        if (responseData.statusCode === 200) {
+          setUser(responseData.data);
+        }
+      }
+
+      setLoading(false);
+    }
+
+    persistUser();
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
     const getTransactionById = async () => {
       const response = await axios.get(
         `/api/transactions/get?id=${transactionId}`
       );
+
+      const transaction = response.data.data;
+
+      if (!transaction) {
+        callback();
+        setLoading(false);
+        return;
+      }
+
       setTransaction(response.data.data);
-      setIsLoading(false);
+      setLoading(false);
     };
 
     getTransactionById();
@@ -52,11 +92,7 @@ export default function TransactionDetail({ transactionId }) {
   const renderCheckMark = () => {
     return (
       <Grid className={classNames(styles.circle)}>
-        <Grid
-          className={classNames(styles.checkIcon)}
-          key={_id}
-          ref={checkMark}
-        >
+        <Grid className={classNames(styles.checkIcon)} key={_id}>
           <Grid className={classNames(styles.checkLine, styles.lineTip)}></Grid>
           <Grid
             className={classNames(styles.checkLine, styles.lineLong)}
@@ -71,7 +107,7 @@ export default function TransactionDetail({ transactionId }) {
   const renderCross = () => {
     return (
       <Grid className={classNames(styles.circle)}>
-        <Grid className={classNames(styles.crossIcon)} key={_id} ref={cross}>
+        <Grid className={classNames(styles.crossIcon)} key={_id}>
           <Grid
             className={classNames(styles.crossLine, styles.leftCross)}
           ></Grid>
@@ -85,15 +121,111 @@ export default function TransactionDetail({ transactionId }) {
     );
   };
 
+  const openConfirmDialog = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const deleteTransaction = async (transactionId) => {
+    setLoading(true);
+
+    const response = await axios.get(
+      `/api/transactions/delete/?id=${transactionId}&userId=${user._id}`
+    );
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      const deletedCount = responseData.data.deletedCount;
+
+      if (deletedCount != 1) {
+        setSuccessMessage('');
+        setErrorMessage(
+          'Something went wrong. The transaction may not have been deleted!'
+        );
+      } else {
+        setErrorMessage('');
+        setSuccessMessage(`The transaction has been deleted!`);
+      }
+
+      callback();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
+
+    setLoading(false);
+  };
+
+  const handleDelete = () => {
+    deleteTransaction(transactionId);
+  };
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (successMessage != '') {
+      setErrorMessage('');
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage]);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (errorMessage != '') {
+      timeoutId = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [errorMessage]);
+
   return (
     <>
-      <FullScreenLoader open={isLoading}></FullScreenLoader>
+      <FullScreenLoader open={loading}></FullScreenLoader>
+      <MessageDialog type="error" open={errorMessage != ''}>
+        {errorMessage}
+      </MessageDialog>
+      <MessageDialog type="success" open={successMessage != ''}>
+        {successMessage}
+      </MessageDialog>
+      <ConfirmDialog
+        title="Are you sure?"
+        content="Please make sure you want to delete this transaction!"
+        isOpen={isConfirmDialogOpen}
+        handleConfirm={() => {
+          handleDelete();
+          setIsConfirmDialogOpen(false);
+        }}
+        handleClose={() => {
+          setIsConfirmDialogOpen(false);
+        }}
+      ></ConfirmDialog>
       <Grid className={classNames(styles.container)}>
         <Grid className={classNames(styles.box)}>
           <span></span>
           <span></span>
           <span></span>
           <span></span>
+          <Grid className={classNames(styles.btn, styles.btnDelete)}>
+            <IconButton
+              aria-label="delete"
+              size="large"
+              onClick={openConfirmDialog}
+            >
+              <Typography>Delete</Typography>
+              <DeleteIcon fontSize="inherit" />
+            </IconButton>
+          </Grid>
           <Grid className={classNames(styles.content)}>
             {renderIcon(status)}
             {status && (

@@ -1,23 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
 import {
-  Grid,
-  Typography,
-  TextField,
-  TextareaAutosize,
   Button,
+  Grid,
+  MenuItem,
   Select,
-  MenuItem
+  TextareaAutosize,
+  TextField,
+  Typography
 } from '@mui/material';
-import classNames from 'classnames';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import styles from './AddTransaction.module.scss';
-import FullScreenLoader from '../../FullScreenLoader';
-import { useUserContext } from '../../../contexts/user';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import axios from 'axios';
+import classNames from 'classnames';
 import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
+import { useUserContext } from '../../../contexts/user';
+import FullScreenLoader from '../../FullScreenLoader';
+import MessageDialog from '../../MessageDialog';
+import styles from './AddTransaction.module.scss';
 
 const renderField = (field, content) => (
   <tr>
@@ -40,6 +41,10 @@ export default function FormAddTransaction(props) {
   const [categories, setCategories] = useState([]);
 
   const fieldTransactionTime = useRef();
+
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     persistUserAndGetCategories();
@@ -71,27 +76,98 @@ export default function FormAddTransaction(props) {
     setLoading(false);
   };
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (successMessage != '') {
+      setErrorMessage('');
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage]);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (errorMessage != '') {
+      timeoutId = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [errorMessage]);
+
   const handleSubmit = async (event) => {
     if (event.keyCode === 13) {
+      event.preventDefault();
       addTransaction();
     }
   };
 
   const addTransaction = async () => {
     let transactionToAdd = transaction;
-    transactionToAdd.time = transaction.time.toDate();
-    transactionToAdd.userId = user._id;
 
-    if (props.type === 'income') {
-      transactionToAdd.amount = Math.abs(transactionToAdd.amount);
-    } else if (props.type === 'expense') {
-      transactionToAdd.amount = -Math.abs(transactionToAdd.amount);
+    /**
+     * Validate transaction inputs
+     *
+     * 1. Transaction title must not be left blank
+     * 2. Transaction amount must not be left blank and must be a valid number
+     * 3. Transaction time must be a valid time string
+     */
+
+    if (!transactionToAdd.title) {
+      setErrorMessage('Transaction title must not be left blank!');
+      return;
     }
 
-    await axios.post(`/api/transactions/add`, transactionToAdd);
+    if (!transactionToAdd.amount) {
+      setErrorMessage('Amount must not be left blank!');
+      return;
+    }
+
+    try {
+      transactionToAdd.time = transaction.time.toDate();
+      if (props.type === 'income') {
+        transactionToAdd.amount = Math.abs(transactionToAdd.amount);
+      } else if (props.type === 'expense') {
+        transactionToAdd.amount = -Math.abs(transactionToAdd.amount);
+      }
+    } catch (e) {
+      setErrorMessage('Please enter a valid date!');
+      return;
+    }
+
+    transactionToAdd.userId = user._id;
+
+    setLoading(true);
+
+    const response = await axios.post(
+      `/api/transactions/add`,
+      transactionToAdd
+    );
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      setErrorMessage('');
+      setSuccessMessage('Transaction added!');
+      props.callback();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
 
     setTransaction({ time: moment() });
-    props.callback();
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -103,6 +179,12 @@ export default function FormAddTransaction(props) {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid className={classNames(styles.container)}>
           <FullScreenLoader open={loading}></FullScreenLoader>
+          <MessageDialog type="error" open={errorMessage != ''}>
+            {errorMessage}
+          </MessageDialog>
+          <MessageDialog type="success" open={successMessage != ''}>
+            {successMessage}
+          </MessageDialog>
           <Grid
             className={classNames(styles.fakeTable)}
             onKeyDown={handleSubmit}

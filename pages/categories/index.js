@@ -14,7 +14,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
@@ -59,6 +60,8 @@ export default function Categories(props) {
   const [category, setCategory] = useState({});
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -113,8 +116,12 @@ export default function Categories(props) {
     setLoading(false);
   };
 
+  const openConfirmDialog = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
   const handleDelete = () => {
-    closeContextMenu();
+    deleteCate([selectedCategoryId]);
   };
 
   useEffect(() => {
@@ -148,11 +155,13 @@ export default function Categories(props) {
 
   const handleKeyDown = async (event) => {
     if (event.keyCode === 13) {
+      event.preventDefault();
       handleSubmit();
     }
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (!category.name) {
       setErrorMessage('Category name is required! Please fill in!');
       return;
@@ -198,17 +207,15 @@ export default function Categories(props) {
     } else {
       setErrorMessage('Something went wrong!');
     }
+
+    setLoading(false);
   };
 
-  const deleteSelected = async () => {
-    if (selectedCategoryIds.length === 0) {
-      return;
-    }
-
+  const deleteCate = async (cateIds) => {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/categories/delete/?ids=${JSON.stringify(selectedCategoryIds)}`
+      `/api/categories/delete/?ids=${JSON.stringify(cateIds)}`
     );
     const responseData = response.data;
 
@@ -216,7 +223,10 @@ export default function Categories(props) {
       setErrorMessage(responseData.error.toString());
     } else if (responseData.statusCode === 200) {
       const deletedCount = responseData.data.deletedCount;
-      if (selectedCategoryIds.length != deletedCount) {
+      if (
+        (!contextMenu && selectedCategoryIds.length != deletedCount) ||
+        (contextMenu && deletedCount != 1)
+      ) {
         setSuccessMessage('');
         setErrorMessage('Some categories may not have been deleted!');
       } else {
@@ -232,6 +242,14 @@ export default function Categories(props) {
     }
 
     setLoading(false);
+  };
+
+  const deleteSelected = async () => {
+    if (selectedCategoryIds.length === 0) {
+      return;
+    }
+
+    deleteCate(selectedCategoryIds);
   };
 
   const persistUserAndGetCategories = async () => {
@@ -279,6 +297,21 @@ export default function Categories(props) {
         <MessageDialog type="success" open={successMessage != ''}>
           {successMessage}
         </MessageDialog>
+        <ConfirmDialog
+          title="Are you sure?"
+          content="Please make sure you want to delete the category(s)!"
+          isOpen={isConfirmDialogOpen}
+          handleConfirm={() => {
+            handleDelete();
+            setIsConfirmDialogOpen(false);
+            setIsDialogOpen(false);
+            closeContextMenu();
+          }}
+          handleClose={() => {
+            setIsConfirmDialogOpen(false);
+            closeContextMenu();
+          }}
+        ></ConfirmDialog>
         <Grid className={classNames(styles.content)}>
           <Grid className={classNames(styles.actions)}>
             <Grid
@@ -374,6 +407,16 @@ export default function Categories(props) {
 
               setSelectedCategoryIds(selectedRows);
             }}
+            initialState={{
+              sorting: {
+                sortModel: [
+                  {
+                    field: 'name',
+                    sort: 'asc'
+                  }
+                ]
+              }
+            }}
           />
           <Menu
             open={contextMenu !== null}
@@ -394,7 +437,7 @@ export default function Categories(props) {
             }}
           >
             <MenuItem onClick={handleEdit}>Edit</MenuItem>
-            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            <MenuItem onClick={openConfirmDialog}>Delete</MenuItem>
           </Menu>
         </Grid>
       </main>

@@ -18,7 +18,7 @@ export default function Transactions(props) {
 
   const [transactionIdToView, setTransactionIdToView] = useState(null);
 
-  const [needReload, setNeedReload] = useState(false);
+  const [needReload, setNeedReload] = useState();
 
   const renderAction = (action) => {
     switch (action) {
@@ -35,6 +35,10 @@ export default function Transactions(props) {
           <Grid className={styles.splash}>
             <TransactionDetail
               transactionId={transactionIdToView}
+              callback={() => {
+                setNeedReload(Date.now());
+                setAction('no-action');
+              }}
             ></TransactionDetail>
           </Grid>
         );
@@ -44,7 +48,7 @@ export default function Transactions(props) {
             <FormAddTransaction
               type="income"
               callback={() => {
-                setNeedReload(true);
+                setNeedReload(Date.now());
               }}
             ></FormAddTransaction>
           </Grid>
@@ -55,7 +59,7 @@ export default function Transactions(props) {
             <FormAddTransaction
               type="expense"
               callback={() => {
-                setNeedReload(true);
+                setNeedReload(Date.now());
               }}
             ></FormAddTransaction>
           </Grid>

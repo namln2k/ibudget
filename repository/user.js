@@ -1,9 +1,11 @@
+import User from '../models/User';
 import UserModel from '../models/User';
 
 const ERR_CODE_DUPLICATE_KEY = 11000;
 
 export async function create(user) {
   let result = user;
+  user.balance = 0;
 
   try {
     await UserModel.create(user);
@@ -35,6 +37,19 @@ export async function findByUsernameExcludePassword(username) {
       .exec();
 
     return user;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function updateOne(userId, changeAmount) {
+  try {
+    const result = await User.updateOne(
+      { _id: userId },
+      { $inc: { balance: parseFloat(changeAmount) } }
+    );
+
+    return result;
   } catch (error) {
     throw new Error(error.toString());
   }

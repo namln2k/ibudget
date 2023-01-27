@@ -44,3 +44,13 @@ export async function findById(transactionId) {
     throw new Error(error.toString());
   }
 }
+
+export async function deleteOne(transactionId) {
+  try {
+    const deletedCount = TransactionModel.deleteOne({ _id: transactionId });
+
+    return deletedCount;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
