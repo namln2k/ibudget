@@ -1,19 +1,18 @@
-import * as CategoryRepository from '../../../repository/category';
+import * as TransactionRepository from '../../../repository/transaction';
 
 export default async function (req, res) {
   try {
     if (req.query.id) {
-      let responseData = await CategoryRepository.findById(req.query.id);
+      let responseData = await TransactionRepository.findById(req.query.id);
 
       res.json({ statusCode: 200, data: responseData });
     } else {
-      const responseData = await CategoryRepository.findByUserId(
+      let responseData = await TransactionRepository.findByUserId(
         req.query.userId
       );
 
       responseData.forEach((element, index) => {
-        element.index = index + 1;
-        element.id = element._id;
+        element.id = index + 1;
       });
 
       res.json({ statusCode: 200, data: responseData });

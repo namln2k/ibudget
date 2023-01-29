@@ -27,6 +27,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true
+    },
+    balance: {
+      type: mongoose.Types.Decimal128,
+      required: true
     }
   },
   {

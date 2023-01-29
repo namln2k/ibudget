@@ -6,7 +6,7 @@ import Icon from './Icon';
 import * as utilHelper from '../../../../helpers/util';
 
 const renderAmount = (amount) => {
-  const amountToString = utilHelper.separateByThousand(amount) + ' $';
+  const amountToString = utilHelper.formatCurrency(amount);
 
   if (amount > 0) {
     return (
@@ -31,7 +31,7 @@ const renderAmount = (amount) => {
               fontWeight={500}
               fontSize="medium"
               sx={{
-                width: '100px'
+                width: '132px'
               }}
             >
               {amountToString}
@@ -63,7 +63,7 @@ const renderAmount = (amount) => {
               fontWeight={500}
               fontSize="medium"
               sx={{
-                width: '100px'
+                width: '132px'
               }}
             >
               {amountToString}
@@ -75,13 +75,7 @@ const renderAmount = (amount) => {
   }
 };
 
-export default function Item({
-  amount,
-  title,
-  detail,
-  callback,
-  itemId
-}) {
+export default function Item({ amount, title, detail, callback, itemId }) {
   return (
     <>
       <Grid
@@ -92,9 +86,7 @@ export default function Item({
       >
         <Grid>{renderAmount(amount)}</Grid>
         <Grid className={classNames(styles.content)}>
-          <Typography className={classNames(styles.title)}>
-            {title}
-          </Typography>
+          <Typography className={classNames(styles.title)}>{title}</Typography>
           <Typography className={classNames(styles.detail)}>
             {detail}
           </Typography>

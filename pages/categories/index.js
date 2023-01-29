@@ -1,4 +1,11 @@
-import { Button, Grid, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Grid,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography
+} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,7 +14,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
@@ -18,7 +26,7 @@ import { useUserContext } from '../../contexts/user';
 import styles from './Categories.module.scss';
 
 const columns = [
-  { field: 'id', headerName: 'Index', width: 100 },
+  { field: 'index', headerName: 'Index', width: 100 },
   { field: 'name', headerName: 'Category name', width: 320 },
   { field: 'description', headerName: 'Description', width: 560 }
 ];
@@ -43,9 +51,17 @@ export default function Categories(props) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const [targetCategories, setTargetCategories] = useState([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
 
-  const [categoryToAdd, setCategoryToAdd] = useState({});
+  const [selectedCategoryId, setSelectedCategoryId] = useState();
+
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const [category, setCategory] = useState({});
+
+  const [isEdit, setIsEdit] = useState(false);
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -53,14 +69,59 @@ export default function Categories(props) {
 
   const [user, setUser] = useUserContext();
 
-  const categoryNameRef = useRef();
-
-  const openDialog = () => {
+  const openDialogAddCate = () => {
+    setCategory({
+      name: '',
+      description: ''
+    });
+    setIsEdit(false);
     setIsDialogOpen(true);
   };
 
   const handleClose = () => {
     setIsDialogOpen(false);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setSelectedCategoryId(event.currentTarget.getAttribute('data-id'));
+    setContextMenu(
+      contextMenu === null
+        ? { mouseX: event.clientX - 2, mouseY: event.clientY - 4 }
+        : null
+    );
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const handleEdit = async () => {
+    setIsEdit(true);
+    closeContextMenu();
+    setLoading(true);
+
+    const response = await axios.get(
+      '/api/categories/get?id=' + selectedCategoryId
+    );
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage('Category no longer exists!');
+    } else {
+      setCategory(responseData.data);
+      setIsDialogOpen(true);
+    }
+
+    setLoading(false);
+  };
+
+  const openConfirmDialog = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleDelete = () => {
+    deleteCate([selectedCategoryId]);
   };
 
   useEffect(() => {
@@ -92,39 +153,106 @@ export default function Categories(props) {
     };
   }, [errorMessage]);
 
-  const handleSubmit = async (event) => {
+  const handleKeyDown = async (event) => {
     if (event.keyCode === 13) {
-      addCategory();
+      event.preventDefault();
+      handleSubmit();
     }
   };
 
-  const addCategory = async () => {
-    if (!categoryToAdd.name) {
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    if (!category.name.trim()) {
       setErrorMessage('Category name is required! Please fill in!');
       return;
     }
 
-    if (categories.find((category) => category.name === categoryToAdd.name)) {
-      setErrorMessage('Category name must be unique!');
-      return;
+    setCategory({ ...category, name: category.name.trim() });
+
+    let response;
+
+    if (isEdit) {
+      const categoryToEdit = category;
+      delete categoryToEdit._id;
+
+      response = await axios.post(
+        '/api/categories/edit?id=' + selectedCategoryId,
+        categoryToEdit
+      );
+    } else {
+      const categoryToAdd = category;
+
+      if (categories.find((category) => category.name === categoryToAdd.name)) {
+        setErrorMessage('Category name must be unique!');
+        return;
+      }
+
+      categoryToAdd.userId = user._id;
+
+      response = await axios.post('/api/categories/add', categoryToAdd);
     }
 
-    categoryToAdd.userId = user._id;
-
-    const response = await axios.post('/api/categories/add', categoryToAdd);
     const responseData = response.data;
 
     if (responseData.statusCode === 400) {
       setErrorMessage(responseData.error.toString());
     } else if (responseData.statusCode === 200) {
       setErrorMessage('');
-      setSuccessMessage('A new category has been added!');
+      setSuccessMessage(
+        'Category ' +
+          (isEdit ? 'edited' : responseData.data.name + ' added') +
+          ' successfully!'
+      );
       setIsDialogOpen(false);
-      setCategoryToAdd({});
+      setCategory({});
       persistUserAndGetCategories();
     } else {
       setErrorMessage('Something went wrong!');
     }
+
+    setLoading(false);
+  };
+
+  const deleteCate = async (cateIds) => {
+    setLoading(true);
+
+    const response = await axios.get(
+      `/api/categories/delete/?ids=${JSON.stringify(cateIds)}`
+    );
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      const deletedCount = responseData.data.deletedCount;
+      if (
+        (!contextMenu && selectedCategoryIds.length != deletedCount) ||
+        (contextMenu && deletedCount != 1)
+      ) {
+        setSuccessMessage('');
+        setErrorMessage('Some categories may not have been deleted!');
+      } else {
+        setErrorMessage('');
+        setSuccessMessage(
+          `Deleted ${responseData.data.deletedCount} category(s)!`
+        );
+      }
+
+      persistUserAndGetCategories();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
+
+    setLoading(false);
+  };
+
+  const deleteSelected = async () => {
+    if (selectedCategoryIds.length === 0) {
+      return;
+    }
+
+    setIsConfirmDialogOpen(true);
   };
 
   const persistUserAndGetCategories = async () => {
@@ -172,21 +300,44 @@ export default function Categories(props) {
         <MessageDialog type="success" open={successMessage != ''}>
           {successMessage}
         </MessageDialog>
+        <ConfirmDialog
+          title="Are you sure?"
+          content="Please make sure you want to delete the category(s)!"
+          isOpen={isConfirmDialogOpen}
+          handleConfirm={() => {
+            handleDelete();
+            setIsConfirmDialogOpen(false);
+            setIsDialogOpen(false);
+            closeContextMenu();
+          }}
+          handleClose={() => {
+            setIsConfirmDialogOpen(false);
+            closeContextMenu();
+          }}
+        ></ConfirmDialog>
         <Grid className={classNames(styles.content)}>
-          <Button
-            className={classNames(styles.btnAddCate)}
-            onClick={openDialog}
-          >
-            <Typography variant="h6">Add a category</Typography>
-          </Button>
+          <Grid className={classNames(styles.actions)}>
+            <Grid
+              className={classNames(styles.btn, styles.btnDelete)}
+              onClick={deleteSelected}
+            >
+              <Typography variant="h6">Delete selected</Typography>
+            </Grid>
+            <Grid
+              className={classNames(styles.btn, styles.btnAdd)}
+              onClick={openDialogAddCate}
+            >
+              <Typography variant="h6">Add a category</Typography>
+            </Grid>
+          </Grid>
           <Dialog
             open={isDialogOpen}
             onClose={handleClose}
             className={classNames(styles.dialog)}
-            onKeyDown={handleSubmit}
+            onKeyDown={handleKeyDown}
           >
             <DialogTitle variant="h6" sx={{ textAlign: 'center' }}>
-              Add a new category
+              {isEdit ? 'Edit category' : 'Add a new category'}
             </DialogTitle>
             <DialogContent sx={{ padding: '40px 30px' }}>
               <Grid sx={{ marginTop: '20px' }}>
@@ -198,14 +349,14 @@ export default function Categories(props) {
                         required
                         placeholder="Category name"
                         variant="standard"
-                        value={categoryToAdd.name || ''}
+                        value={category.name || ''}
                         onChange={(event) =>
-                          setCategoryToAdd({
-                            ...categoryToAdd,
+                          setCategory({
+                            ...category,
                             name: event.target.value
                           })
                         }
-                        ref={categoryNameRef}
+                        autoFocus
                         sx={{ width: '240px' }}
                       />
                     )}
@@ -214,10 +365,10 @@ export default function Categories(props) {
                       <TextField
                         placeholder="Description"
                         variant="standard"
-                        value={categoryToAdd.description || ''}
+                        value={category.description || ''}
                         onChange={(event) =>
-                          setCategoryToAdd({
-                            ...categoryToAdd,
+                          setCategory({
+                            ...category,
                             description: event.target.value
                           })
                         }
@@ -230,7 +381,7 @@ export default function Categories(props) {
             </DialogContent>
             <DialogActions sx={{ padding: '0 30px 30px 40px' }}>
               <Button
-                onClick={addCategory}
+                onClick={handleSubmit}
                 type="submit"
                 variant="contained"
                 className={classNames(styles.btnSubmit)}
@@ -242,13 +393,55 @@ export default function Categories(props) {
               </Button>
             </DialogActions>
           </Dialog>
+          <Typography
+            sx={{
+              fontStyle: 'italic',
+              fontWeight: 700,
+              marginBottom: '8px',
+              marginRight: 0
+            }}
+          >
+            Note: Right click to edit
+          </Typography>
           <DataGrid
             rows={categories}
+            componentsProps={{
+              row: {
+                onContextMenu: handleContextMenu
+              }
+            }}
             columns={columns}
             checkboxSelection
-            hideFooterPagination
-            pageSize={8}
+            onSelectionModelChange={(ids) => {
+              const selectedIds = new Set(ids);
+              const selectedRows = categories
+                .filter((category) => selectedIds.has(category._id))
+                .map((category) => category._id);
+
+              setSelectedCategoryIds(selectedRows);
+            }}
           />
+          <Menu
+            open={contextMenu !== null}
+            onClose={closeContextMenu}
+            anchorReference="anchorPosition"
+            anchorPosition={
+              contextMenu !== null
+                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                : undefined
+            }
+            componentsProps={{
+              root: {
+                onContextMenu: (e) => {
+                  e.preventDefault();
+                  handleClose();
+                }
+              }
+            }}
+          >
+            <MenuItem onClick={handleEdit}>Edit</MenuItem>
+            <MenuItem onClick={openConfirmDialog}>Delete</MenuItem>
+          </Menu>
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>

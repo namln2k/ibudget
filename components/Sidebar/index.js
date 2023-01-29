@@ -29,12 +29,17 @@ function Sidebar() {
             options={{ action: 'no-action' }}
           ></SidebarItem>
           <SidebarItem
+            label="Add an income"
+            as="/transactions"
+            to="/transactions"
+            options={{ action: 'add-income' }}
+          ></SidebarItem>
+          <SidebarItem
             label="Add an expense"
             as="/transactions"
             to="/transactions"
-            options={{ action: 'add' }}
+            options={{ action: 'add-expense' }}
           ></SidebarItem>
-          <SidebarItem label="Add an income"></SidebarItem>
         </SidebarItem>
       </Grid>
     </Grid>
