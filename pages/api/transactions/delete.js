@@ -7,9 +7,9 @@ export default async function (req, res) {
 
     const responseData = await TransactionRepository.deleteOne(req.query.id);
 
-    await UserRepository.updateOne(
+    await UserRepository.updateBalance(
       req.query.userId,
-      0 - parseFloat(transaction.amount)
+      0 - parseFloat(transaction.amount.toString())
     );
 
     res.json({ statusCode: 200, data: responseData });

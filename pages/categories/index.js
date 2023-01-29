@@ -162,10 +162,13 @@ export default function Categories(props) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    if (!category.name) {
+
+    if (!category.name.trim()) {
       setErrorMessage('Category name is required! Please fill in!');
       return;
     }
+
+    setCategory({ ...category, name: category.name.trim() });
 
     let response;
 
@@ -249,7 +252,7 @@ export default function Categories(props) {
       return;
     }
 
-    deleteCate(selectedCategoryIds);
+    setIsConfirmDialogOpen(true);
   };
 
   const persistUserAndGetCategories = async () => {
@@ -390,6 +393,16 @@ export default function Categories(props) {
               </Button>
             </DialogActions>
           </Dialog>
+          <Typography
+            sx={{
+              fontStyle: 'italic',
+              fontWeight: 700,
+              marginBottom: '8px',
+              marginRight: 0
+            }}
+          >
+            Note: Right click to edit
+          </Typography>
           <DataGrid
             rows={categories}
             componentsProps={{
@@ -406,16 +419,6 @@ export default function Categories(props) {
                 .map((category) => category._id);
 
               setSelectedCategoryIds(selectedRows);
-            }}
-            initialState={{
-              sorting: {
-                sortModel: [
-                  {
-                    field: 'name',
-                    sort: 'asc'
-                  }
-                ]
-              }
             }}
           />
           <Menu

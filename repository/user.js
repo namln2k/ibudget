@@ -42,7 +42,7 @@ export async function findByUsernameExcludePassword(username) {
   }
 }
 
-export async function updateOne(userId, changeAmount) {
+export async function updateBalance(userId, changeAmount) {
   try {
     const result = await User.updateOne(
       { _id: userId },

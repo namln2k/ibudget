@@ -11,7 +11,7 @@ export default async function (req, res) {
 
     await TransactionRepository.create(req.body);
 
-    await UserRepository.updateOne(userId, req.body.amount);
+    await UserRepository.updateBalance(userId, req.body.amount);
 
     res.json({ statusCode: 200 });
   } catch (error) {
