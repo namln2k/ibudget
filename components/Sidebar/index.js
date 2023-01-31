@@ -12,7 +12,7 @@ function Sidebar() {
         <SidebarItem label="Account settings"></SidebarItem>
         <SidebarItem label="Team spending">
           <SidebarItem label="Create new event"></SidebarItem>
-          <SidebarItem label="View all events"></SidebarItem>
+          <SidebarItem label="View all events" to="/events"></SidebarItem>
           <SidebarItem label="Join an event"></SidebarItem>
         </SidebarItem>
         <SidebarItem label="Personal budget">

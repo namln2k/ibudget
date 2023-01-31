@@ -73,7 +73,7 @@ export default function Header() {
             width={142}
             height={48}
             alt="logo"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/dashboard')}
           ></Image>
         </Grid>
         <Grid className={classNames(styles.search)}>
