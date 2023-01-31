@@ -5,7 +5,7 @@ connectDb();
 
 const Schema = mongoose.Schema;
 
-const CategorySchema = new Schema(
+const EventSchema = new Schema(
   {
     name: {
       type: String,
@@ -60,5 +60,4 @@ const CategorySchema = new Schema(
   }
 );
 
-export default mongoose.models.Category ||
-  mongoose.model('Category', CategorySchema);
+export default mongoose.models.Event || mongoose.model('Event', EventSchema);

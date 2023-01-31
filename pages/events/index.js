@@ -1,8 +1,4 @@
-import {
-  Button,
-  Grid,
-  Typography
-} from '@mui/material';
+import { Grid } from '@mui/material';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
@@ -69,14 +65,14 @@ export default function Categories(props) {
         setUser(responseData.data);
 
         const response = await axios.get(
-          `/api/events/get?userId=${responseData.data._id}`
+          `/api/events/get?userId=${responseData.data._id}&role=participant`
         );
 
         setEvents(response.data.data);
       }
     } else {
       const response = await axios.get(
-        `/api/events/get?userId=${user._id}`
+        `/api/events/get?userId=${user._id}&role=participant`
       );
 
       setEvents(response.data.data);
@@ -120,6 +116,15 @@ export default function Categories(props) {
           }}
         ></ConfirmDialog>
         <Grid className={classNames(styles.content)}>
+          <form onSubmit={(event) => handleSubmit(event)}>
+            <label htmlFor="name">Name</label>
+            <input type="text" id="name" />
+            <label htmlFor="holder_id">Holder</label>
+            <input type="text" id="holder_id" />
+            <label htmlFor="split_rule">Split rule</label>
+            <input type="text" id="split_rule" />
+            <button type="submit">Submit</button>
+          </form>
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>

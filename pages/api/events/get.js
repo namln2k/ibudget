@@ -9,7 +9,7 @@ export default async function (req, res) {
     } else {
       let responseData = undefined;
 
-      switch (req.role) {
+      switch (req.query.role) {
         case 'participant':
           responseData = await EventRepository.findAsParticipant(
             req.query.userId
