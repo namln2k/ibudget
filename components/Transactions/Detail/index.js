@@ -1,5 +1,13 @@
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Grid, IconButton, Typography } from '@mui/material';
+import {
+  Grid,
+  IconButton,
+  TextareaAutosize,
+  TextField,
+  Typography
+} from '@mui/material';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import axios from 'axios';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
@@ -18,11 +26,7 @@ const renderField = (field, content) => (
         {field + ':'}
       </Typography>
     </td>
-    <td>
-      <Typography sx={{ fontWeight: 400, margin: '10px 6px' }}>
-        {content}
-      </Typography>
-    </td>
+    <td>{content}</td>
   </tr>
 );
 
@@ -191,74 +195,125 @@ export default function TransactionDetail({ transactionId, callback }) {
 
   return (
     <>
-      <FullScreenLoader open={loading}></FullScreenLoader>
-      <MessageDialog type="error" open={errorMessage != ''}>
-        {errorMessage}
-      </MessageDialog>
-      <MessageDialog type="success" open={successMessage != ''}>
-        {successMessage}
-      </MessageDialog>
-      <ConfirmDialog
-        title="Are you sure?"
-        content="Please make sure you want to delete this transaction!"
-        isOpen={isConfirmDialogOpen}
-        handleConfirm={() => {
-          handleDelete();
-          setIsConfirmDialogOpen(false);
-        }}
-        handleClose={() => {
-          setIsConfirmDialogOpen(false);
-        }}
-      ></ConfirmDialog>
-      <Grid className={classNames(styles.container)}>
-        <Grid className={classNames(styles.box)}>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <Grid className={classNames(styles.btn, styles.btnDelete)}>
-            <IconButton
-              aria-label="delete"
-              size="large"
-              onClick={openConfirmDialog}
-            >
-              <Typography>Delete</Typography>
-              <DeleteIcon fontSize="inherit" />
-            </IconButton>
-          </Grid>
-          <Grid className={classNames(styles.content)}>
-            {renderIcon(status)}
-            {status && (
-              <Typography>{status ? 'Success' : 'Failure'}</Typography>
-            )}
-            {amount && (
-              <Grid>
-                <Typography
-                  className={classNames(
-                    amount.$numberDecimal > 0 ? styles.income : styles.expense
-                  )}
-                  variant="h4"
-                  sx={{ marginTop: '20px' }}
-                >
-                  {(amount.$numberDecimal > 0 ? '+ ' : '- ') +
-                    utilHelper.formatCurrency(amount.$numberDecimal)}
-                </Typography>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <FullScreenLoader open={loading}></FullScreenLoader>
+        <MessageDialog type="error" open={errorMessage != ''}>
+          {errorMessage}
+        </MessageDialog>
+        <MessageDialog type="success" open={successMessage != ''}>
+          {successMessage}
+        </MessageDialog>
+        <ConfirmDialog
+          title="Are you sure?"
+          content="Please make sure you want to delete this transaction!"
+          isOpen={isConfirmDialogOpen}
+          handleConfirm={() => {
+            handleDelete();
+            setIsConfirmDialogOpen(false);
+          }}
+          handleClose={() => {
+            setIsConfirmDialogOpen(false);
+          }}
+        ></ConfirmDialog>
+        <Grid className={classNames(styles.container)}>
+          <Grid className={classNames(styles.box)}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <Grid className={classNames(styles.btn, styles.btnDelete)}>
+              <IconButton
+                aria-label="delete"
+                size="large"
+                onClick={openConfirmDialog}
+              >
+                <Typography>Delete</Typography>
+                <DeleteIcon fontSize="inherit" />
+              </IconButton>
+            </Grid>
+            <Grid className={classNames(styles.content)}>
+              {renderIcon(status)}
+              {status && (
+                <Typography>{status ? 'Success' : 'Failure'}</Typography>
+              )}
+              {amount && (
+                <Grid>
+                  <Typography
+                    className={classNames(
+                      amount.$numberDecimal > 0 ? styles.income : styles.expense
+                    )}
+                    variant="h4"
+                    sx={{ marginTop: '20px' }}
+                  >
+                    {(amount.$numberDecimal > 0 ? '+ ' : '- ') +
+                      utilHelper.formatCurrency(amount.$numberDecimal)}
+                  </Typography>
+                </Grid>
+              )}
+              <Grid className={classNames(styles.fakeTable)}>
+                <table>
+                  <tbody>
+                    {renderField(
+                      'Transaction ID',
+                      <Typography sx={{ fontWeight: 400, margin: '10px 6px' }}>
+                        {_id}
+                      </Typography>
+                    )}
+                    {renderField(
+                      'Time',
+                      <DateTimePicker
+                        className={classNames(styles.timePicker)}
+                        value={time}
+                        onChange={(value) =>
+                          setTransaction({
+                            ...transaction,
+                            time: value
+                          })
+                        }
+                        renderInput={(params) => <TextField {...params} />}
+                        sx={{ width: '80px' }}
+                      />
+                    )}
+                    {renderField('Category', category?.name || 'None')}
+                    {renderField(
+                      'Title',
+                      <TextField
+                        required
+                        placeholder="Title"
+                        variant="standard"
+                        value={title || ''}
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            title: event.target.value
+                          })
+                        }
+                      />
+                    )}
+                    {renderField(
+                      'Detail',
+                      <TextareaAutosize
+                        placeholder="Transaction detail"
+                        variant="standard"
+                        className={classNames(styles.textArea)}
+                        value={detail || ''}
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            detail: event.target.value
+                          })
+                        }
+                        minRows={3}
+                        maxRows={8}
+                      />
+                    )}
+                  </tbody>
+                </table>
               </Grid>
-            )}
-            <Grid className={classNames(styles.fakeTable)}>
-              <table>
-                <tbody>
-                  {renderField('Transaction ID', _id)}
-                  {renderField('Time', utilHelper.mongoDateToString(time))}
-                  {renderField('Category', category?.name || 'None')}
-                  {renderField('Title', title)}
-                  {renderField('Detail', detail)}
-                </tbody>
-              </table>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </LocalizationProvider>
     </>
   );
 }
