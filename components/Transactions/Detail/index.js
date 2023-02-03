@@ -22,7 +22,15 @@ import styles from './Detail.module.scss';
 const renderField = (field, content) => (
   <tr>
     <td>
-      <Typography variant="h6" sx={{ margin: '10px 6px', fontWeight: 500 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          height: '72px',
+          display: 'block',
+          lineHeight: '72px',
+          fontWeight: 500
+        }}
+      >
         {field + ':'}
       </Typography>
     </td>
@@ -232,32 +240,48 @@ export default function TransactionDetail({ transactionId, callback }) {
               </IconButton>
             </Grid>
             <Grid className={classNames(styles.content)}>
-              {renderIcon(status)}
-              {status && (
-                <Typography>{status ? 'Success' : 'Failure'}</Typography>
-              )}
-              {amount && (
-                <Grid>
-                  <Typography
-                    className={classNames(
-                      amount.$numberDecimal > 0 ? styles.income : styles.expense
-                    )}
-                    variant="h4"
-                    sx={{ marginTop: '20px' }}
-                  >
-                    {(amount.$numberDecimal > 0 ? '+ ' : '- ') +
-                      utilHelper.formatCurrency(amount.$numberDecimal)}
-                  </Typography>
+              <Grid className={classNames(styles.transactionStatus)}>
+                {renderIcon(status)}
+                {status && (
+                  <Typography>{status ? 'Success' : 'Failure'}</Typography>
+                )}
+                <Grid
+                  sx={{
+                    minWidth: '200px'
+                  }}
+                >
+                  {amount && (
+                    <Typography
+                      className={classNames(
+                        amount.$numberDecimal > 0
+                          ? styles.income
+                          : styles.expense
+                      )}
+                      variant="h4"
+                      sx={{
+                        padding: '0 36px',
+                        width: 'fit-content',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}
+                    >
+                      {(amount.$numberDecimal > 0 ? '+' : '-') +
+                        utilHelper.formatCurrency(amount.$numberDecimal)}
+                    </Typography>
+                  )}
                 </Grid>
-              )}
-              <Grid className={classNames(styles.fakeTable)}>
+              </Grid>
+              <Grid
+                className={classNames(
+                  styles.fakeTable,
+                  styles.transactionDetail
+                )}
+              >
                 <table>
                   <tbody>
                     {renderField(
                       'Transaction ID',
-                      <Typography sx={{ fontWeight: 400, margin: '10px 6px' }}>
-                        {_id}
-                      </Typography>
+                      <Typography>{_id}</Typography>
                     )}
                     {renderField(
                       'Time',
@@ -271,7 +295,6 @@ export default function TransactionDetail({ transactionId, callback }) {
                           })
                         }
                         renderInput={(params) => <TextField {...params} />}
-                        sx={{ width: '80px' }}
                       />
                     )}
                     {renderField('Category', category?.name || 'None')}
@@ -288,6 +311,7 @@ export default function TransactionDetail({ transactionId, callback }) {
                             title: event.target.value
                           })
                         }
+                        sx={{ marginTop: '-10px', width: '100%' }}
                       />
                     )}
                     {renderField(

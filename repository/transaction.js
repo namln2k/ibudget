@@ -18,6 +18,7 @@ export async function findByUserId(userId) {
       user_id: userId
     })
       .populate('category')
+      .sort({ time: 'desc' })
       .exec();
     return transactions;
   } catch (error) {
