@@ -2,6 +2,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Grid,
   IconButton,
+  MenuItem,
+  Select,
   TextareaAutosize,
   TextField,
   Typography
@@ -41,9 +43,11 @@ const renderField = (field, content) => (
 export default function TransactionDetail({ transactionId, callback }) {
   const [transaction, setTransaction] = useState({});
 
-  const { _id, amount, detail, time, status, title, category } = transaction;
+  const { _id, amount, detail, time, status, title } = transaction;
 
   const [user, setUser] = useUserContext();
+
+  const [categories, setCategories] = useState([]);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
@@ -54,21 +58,33 @@ export default function TransactionDetail({ transactionId, callback }) {
   const [loading, setLoading] = useLoadingContext();
 
   useEffect(() => {
-    async function persistUser() {
+    async function persistUserAndGetCategories() {
+      setLoading(true);
       if (!!user) {
-        setLoading(true);
         const response = await axios.post('/api/auth/persist-user');
         const responseData = response.data;
 
         if (responseData.statusCode === 200) {
           setUser(responseData.data);
+
+          const response = await axios.get(
+            `/api/categories/get?userId=${responseData.data._id}`
+          );
+
+          setCategories(response.data.data);
         }
+      } else {
+        const response = await axios.get(
+          `/api/categories/get?userId=${user._id}`
+        );
+
+        setCategories(response.data.data);
       }
 
       setLoading(false);
     }
 
-    persistUser();
+    persistUserAndGetCategories();
   }, []);
 
   useEffect(() => {
@@ -297,7 +313,30 @@ export default function TransactionDetail({ transactionId, callback }) {
                         renderInput={(params) => <TextField {...params} />}
                       />
                     )}
-                    {renderField('Category', category?.name || 'None')}
+                    {renderField(
+                      'Category',
+                      <Select
+                        value={transaction.category?._id || ''}
+                        displayEmpty
+                        label="Category"
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            category: categories.find(
+                              (cate) => cate._id == event.target.value
+                            )
+                          })
+                        }
+                        className={classNames(styles.select, styles.shortField)}
+                      >
+                        <MenuItem value={''}>None</MenuItem>
+                        {categories.map((category) => (
+                          <MenuItem key={category._id} value={category._id}>
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
                     {renderField(
                       'Title',
                       <TextField
