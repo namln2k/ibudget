@@ -60,11 +60,13 @@ export default function SpendingHistory(props) {
         <Grid className={classNames(styles.container)}>
           {items.length > 0 && (
             <>
-              <Divider textAlign="left">
-                {moment(items[0].time).format('MM-YYYY')}
+              <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
+                <Typography variant="h6">
+                  {moment(items[0].time).format('MM-YYYY')}
+                </Typography>
               </Divider>
               {items.map((item, index) => (
-                <>
+                <Grid key={item._id}>
                   <Item
                     key={item._id}
                     amount={item.amount.$numberDecimal}
@@ -74,11 +76,13 @@ export default function SpendingHistory(props) {
                     itemId={item._id}
                   ></Item>
                   {needLineBreak(item.time, items[index + 1]?.time) && (
-                    <Divider textAlign="left" key={items[index + 1]?.time}>
-                      {needLineBreak(item.time, items[index + 1]?.time)}
+                    <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
+                      <Typography variant="h6">
+                        {needLineBreak(item.time, items[index + 1]?.time)}
+                      </Typography>
                     </Divider>
                   )}
-                </>
+                </Grid>
               ))}
             </>
           )}

@@ -35,10 +35,16 @@
   .btn {
     cursor: pointer;
     z-index: 10;
+  }
+
+  .btnUpdate {
+    position: absolute;
+    top: 32px;
+    right: 124px;
 
     :hover {
-      color: blue;
-      text-decoration: line-through;
+      color: #00f;
+      font-style: italic;
     }
   }
 
@@ -46,6 +52,11 @@
     position: absolute;
     top: 32px;
     right: 24px;
+
+    :hover {
+      color: #f00;
+      text-decoration: line-through;
+    }
   }
 
   .content {
@@ -361,9 +372,9 @@
     }
 
     .fakeTable {
-      margin-top: 20px;
+      margin-top: 32px;
       width: 100%;
-      max-height: calc(100% - 40px);
+      max-height: calc(100% - 20px);
       overflow: auto;
 
       table {
@@ -372,7 +383,7 @@
     }
 
     tr {
-      height: 72px;
+      height: 64px;
 
       td {
         &:first-child {

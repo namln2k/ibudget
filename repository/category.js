@@ -1,4 +1,3 @@
-import Category from '../models/Category';
 import CategoryModel from '../models/Category';
 
 const ERR_CODE_DUPLICATE_KEY = 11000;
@@ -63,7 +62,9 @@ export async function deleteManyByIds(ids) {
 
 export async function updateOne(query, category) {
   try {
-    const result = await Category.findOneAndUpdate(query, { $set: category });
+    const result = await CategoryModel.findOneAndUpdate(query, {
+      $set: category
+    });
 
     return result;
   } catch (error) {

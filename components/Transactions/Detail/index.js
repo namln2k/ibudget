@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Grid,
   IconButton,
@@ -27,9 +28,9 @@ const renderField = (field, content) => (
       <Typography
         variant="h6"
         sx={{
-          height: '72px',
+          height: '64px',
           display: 'block',
-          lineHeight: '72px',
+          lineHeight: '64px',
           fontWeight: 500
         }}
       >
@@ -188,6 +189,35 @@ export default function TransactionDetail({ transactionId, callback }) {
     deleteTransaction(transactionId);
   };
 
+  const updateTransaction = async () => {
+    setLoading(true);
+
+    const transactionToUpdate = {
+      ...transaction,
+      category: transaction.category?._id
+    };
+
+    const response = await axios.post(
+      `/api/transactions/edit/?id=${transactionId}`,
+      transactionToUpdate
+    );
+
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      setErrorMessage('');
+      setSuccessMessage(`The transaction has been updated!`);
+
+      callback();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     let timeoutId;
 
@@ -245,12 +275,14 @@ export default function TransactionDetail({ transactionId, callback }) {
             <span></span>
             <span></span>
             <span></span>
+            <Grid className={classNames(styles.btn, styles.btnUpdate)}>
+              <IconButton size="large" onClick={updateTransaction}>
+                <Typography>Update</Typography>
+                <EditIcon />
+              </IconButton>
+            </Grid>
             <Grid className={classNames(styles.btn, styles.btnDelete)}>
-              <IconButton
-                aria-label="delete"
-                size="large"
-                onClick={openConfirmDialog}
-              >
+              <IconButton size="large" onClick={openConfirmDialog}>
                 <Typography>Delete</Typography>
                 <DeleteIcon fontSize="inherit" />
               </IconButton>
@@ -300,6 +332,23 @@ export default function TransactionDetail({ transactionId, callback }) {
                       <Typography>{_id}</Typography>
                     )}
                     {renderField(
+                      'Amount',
+                      amount && (
+                        <TextField
+                          required
+                          variant="standard"
+                          value={amount.$numberDecimal}
+                          onChange={(event) =>
+                            setTransaction({
+                              ...transaction,
+                              amount: { $numberDecimal: event.target.value }
+                            })
+                          }
+                          sx={{ marginTop: '-10px' }}
+                        />
+                      )
+                    )}
+                    {renderField(
                       'Time',
                       <DateTimePicker
                         className={classNames(styles.timePicker)}
@@ -327,7 +376,6 @@ export default function TransactionDetail({ transactionId, callback }) {
                             )
                           })
                         }
-                        className={classNames(styles.select, styles.shortField)}
                       >
                         <MenuItem value={''}>None</MenuItem>
                         {categories.map((category) => (

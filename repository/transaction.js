@@ -55,3 +55,15 @@ export async function deleteOne(transactionId) {
     throw new Error(error.toString());
   }
 }
+
+export async function updateOne(query, transaction) {
+  try {
+    const result = await TransactionModel.findOneAndUpdate(query, {
+      $set: transaction
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
