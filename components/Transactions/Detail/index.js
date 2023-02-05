@@ -1,5 +1,16 @@
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Grid, IconButton, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  TextareaAutosize,
+  TextField,
+  Typography
+} from '@mui/material';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import axios from 'axios';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
@@ -14,24 +25,30 @@ import styles from './Detail.module.scss';
 const renderField = (field, content) => (
   <tr>
     <td>
-      <Typography variant="h6" sx={{ margin: '10px 6px', fontWeight: 500 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          height: '64px',
+          display: 'block',
+          lineHeight: '64px',
+          fontWeight: 500
+        }}
+      >
         {field + ':'}
       </Typography>
     </td>
-    <td>
-      <Typography sx={{ fontWeight: 400, margin: '10px 6px' }}>
-        {content}
-      </Typography>
-    </td>
+    <td>{content}</td>
   </tr>
 );
 
 export default function TransactionDetail({ transactionId, callback }) {
   const [transaction, setTransaction] = useState({});
 
-  const { _id, amount, detail, time, status, title, category } = transaction;
+  const { _id, amount, detail, time, status, title } = transaction;
 
   const [user, setUser] = useUserContext();
+
+  const [categories, setCategories] = useState([]);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
@@ -42,21 +59,33 @@ export default function TransactionDetail({ transactionId, callback }) {
   const [loading, setLoading] = useLoadingContext();
 
   useEffect(() => {
-    async function persistUser() {
+    async function persistUserAndGetCategories() {
+      setLoading(true);
       if (!!user) {
-        setLoading(true);
         const response = await axios.post('/api/auth/persist-user');
         const responseData = response.data;
 
         if (responseData.statusCode === 200) {
           setUser(responseData.data);
+
+          const response = await axios.get(
+            `/api/categories/get?userId=${responseData.data._id}`
+          );
+
+          setCategories(response.data.data);
         }
+      } else {
+        const response = await axios.get(
+          `/api/categories/get?userId=${user._id}`
+        );
+
+        setCategories(response.data.data);
       }
 
       setLoading(false);
     }
 
-    persistUser();
+    persistUserAndGetCategories();
   }, []);
 
   useEffect(() => {
@@ -160,6 +189,35 @@ export default function TransactionDetail({ transactionId, callback }) {
     deleteTransaction(transactionId);
   };
 
+  const updateTransaction = async () => {
+    setLoading(true);
+
+    const transactionToUpdate = {
+      ...transaction,
+      category: transaction.category?._id
+    };
+
+    const response = await axios.post(
+      `/api/transactions/edit/?id=${transactionId}`,
+      transactionToUpdate
+    );
+
+    const responseData = response.data;
+
+    if (responseData.statusCode === 400) {
+      setErrorMessage(responseData.error.toString());
+    } else if (responseData.statusCode === 200) {
+      setErrorMessage('');
+      setSuccessMessage(`The transaction has been updated!`);
+
+      callback();
+    } else {
+      setErrorMessage('Something went wrong!');
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     let timeoutId;
 
@@ -191,74 +249,182 @@ export default function TransactionDetail({ transactionId, callback }) {
 
   return (
     <>
-      <FullScreenLoader open={loading}></FullScreenLoader>
-      <MessageDialog type="error" open={errorMessage != ''}>
-        {errorMessage}
-      </MessageDialog>
-      <MessageDialog type="success" open={successMessage != ''}>
-        {successMessage}
-      </MessageDialog>
-      <ConfirmDialog
-        title="Are you sure?"
-        content="Please make sure you want to delete this transaction!"
-        isOpen={isConfirmDialogOpen}
-        handleConfirm={() => {
-          handleDelete();
-          setIsConfirmDialogOpen(false);
-        }}
-        handleClose={() => {
-          setIsConfirmDialogOpen(false);
-        }}
-      ></ConfirmDialog>
-      <Grid className={classNames(styles.container)}>
-        <Grid className={classNames(styles.box)}>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <Grid className={classNames(styles.btn, styles.btnDelete)}>
-            <IconButton
-              aria-label="delete"
-              size="large"
-              onClick={openConfirmDialog}
-            >
-              <Typography>Delete</Typography>
-              <DeleteIcon fontSize="inherit" />
-            </IconButton>
-          </Grid>
-          <Grid className={classNames(styles.content)}>
-            {renderIcon(status)}
-            {status && (
-              <Typography>{status ? 'Success' : 'Failure'}</Typography>
-            )}
-            {amount && (
-              <Grid>
-                <Typography
-                  className={classNames(
-                    amount.$numberDecimal > 0 ? styles.income : styles.expense
-                  )}
-                  variant="h4"
-                  sx={{ marginTop: '20px' }}
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <FullScreenLoader open={loading}></FullScreenLoader>
+        <MessageDialog type="error" open={errorMessage != ''}>
+          {errorMessage}
+        </MessageDialog>
+        <MessageDialog type="success" open={successMessage != ''}>
+          {successMessage}
+        </MessageDialog>
+        <ConfirmDialog
+          title="Are you sure?"
+          content="Please make sure you want to delete this transaction!"
+          isOpen={isConfirmDialogOpen}
+          handleConfirm={() => {
+            handleDelete();
+            setIsConfirmDialogOpen(false);
+          }}
+          handleClose={() => {
+            setIsConfirmDialogOpen(false);
+          }}
+        ></ConfirmDialog>
+        <Grid className={classNames(styles.container)}>
+          <Grid className={classNames(styles.box)}>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <Grid className={classNames(styles.btn, styles.btnUpdate)}>
+              <IconButton size="large" onClick={updateTransaction}>
+                <Typography>Update</Typography>
+                <EditIcon />
+              </IconButton>
+            </Grid>
+            <Grid className={classNames(styles.btn, styles.btnDelete)}>
+              <IconButton size="large" onClick={openConfirmDialog}>
+                <Typography>Delete</Typography>
+                <DeleteIcon fontSize="inherit" />
+              </IconButton>
+            </Grid>
+            <Grid className={classNames(styles.content)}>
+              <Grid className={classNames(styles.transactionStatus)}>
+                {renderIcon(status)}
+                {status && (
+                  <Typography>{status ? 'Success' : 'Failure'}</Typography>
+                )}
+                <Grid
+                  sx={{
+                    minWidth: '200px'
+                  }}
                 >
-                  {(amount.$numberDecimal > 0 ? '+ ' : '- ') +
-                    utilHelper.formatCurrency(amount.$numberDecimal)}
-                </Typography>
+                  {amount && (
+                    <Typography
+                      className={classNames(
+                        amount.$numberDecimal > 0
+                          ? styles.income
+                          : styles.expense
+                      )}
+                      variant="h4"
+                      sx={{
+                        padding: '0 36px',
+                        width: 'fit-content',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                      }}
+                    >
+                      {(amount.$numberDecimal > 0 ? '+' : '-') +
+                        utilHelper.formatCurrency(amount.$numberDecimal)}
+                    </Typography>
+                  )}
+                </Grid>
               </Grid>
-            )}
-            <Grid className={classNames(styles.fakeTable)}>
-              <table>
-                <tbody>
-                  {renderField('Transaction ID', _id)}
-                  {renderField('Time', utilHelper.mongoDateToString(time))}
-                  {renderField('Category', category?.name || 'None')}
-                  {renderField('Title', title)}
-                  {renderField('Detail', detail)}
-                </tbody>
-              </table>
+              <Grid
+                className={classNames(
+                  styles.fakeTable,
+                  styles.transactionDetail
+                )}
+              >
+                <table>
+                  <tbody>
+                    {renderField(
+                      'Transaction ID',
+                      <Typography>{_id}</Typography>
+                    )}
+                    {renderField(
+                      'Amount',
+                      amount && (
+                        <TextField
+                          required
+                          variant="standard"
+                          value={amount.$numberDecimal}
+                          onChange={(event) =>
+                            setTransaction({
+                              ...transaction,
+                              amount: { $numberDecimal: event.target.value }
+                            })
+                          }
+                          sx={{ marginTop: '-10px' }}
+                        />
+                      )
+                    )}
+                    {renderField(
+                      'Time',
+                      <DateTimePicker
+                        className={classNames(styles.timePicker)}
+                        value={time}
+                        onChange={(value) =>
+                          setTransaction({
+                            ...transaction,
+                            time: value
+                          })
+                        }
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    )}
+                    {renderField(
+                      'Category',
+                      <Select
+                        value={transaction.category?._id || ''}
+                        displayEmpty
+                        label="Category"
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            category: categories.find(
+                              (cate) => cate._id == event.target.value
+                            )
+                          })
+                        }
+                      >
+                        <MenuItem value={''}>None</MenuItem>
+                        {categories.map((category) => (
+                          <MenuItem key={category._id} value={category._id}>
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                    {renderField(
+                      'Title',
+                      <TextField
+                        required
+                        placeholder="Title"
+                        variant="standard"
+                        value={title || ''}
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            title: event.target.value
+                          })
+                        }
+                        sx={{ marginTop: '-10px', width: '100%' }}
+                      />
+                    )}
+                    {renderField(
+                      'Detail',
+                      <TextareaAutosize
+                        placeholder="Transaction detail"
+                        variant="standard"
+                        className={classNames(styles.textArea)}
+                        value={detail || ''}
+                        onChange={(event) =>
+                          setTransaction({
+                            ...transaction,
+                            detail: event.target.value
+                          })
+                        }
+                        minRows={3}
+                        maxRows={8}
+                      />
+                    )}
+                  </tbody>
+                </table>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </LocalizationProvider>
     </>
   );
 }

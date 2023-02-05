@@ -31,9 +31,3 @@ export function formatCurrency(amount) {
     currency: 'VND'
   }).format(Math.abs(amount));
 }
-
-export function mongoDateToString(date) {
-  const tempDate = new Date(date);
-
-  return tempDate.toDateString();
-}

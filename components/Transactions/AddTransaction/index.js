@@ -199,7 +199,7 @@ export default function FormAddTransaction(props) {
                     onChange={(value) =>
                       setTransaction({
                         ...transaction,
-                        time: value
+                        time: moment(value).format('DD/MM/YYYY hh:mm')
                       })
                     }
                     renderInput={(params) => <TextField {...params} />}
@@ -212,6 +212,7 @@ export default function FormAddTransaction(props) {
                   <Select
                     value={transaction.category || ''}
                     displayEmpty
+                    renderValue="None"
                     label="Category"
                     onChange={(event) =>
                       setTransaction({

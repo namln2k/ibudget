@@ -18,6 +18,7 @@ export async function findByUserId(userId) {
       user_id: userId
     })
       .populate('category')
+      .sort({ time: 'desc' })
       .exec();
     return transactions;
   } catch (error) {
@@ -50,6 +51,18 @@ export async function deleteOne(transactionId) {
     const deletedCount = TransactionModel.deleteOne({ _id: transactionId });
 
     return deletedCount;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function updateOne(query, transaction) {
+  try {
+    const result = await TransactionModel.findOneAndUpdate(query, {
+      $set: transaction
+    });
+
+    return result;
   } catch (error) {
     throw new Error(error.toString());
   }
