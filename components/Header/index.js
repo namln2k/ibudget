@@ -16,6 +16,7 @@ import FullScreenLoader from '../../components/FullScreenLoader';
 import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import * as utilHelper from '../../helpers/util';
+import MessageDialog from '../MessageDialog';
 import SearchBox from '../SearchBox';
 import styles from './Header.module.scss';
 
@@ -24,6 +25,8 @@ export default function Header() {
 
   const [loading, setLoading] = useLoadingContext();
 
+  const [errorMessage, setErrorMessage] = useState();
+
   const router = useRouter();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -31,12 +34,12 @@ export default function Header() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const closeMenu = () => {
     setAnchorEl(null);
   };
 
   const [user, setUser] = useUserContext();
-  const { firstname, lastname } = user;
+  const { firstname, lastname } = user || {};
   const userFullName = firstname + ' ' + lastname;
 
   useEffect(() => {
@@ -57,9 +60,41 @@ export default function Header() {
     persistUser();
   }, []);
 
+  useEffect(() => {
+    let timeoutId;
+
+    if (errorMessage != '') {
+      timeoutId = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [errorMessage]);
+
+  const handleLogout = async () => {
+    setUser();
+
+    const response = await axios.post('/api/auth/logout');
+    const responseData = response.data;
+
+    if (responseData.statusCode === 200) {
+      router.push('/login');
+    } else {
+      setErrorMessage('Unable to log user out!');
+    }
+
+    closeMenu();
+  };
+
   return (
     <>
       <FullScreenLoader open={loading}></FullScreenLoader>
+      <MessageDialog type="error" open={errorMessage}>
+        <Typography>{errorMessage}</Typography>
+      </MessageDialog>
       <Grid
         container
         justifyContent="space-between"
@@ -126,41 +161,55 @@ export default function Header() {
           </Box>
           <Menu
             anchorEl={anchorEl}
-            className={classNames(styles.menu)}
+            id="account-menu"
             open={open}
-            onClose={handleClose}
-            onClick={handleClose}
+            onClose={closeMenu}
+            onClick={closeMenu}
             PaperProps={{
+              elevation: 0,
               sx: {
+                overflow: 'visible',
                 filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                 mt: 1.5,
-                '& li': {
-                  display: 'flex'
-                },
                 '& .MuiAvatar-root': {
-                  width: 36,
-                  height: 36
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0
                 }
               }
             }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem>
-              <Avatar /> My Profile
+            <MenuItem onClick={closeMenu}>
+              <Avatar />
+              <Typography>My account</Typography>
             </MenuItem>
             <Divider />
-            <MenuItem>
+            <MenuItem onClick={closeMenu}>
               <ListItemIcon>
-                <Settings />
+                <Settings fontSize="small" />
               </ListItemIcon>
-              Settings
+              <Typography>Settings</Typography>
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={handleLogout}>
               <ListItemIcon>
-                <Logout />
+                <Logout fontSize="small" />
               </ListItemIcon>
-              Logout
+              <Typography>Logout</Typography>
             </MenuItem>
           </Menu>
         </Grid>
