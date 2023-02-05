@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material';
 import classNames from 'classnames';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import BudgetLimits from '../../components/Dashboard/BudgetLimits';
 import QuickAccess from '../../components/Dashboard/QuickAccess';
 import SpendingHistory from '../../components/Dashboard/SpendingHistory';
@@ -10,7 +11,20 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import styles from './Dashboard.module.scss';
 
-export default function Dashboard(params) {
+export default function Dashboard(props) {
+  const router = useRouter();
+
+  const viewTransactionDetail = (transactionId) => {
+    router.push({
+      pathname: '/transactions',
+      as: 'transactions',
+      query: {
+        action: 'detail',
+        viewDetailFromDashboard: transactionId
+      }
+    });
+  };
+
   return (
     <>
       <Head>
@@ -31,7 +45,9 @@ export default function Dashboard(params) {
             <QuickAccess></QuickAccess>
           </Grid>
           <BudgetLimits></BudgetLimits>
-          <SpendingHistory></SpendingHistory>
+          <SpendingHistory
+            callbackViewTransaction={viewTransactionDetail}
+          ></SpendingHistory>
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>
