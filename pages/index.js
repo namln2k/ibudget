@@ -1,12 +1,12 @@
+import MenuIcon from '@mui/icons-material/Menu';
+import { Box, Grid, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import classNames from 'classnames';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { Box, Grid, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
-import MenuIcon from '@mui/icons-material/Menu';
-import styles from '../styles/Home.module.scss';
-import classNames from 'classnames';
 import Footer from '../components/Footer';
+import styles from '../styles/Home.module.scss';
 
 export default function Home() {
   const router = useRouter();
@@ -50,6 +50,15 @@ export default function Home() {
               ></Image>
             </Grid>
             <Grid className={classNames(styles.actions)}>
+              <Button
+                variant="text"
+                className={classNames(styles.btn)}
+                onClick={() => {
+                  router.push('/dashboard');
+                }}
+              >
+                Dashboard
+              </Button>
               <Button
                 variant="text"
                 className={classNames(styles.btn)}

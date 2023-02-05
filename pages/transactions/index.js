@@ -16,7 +16,7 @@ export default function Transactions(props) {
 
   const [action, setAction] = useState(router.query.action);
 
-  const [transactionIdToView, setTransactionIdToView] = useState(null);
+  const [transactionIdToView, setTransactionIdToView] = useState(router.query.viewDetailFromDashboard);
 
   const [needReload, setNeedReload] = useState();
 
@@ -70,6 +70,10 @@ export default function Transactions(props) {
   };
 
   useEffect(() => {
+    if (router.query.viewDetailFromDashboard) {
+      viewTransactionDetail(router.query.viewDetailFromDashboard);
+    }
+
     setAction(router.query.action);
   }, [props]);
 
