@@ -1,4 +1,3 @@
-import User from '../models/User';
 import UserModel from '../models/User';
 
 const ERR_CODE_DUPLICATE_KEY = 11000;
@@ -44,7 +43,7 @@ export async function findByUsernameExcludePassword(username) {
 
 export async function updateBalance(userId, changeAmount) {
   try {
-    const result = await User.updateOne(
+    const result = await UserModel.updateOne(
       { _id: userId },
       { $inc: { balance: parseFloat(changeAmount) } }
     );
