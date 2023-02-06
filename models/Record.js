@@ -14,30 +14,30 @@ const RecordSchema = new Schema(
       ref: 'User'
     },
     /**
-     * 1. Daily
-     * 2. Monthly
-     * 3. Yearly
+     * 1 - Daily
+     * 2 - Monthly
+     * 3 - Yearly
      */
     time_type: {
       type: Number,
       required: true
     },
     /**
-     * 1. Income
-     * 2. Expense
+     * 1 - Income
+     * 2 - Expense
+     * 3 - User balance
      */
     spending_type: {
       type: Number,
       required: true
     },
     /**
-     * 1. Total of transactions that does not belong to any category
-     * 2. User balance
-     * 3. Total of transactions by category id
+     * 1 - Total of transactions that does not belong to any category
+     * 2 - Total of transactions by category id
      */
     category_type: {
       type: Number,
-      required: true
+      required: false
     },
     category_id: {
       type: Schema.Types.ObjectId,
