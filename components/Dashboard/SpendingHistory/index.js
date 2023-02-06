@@ -1,12 +1,24 @@
-import { Grid, Typography } from '@mui/material';
+import { Divider, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 import classNames from 'classnames';
+import moment from 'moment/moment';
 import { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
 import { useUserContext } from '../../../contexts/user';
 import FullScreenLoader from '../../FullScreenLoader';
 import Item from './Item';
 import styles from './SpendingHistory.module.scss';
+
+const needLineBreak = (time1, time2) => {
+  if (!time2) return false;
+
+  const month1 = moment(time1).month();
+  const month2 = moment(time2).month();
+
+  if (month1 != month2) return moment(time2).format('MM-YYYY');
+
+  return false;
+};
 
 export default function SpendingHistory(props) {
   const [items, setItems] = useState([]);
@@ -46,17 +58,34 @@ export default function SpendingHistory(props) {
           Spending History
         </Typography>
         <Grid className={classNames(styles.container)}>
-          {items.length > 0 &&
-            items.map((item, index) => (
-              <Item
-                key={item._id}
-                amount={item.amount.$numberDecimal}
-                title={item.title}
-                detail={item.detail}
-                callback={props.callbackViewTransaction}
-                itemId={item._id}
-              ></Item>
-            ))}
+          {items.length > 0 && (
+            <>
+              <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
+                <Typography variant="h6">
+                  {moment(items[0].time).format('MM-YYYY')}
+                </Typography>
+              </Divider>
+              {items.map((item, index) => (
+                <Grid key={item._id}>
+                  <Item
+                    key={item._id}
+                    amount={item.amount.$numberDecimal}
+                    title={item.title}
+                    detail={item.detail}
+                    callback={props.callbackViewTransaction}
+                    itemId={item._id}
+                  ></Item>
+                  {needLineBreak(item.time, items[index + 1]?.time) && (
+                    <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
+                      <Typography variant="h6">
+                        {needLineBreak(item.time, items[index + 1]?.time)}
+                      </Typography>
+                    </Divider>
+                  )}
+                </Grid>
+              ))}
+            </>
+          )}
           {items.length <= 0 && (
             <Grid
               className={classNames(styles.noItem)}
