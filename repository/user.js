@@ -53,3 +53,29 @@ export async function updateBalance(userId, changeAmount) {
     throw new Error(error.toString());
   }
 }
+
+export async function getAllUserIds() {
+  try {
+    const userIds = await UserModel.find({}, '_id');
+
+    return userIds;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function findById(userId) {
+  try {
+    const user = await UserModel.find({
+      _id: userId
+    }).exec();
+
+    if (user.length === 1) {
+      return user[0];
+    } else {
+      throw new Error('Can not find user with _id = ' + userId);
+    }
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
