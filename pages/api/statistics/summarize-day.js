@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
-import * as RecordRepository from '../../../repository/record';
-import * as UserRepository from '../../../repository/user';
-import * as TransactionRepository from '../../../repository/transaction';
 import * as CategoryRepository from '../../../repository/category';
+import * as RecordRepository from '../../../repository/record';
+import * as TransactionRepository from '../../../repository/transaction';
+import * as UserRepository from '../../../repository/user';
 
 const prepareAmount = (transactions) => {
   return transactions.reduce(
@@ -42,6 +41,11 @@ const prepareRecord = async (
       userId,
       spendingType,
       categoryId
+    );
+  } else if (categoryType === 3) {
+    transactions = await TransactionRepository.findForRecord(
+      userId,
+      spendingType
     );
   }
 
@@ -93,6 +97,14 @@ export default async function (req, res) {
 
       // Total expense of transactions that does not belong to any category
       preparedRecord = await prepareRecord(userId, recordToAdd, 2, 1);
+      recordsToAdd.push(preparedRecord);
+
+      // Total income of all transactions
+      preparedRecord = await prepareRecord(userId, recordToAdd, 1, 3);
+      recordsToAdd.push(preparedRecord);
+
+      // Total expense of all transactions
+      preparedRecord = await prepareRecord(userId, recordToAdd, 2, 3);
       recordsToAdd.push(preparedRecord);
 
       const categories = await CategoryRepository.findByUserId(userId);

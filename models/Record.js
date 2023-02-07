@@ -34,6 +34,7 @@ const RecordSchema = new Schema(
     /**
      * 1 - Total of transactions that does not belong to any category
      * 2 - Total of transactions by category id
+     * 3 - Total of all transactions
      */
     category_type: {
       type: Number,
