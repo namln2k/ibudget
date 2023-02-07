@@ -1,4 +1,5 @@
 import TransactionModel from '../models/Transaction';
+import moment from 'moment/moment';
 
 export async function create(transaction) {
   let result = transaction;
@@ -98,8 +99,20 @@ export async function findForRecord(userId, spendingType, categoryId) {
       if (query.amount) delete query.amount;
     }
 
+    const yesterday = moment().subtract(1, 'days');
+    const startOfYesterday = moment(yesterday).startOf('day');
+    const endOfYesterday = moment(yesterday).endOf('day');
+
+    query = {
+      ...query,
+      time: {
+        $gte: startOfYesterday.toDate(),
+        $lt: endOfYesterday.toDate()
+      }
+    };
+
     const transactions = await TransactionModel.find(query).exec();
-    
+
     return transactions;
   } catch (error) {
     throw new Error(error.toString());
