@@ -1,0 +1,12 @@
+name: summarize-daily
+on:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call API [POST] /api/statistics/summarize-day
+        run: |
+          curl --request POST \
+          --url 'https://ibudget-eight.vercel.app/api/statistics/summarize-day'
