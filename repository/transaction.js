@@ -1,4 +1,5 @@
 import TransactionModel from '../models/Transaction';
+import moment from 'moment/moment';
 
 export async function create(transaction) {
   let result = transaction;
@@ -63,6 +64,56 @@ export async function updateOne(query, transaction) {
     });
 
     return result;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function findForRecord(userId, spendingType, categoryId) {
+  try {
+    let query = { user_id: userId };
+
+    if (categoryId === 'none') {
+      query = {
+        ...query,
+        category: { $exists: false }
+      };
+    } else if (categoryId) {
+      query = {
+        ...query,
+        category: categoryId
+      };
+    }
+
+    if (spendingType === 1) {
+      query = {
+        ...query,
+        amount: { $gt: 0 }
+      };
+    } else if (spendingType === 2) {
+      query = {
+        ...query,
+        amount: { $lt: 0 }
+      };
+    } else {
+      if (query.amount) delete query.amount;
+    }
+
+    const yesterday = moment().subtract(1, 'days');
+    const startOfYesterday = moment(yesterday).startOf('day');
+    const endOfYesterday = moment(yesterday).endOf('day');
+
+    query = {
+      ...query,
+      time: {
+        $gte: startOfYesterday.toDate(),
+        $lt: endOfYesterday.toDate()
+      }
+    };
+
+    const transactions = await TransactionModel.find(query).exec();
+
+    return transactions;
   } catch (error) {
     throw new Error(error.toString());
   }

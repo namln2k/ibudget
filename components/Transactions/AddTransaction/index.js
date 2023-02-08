@@ -212,7 +212,6 @@ export default function FormAddTransaction(props) {
                   <Select
                     value={transaction.category || ''}
                     displayEmpty
-                    renderValue="None"
                     label="Category"
                     onChange={(event) =>
                       setTransaction({
