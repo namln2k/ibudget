@@ -11,7 +11,7 @@ function Sidebar() {
         <SidebarItem label="Trends (Charts)"></SidebarItem>
         <SidebarItem label="Account settings"></SidebarItem>
         <SidebarItem label="Team spending">
-          <SidebarItem label="Create new event"></SidebarItem>
+          <SidebarItem label="Create new event" to="/events"></SidebarItem>
           <SidebarItem label="View all events" to="/events"></SidebarItem>
           <SidebarItem label="Join an event"></SidebarItem>
         </SidebarItem>

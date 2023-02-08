@@ -1,4 +1,5 @@
-import { Grid } from '@mui/material';
+import { Grid, Menu, MenuItem } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
@@ -13,8 +14,23 @@ import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import styles from './Events.module.scss';
 
+const columns = [
+  { field: 'index', headerName: 'Index', width: 80 },
+  { field: 'name', headerName: 'Event name', width: 320 },
+  { field: 'description', headerName: 'Description', width: 480 },
+  { field: 'no_of_users', headerName: 'Number of users', width: 180 },
+  { field: 'total', headerName: 'Total budget', width: 200 },
+  { field: 'due_date', headerName: 'Due date', width: 240 }
+];
+
 export default function Categories(props) {
   const [events, setEvents] = useState([]);
+
+  const [selectedEvents, setSelectedEvents] = useState([]);
+
+  const [contextMenu, setContextMenu] = useState(null);
+
+  const [selectedEventId, setSelectedEventId] = useState();
 
   const [loading, setLoading] = useLoadingContext();
 
@@ -25,6 +41,24 @@ export default function Categories(props) {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [user, setUser] = useUserContext();
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setSelectedEventId(event.currentTarget.getAttribute('data-id'));
+    setContextMenu(
+      contextMenu === null
+        ? { mouseX: event.clientX - 2, mouseY: event.clientY - 4 }
+        : null
+    );
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const handleClose = () => {
+    setIsDialogOpen(false);
+  };
 
   useEffect(() => {
     let timeoutId;
@@ -88,7 +122,7 @@ export default function Categories(props) {
   return (
     <>
       <Head>
-        <title>Categories</title>
+        <title>Events</title>
       </Head>
       <Header></Header>
       <main className={classNames(styles.main)}>
@@ -102,7 +136,7 @@ export default function Categories(props) {
         </MessageDialog>
         <ConfirmDialog
           title="Are you sure?"
-          content="Please make sure you want to delete the category(s)!"
+          content="Please make sure you want to unjoin the event(s)!"
           isOpen={isConfirmDialogOpen}
           handleConfirm={() => {
             handleDelete();
@@ -116,15 +150,45 @@ export default function Categories(props) {
           }}
         ></ConfirmDialog>
         <Grid className={classNames(styles.content)}>
-          <form onSubmit={(event) => handleSubmit(event)}>
-            <label htmlFor="name">Name</label>
-            <input type="text" id="name" />
-            <label htmlFor="holder_id">Holder</label>
-            <input type="text" id="holder_id" />
-            <label htmlFor="split_rule">Split rule</label>
-            <input type="text" id="split_rule" />
-            <button type="submit">Submit</button>
-          </form>
+          <DataGrid
+            rows={events}
+            componentsProps={{
+              row: {
+                onContextMenu: handleContextMenu
+              }
+            }}
+            columns={columns}
+            checkboxSelection
+            onSelectionModelChange={(ids) => {
+              const selectedIds = new Set(ids);
+              const selectedRows = events
+                .filter((event) => selectedIds.has(event._id))
+                .map((event) => event._id);
+
+              setSelectedEvents(selectedRows);
+            }}
+          />
+          <Menu
+            open={contextMenu !== null}
+            onClose={closeContextMenu}
+            anchorReference="anchorPosition"
+            anchorPosition={
+              contextMenu !== null
+                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                : undefined
+            }
+            componentsProps={{
+              root: {
+                onContextMenu: (e) => {
+                  e.preventDefault();
+                  handleClose();
+                }
+              }
+            }}
+          >
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Delete</MenuItem>
+          </Menu>
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>

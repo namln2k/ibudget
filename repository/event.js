@@ -22,7 +22,9 @@ export async function findAsParticipant(userId) {
   try {
     const events = await EventModel.find({
       user_ids: { $in: [userId] }
-    }).exec();
+    })
+      .lean()
+      .exec();
 
     return events;
   } catch (error) {
@@ -35,6 +37,7 @@ export async function findAsHolder(userId) {
     const events = await EventModel.find({
       holder_id: userId
     })
+      .lean()
       .populate('user')
       .exec();
 
