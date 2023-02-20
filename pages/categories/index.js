@@ -15,6 +15,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
+import * as utilHelper from '../../helpers/util';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import FullScreenLoader from '../../components/FullScreenLoader';
@@ -27,8 +28,9 @@ import styles from './Categories.module.scss';
 
 const columns = [
   { field: 'index', headerName: 'Index', width: 100 },
-  { field: 'name', headerName: 'Category name', width: 320 },
-  { field: 'description', headerName: 'Description', width: 560 }
+  { field: 'name', headerName: 'Category name', width: 360 },
+  { field: 'description', headerName: 'Description', width: 720 },
+  { field: 'monthly_target_display', headerName: 'Monthly target', width: 240 }
 ];
 
 const renderField = (title, input) => {
@@ -375,6 +377,23 @@ export default function Categories(props) {
                         sx={{ width: '600px' }}
                       />
                     )}
+                    {renderField(
+                      'Monthly target',
+                      <TextField
+                        placeholder="Monthly target"
+                        variant="standard"
+                        value={category.monthly_target?.$numberDecimal || ''}
+                        onChange={(event) =>
+                          setCategory({
+                            ...category,
+                            monthly_target: {
+                              $numberDecimal: event.target.value
+                            }
+                          })
+                        }
+                        sx={{ width: '600px' }}
+                      />
+                    )}
                   </tbody>
                 </table>
               </Grid>
@@ -404,7 +423,13 @@ export default function Categories(props) {
             Note: Right click to edit
           </Typography>
           <DataGrid
-            rows={categories}
+            rows={categories.map((cate) => {
+              cate.monthly_target_display = cate.monthly_target?.$numberDecimal
+                ? utilHelper.formatCurrency(cate.monthly_target.$numberDecimal)
+                : '';
+
+              return cate;
+            })}
             componentsProps={{
               row: {
                 onContextMenu: handleContextMenu
