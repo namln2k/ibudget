@@ -21,6 +21,10 @@ const CategorySchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'User'
+    },
+    monthly_target: {
+      type: mongoose.Types.Decimal128,
+      required: false
     }
   },
   {
