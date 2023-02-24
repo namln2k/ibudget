@@ -31,6 +31,28 @@ const UserSchema = new Schema(
     balance: {
       type: mongoose.Types.Decimal128,
       required: true
+    },
+    email: {
+      type: String,
+      trim: true,
+      required: false,
+      unique: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please fill a valid email address'
+      ],
+      lowercase: true
+    },
+    phone_number: {
+      type: String,
+      required: false,
+      trim: true,
+      match: [/\d+/g, 'Please fill a valid phone number']
+    },
+    quote: {
+      type: String,
+      required: false,
+      trim: true
     }
   },
   {
@@ -40,5 +62,10 @@ const UserSchema = new Schema(
     }
   }
 );
+
+UserSchema.path('email').validate(function (email) {
+  var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+  return emailRegex.test(email.text);
+}, 'Please enter a valid email!');
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

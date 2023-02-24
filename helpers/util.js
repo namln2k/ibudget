@@ -16,10 +16,11 @@ export function stringToColor(string) {
   return color;
 }
 
-export function stringAvatar(name) {
+export function stringAvatar(name, sx = {}) {
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
+      ...sx
     },
     children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
   };
