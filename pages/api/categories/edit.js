@@ -6,7 +6,8 @@ export default async function (req, res) {
 
     const categoryToEdit = {
       name: req.body.name,
-      description: req.body.description
+      description: req.body.description,
+      monthly_target: req.body.monthly_target,
     };
 
     const updatedCategory = await CategoryRepository.updateOne(

@@ -9,7 +9,7 @@ function Sidebar() {
       <Grid className={classNames(styles.wrapper)}>
         <SidebarItem label="Dashboard" to="/dashboard"></SidebarItem>
         <SidebarItem label="Trends (Charts)"></SidebarItem>
-        <SidebarItem label="Account settings"></SidebarItem>
+        <SidebarItem label="Account settings" as="/me" to="/me"></SidebarItem>
         <SidebarItem label="Team spending">
           <SidebarItem label="Create new event" to="/events"></SidebarItem>
           <SidebarItem label="View all events" to="/events"></SidebarItem>

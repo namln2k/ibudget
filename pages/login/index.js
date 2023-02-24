@@ -17,10 +17,11 @@ import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import styles from './Login.module.scss';
 
-export default function Login() {
+export default function Login(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [warningMessage, setWarningMessage] = useState('');
 
   const router = useRouter();
 
@@ -33,6 +34,14 @@ export default function Login() {
   useEffect(() => {
     usernameRef.current.querySelectorAll('input')[0].focus();
   }, []);
+
+  useEffect(() => {
+    console.log(router.query.message);
+
+    if (router.query.message) {
+      setWarningMessage(router.query.message);
+    }
+  }, [router.query]);
 
   const handleSubmit = async (e) => {
     setErrorMessage('');
@@ -63,6 +72,9 @@ export default function Login() {
       </Head>
       <MessageDialog type="error" open={errorMessage != ''}>
         {errorMessage}
+      </MessageDialog>
+      <MessageDialog type="warning" open={warningMessage != ''}>
+        {warningMessage}
       </MessageDialog>
       <FullScreenLoader open={loading}></FullScreenLoader>
       <Grid

@@ -31,11 +31,18 @@ export default function Header() {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const closeMenu = () => {
     setAnchorEl(null);
+  };
+
+  const goToMyAccount = () => {
+    router.push('/me');
+    closeMenu();
   };
 
   const [user, setUser] = useUserContext();
@@ -194,17 +201,11 @@ export default function Header() {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem onClick={closeMenu}>
+            <MenuItem onClick={goToMyAccount}>
               <Avatar />
               <Typography>My account</Typography>
             </MenuItem>
             <Divider />
-            <MenuItem onClick={closeMenu}>
-              <ListItemIcon>
-                <Settings fontSize="small" />
-              </ListItemIcon>
-              <Typography>Settings</Typography>
-            </MenuItem>
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <Logout fontSize="small" />
