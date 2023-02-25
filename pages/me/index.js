@@ -108,6 +108,8 @@ export default function Me(props) {
     const responseData = response?.data;
 
     if (responseData.statusCode === 200) {
+      setSuccessMessage('Your changes has been submitted!');
+      setErrorMessage('');
       persistUserAndGetRandomQuote();
     } else {
       setErrorMessage(responseData.error);

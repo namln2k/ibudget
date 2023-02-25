@@ -1,12 +1,13 @@
-const nameRegex = /^[A-Za-z\s]*$/;
-const usernameRegex = /^[A-Za-z0-9]*$/;
+export const REGEX_NAME = /^[A-Za-z\s]*$/;
+export const REGEX_USERNAME = /^[A-Za-z0-9]*$/;
+export const REGEX_EMAIL = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const validateName = (name) => {
-  return nameRegex.test(name);
+  return REGEX_NAME.test(name);
 };
 
 const validateUsername = (username) => {
-  return usernameRegex.test(username);
+  return REGEX_USERNAME.test(username);
 };
 
 const validatePassword = (password) => {

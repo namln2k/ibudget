@@ -44,7 +44,13 @@ export default function Signup() {
       setErrorMessage('');
       timeoutId = setTimeout(() => {
         setSuccessMessage('');
-        router.push('/login');
+        router.push(
+          {
+            pathname: '/login',
+            query: { message: 'Please login to continue!' }
+          },
+          '/login'
+        );
       }, 3000);
     }
 
