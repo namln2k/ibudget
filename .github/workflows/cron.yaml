@@ -2,11 +2,18 @@ name: summarize-daily
 on:
   schedule:
     - cron: '0 0 * * *'
+    - cron: '0 0 * * MON'
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
       - name: Call API [POST] /api/statistics/summarize-day
+        if: github.event.schedule == '0 0 * * *'
         run: |
           curl --request POST \
           --url 'https://ibudget-eight.vercel.app/api/statistics/summarize-day'
+      - name: Call API [POST] /api/statistics/summarize-week
+        if: github.event.schedule == 0 0 * * MON'
+        run: |
+          curl --request POST \
+          --url 'https://ibudget-eight.vercel.app/api/statistics/summarize-week'
