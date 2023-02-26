@@ -1,5 +1,5 @@
-import TransactionModel from '../models/Transaction';
 import moment from 'moment/moment';
+import TransactionModel from '../models/Transaction';
 
 export async function create(transaction) {
   let result = transaction;
@@ -69,7 +69,7 @@ export async function updateOne(query, transaction) {
   }
 }
 
-export async function findForRecord(userId, spendingType, categoryId) {
+export async function findForRecordDay(userId, spendingType, categoryId) {
   try {
     let query = { user_id: userId };
 
@@ -108,6 +108,57 @@ export async function findForRecord(userId, spendingType, categoryId) {
       time: {
         $gte: startOfYesterday.toDate(),
         $lt: endOfYesterday.toDate()
+      }
+    };
+
+    const transactions = await TransactionModel.find(query).exec();
+
+    return transactions;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function findForRecordWeek(userId, spendingType, categoryId) {
+  try {
+    let query = { user_id: userId };
+
+    if (categoryId === 'none') {
+      query = {
+        ...query,
+        category: { $exists: false }
+      };
+    } else if (categoryId) {
+      query = {
+        ...query,
+        category: categoryId
+      };
+    }
+
+    if (spendingType === 1) {
+      query = {
+        ...query,
+        amount: { $gt: 0 }
+      };
+    } else if (spendingType === 2) {
+      query = {
+        ...query,
+        amount: { $lt: 0 }
+      };
+    } else {
+      if (query.amount) delete query.amount;
+    }
+
+    const startWeek = moment().subtract(7, 'days');
+    const startOfWeek = moment(startWeek).startOf('day');
+    const endWeek = moment().subtract(1, 'days');
+    const endOfWeek = moment(endWeek).endOf('day');
+
+    query = {
+      ...query,
+      time: {
+        $gte: startOfWeek.toDate(),
+        $lt: endOfWeek.toDate()
       }
     };
 
