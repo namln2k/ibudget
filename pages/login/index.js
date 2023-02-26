@@ -36,8 +36,6 @@ export default function Login(props) {
   }, []);
 
   useEffect(() => {
-    console.log(router.query.message);
-
     if (router.query.message) {
       setWarningMessage(router.query.message);
     }

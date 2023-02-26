@@ -56,7 +56,9 @@ export async function updateBalance(userId, changeAmount) {
 
 export async function updateUserInfo(userId, userInfo) {
   try {
-    const result = await UserModel.updateOne({ _id: userId }, userInfo);
+    const result = await UserModel.updateOne({ _id: userId }, userInfo, {
+      runValidators: true
+    });
 
     return result;
   } catch (error) {
