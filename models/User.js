@@ -45,9 +45,12 @@ const UserSchema = new Schema(
       validate: {
         validator: function (name) {
           var regex = REGEX_NAME;
-          return !name || !name.trim().length || regex.test(name);
+
+          const formattedName = name.replace(/\s/g, '');
+
+          return !name || !name.trim().length || regex.test(formattedName);
         },
-        message: 'Lastname must contain only letters (A-Z, a-z) and spaces.'
+        message: 'Lastname must contain only Vietnamese letters and spaces.'
       },
       trim: true
     },

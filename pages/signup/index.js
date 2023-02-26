@@ -44,6 +44,35 @@ export default function Signup() {
       setErrorMessage('');
       timeoutId = setTimeout(() => {
         setSuccessMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [successMessage]);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (errorMessage != '') {
+      timeoutId = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [errorMessage]);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (successMessage != '') {
+      setErrorMessage('');
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
         router.push(
           {
             pathname: '/login',
@@ -60,8 +89,8 @@ export default function Signup() {
   }, [successMessage]);
 
   const handleSubmit = async (e) => {
-    setErrorMessage('');
     e.preventDefault();
+    setErrorMessage('');
 
     if (password != rePassword) {
       setErrorMessage(
@@ -235,6 +264,9 @@ export default function Signup() {
                     className={classNames(styles.btnSignup)}
                     sx={{
                       marginTop: '32px'
+                    }}
+                    onClick={(e) => {
+                      handleSubmit(e);
                     }}
                   >
                     Signup
