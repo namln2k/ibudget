@@ -31,7 +31,7 @@ export function validateSignupInfo(user) {
 
   if (!validateName(firstname)) {
     throw new Error(
-      'Firstname must contain only letters (A-Z, a-z) and spaces.'
+      'Firstname must contain only Vietnamese letters and spaces.'
     );
   } else if (!validateName(lastname)) {
     throw new Error(
