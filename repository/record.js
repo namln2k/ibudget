@@ -16,7 +16,11 @@ export async function findByUserId(userId) {
   try {
     const records = await RecordModel.find({
       user_id: userId
-    }).exec();
+    })
+      .populate('category_id')
+      .lean()
+      .exec();
+
     return records;
   } catch (error) {
     throw new Error(error.toString());
