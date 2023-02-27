@@ -15,17 +15,15 @@ import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import * as utilHelper from '../../helpers/util';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
-import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
 import MessageDialog from '../../components/MessageDialog';
 import Sidebar from '../../components/Sidebar';
 import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
+import * as utilHelper from '../../helpers/util';
 import styles from './Categories.module.scss';
-
 const columns = [
   { field: 'index', headerName: 'Index', width: 100 },
   { field: 'name', headerName: 'Category name', width: 360 },
@@ -295,7 +293,6 @@ export default function Categories(props) {
       <Header></Header>
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
-        <FullScreenLoader open={loading}></FullScreenLoader>
         <MessageDialog type="error" open={errorMessage != ''}>
           {errorMessage}
         </MessageDialog>
