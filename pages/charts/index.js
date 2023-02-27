@@ -5,13 +5,11 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import Daily from '../../components/Daily';
 import Footer from '../../components/Footer';
-import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
 import styles from './Charts.module.scss';
-
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -85,7 +83,6 @@ export default function Categories(props) {
       <Header></Header>
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
-        <FullScreenLoader open={loading}></FullScreenLoader>
         <Grid className={classNames(styles.content)}>
           <Box sx={{ width: '100wh', p: 5 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

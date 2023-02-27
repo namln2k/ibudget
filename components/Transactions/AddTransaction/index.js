@@ -16,7 +16,6 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
 import { useUserContext } from '../../../contexts/user';
-import FullScreenLoader from '../../FullScreenLoader';
 import MessageDialog from '../../MessageDialog';
 import styles from './AddTransaction.module.scss';
 
@@ -178,7 +177,6 @@ export default function FormAddTransaction(props) {
     <>
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid className={classNames(styles.container)}>
-          <FullScreenLoader open={loading}></FullScreenLoader>
           <MessageDialog type="error" open={errorMessage != ''}>
             {errorMessage}
           </MessageDialog>
