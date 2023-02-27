@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { REGEX_NAME, REGEX_USERNAME, REGEX_EMAIL } from '../helpers/user';
 import connectDb from '../utils/connectDb';
 
 connectDb();
@@ -11,6 +12,14 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: function (username) {
+          var regex = REGEX_USERNAME;
+          return !username || !username.trim().length || regex.test(username);
+        },
+        message:
+          'Username must contain only letters (A-Z, a-z) and numbers (0-9).'
+      },
       trim: true
     },
     password: {
@@ -21,11 +30,31 @@ const UserSchema = new Schema(
     firstname: {
       type: String,
       required: true,
+      validate: {
+        validator: function (name) {
+          var regex = REGEX_NAME;
+
+          const formattedName = name.replace(/\s/g, '');
+
+          return !name || !name.trim().length || regex.test(formattedName);
+        },
+        message: 'Firstname must contain only Vietnamese letters and spaces.'
+      },
       trim: true
     },
     lastname: {
       type: String,
       required: true,
+      validate: {
+        validator: function (name) {
+          var regex = REGEX_NAME;
+
+          const formattedName = name.replace(/\s/g, '');
+
+          return !name || !name.trim().length || regex.test(formattedName);
+        },
+        message: 'Lastname must contain only Vietnamese letters and spaces.'
+      },
       trim: true
     },
     balance: {
@@ -37,10 +66,13 @@ const UserSchema = new Schema(
       trim: true,
       required: false,
       unique: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        'Please fill a valid email address'
-      ],
+      validate: {
+        validator: function (email) {
+          var regex = REGEX_EMAIL;
+          return !email || !email.trim().length || regex.test(email);
+        },
+        message: 'Email format is not valid.'
+      },
       lowercase: true
     },
     phone_number: {
@@ -62,10 +94,5 @@ const UserSchema = new Schema(
     }
   }
 );
-
-UserSchema.path('email').validate(function (email) {
-  var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  return emailRegex.test(email.text);
-}, 'Please enter a valid email!');
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

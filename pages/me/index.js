@@ -108,6 +108,8 @@ export default function Me(props) {
     const responseData = response?.data;
 
     if (responseData.statusCode === 200) {
+      setSuccessMessage('Your changes has been submitted!');
+      setErrorMessage('');
       persistUserAndGetRandomQuote();
     } else {
       setErrorMessage(responseData.error);
@@ -212,21 +214,6 @@ export default function Me(props) {
               onChange={(e) => setNewBalance(e.target.value)}
             />
           </FormControl>
-          <FormControl
-            fullWidth
-            required
-            variant="standard"
-            sx={{ marginTop: '16px' }}
-          >
-            <InputLabel htmlFor="password">Confirm your password</InputLabel>
-            <Input
-              id="password"
-              aria-describedby="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-            />
-          </FormControl>
         </>
       );
     }
@@ -262,6 +249,8 @@ export default function Me(props) {
   }, [errorMessage]);
 
   const submitSecureChanges = async () => {
+    setLoading(true);
+
     if (editPassword) {
       if (password !== rePassword) {
         setErrorMessage('Password not match!');
@@ -300,20 +289,23 @@ export default function Me(props) {
         return;
       }
 
-      const response = await axios.post('/api/me/change-balance', {
-        userId: user._id,
-        newBalance,
-        password
+      const response = await axios.post('/api/me/edit', {
+        _id: user._id,
+        balance: parseFloat(newBalance)
       });
 
-      if (response?.data?.statusCode === 200) {
+      const responseData = response?.data;
+
+      if (responseData.statusCode === 200) {
         setSuccessMessage('Your changes has been submitted!');
       } else {
-        setErrorMessage(response?.data?.error);
+        setErrorMessage(responseData.error);
       }
     }
 
     persistUserAndGetRandomQuote();
+
+    setLoading(false);
   };
 
   const closeForm = () => {
@@ -404,7 +396,7 @@ export default function Me(props) {
               </Grid>
               <Button
                 variant="contained"
-                sx={{ marginTop: '8px' }}
+                sx={{ marginTop: '8px', padding: '16px 32px' }}
                 onClick={() => {
                   setEditPassword(true);
                   setFormOpen(true);
@@ -414,7 +406,7 @@ export default function Me(props) {
                   Change login password
                 </Typography>
               </Button>
-              <Grid sx={{ borderTop: '3px solid #888888', marginTop: '128px' }}>
+              <Grid sx={{ borderTop: '3px solid #888888', marginTop: '64px' }}>
                 <Typography sx={{ marginTop: '24px' }} variant="h6">
                   {userToEdit.quote ? 'Favorite quote' : 'Random quote'}
                 </Typography>

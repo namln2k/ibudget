@@ -1,12 +1,16 @@
-const nameRegex = /^[A-Za-z\s]*$/;
-const usernameRegex = /^[A-Za-z0-9]*$/;
+export const REGEX_NAME =
+  /^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/;
+export const REGEX_USERNAME = /^[A-Za-z0-9]*$/;
+export const REGEX_EMAIL = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const validateName = (name) => {
-  return nameRegex.test(name);
+  const formattedName = name.replace(/\s/g, '');
+
+  return REGEX_NAME.test(formattedName);
 };
 
 const validateUsername = (username) => {
-  return usernameRegex.test(username);
+  return REGEX_USERNAME.test(username);
 };
 
 const validatePassword = (password) => {
@@ -15,7 +19,7 @@ const validatePassword = (password) => {
 
 /**
  * Validate account signup info
- * 1. Firstname and lastname must contain only letters (A-Z, a-z) and spaces.
+ * 1. Lastname must contain only Vietnamese letters and spaces.
  * 2. Username must contain only letters (A-Z, a-z) and numbers (0-9).
  * 3. Password must be at least 8 characters long
  *
@@ -27,11 +31,11 @@ export function validateSignupInfo(user) {
 
   if (!validateName(firstname)) {
     throw new Error(
-      'Firstname must contain only letters (A-Z, a-z) and spaces.'
+      'Firstname must contain only Vietnamese letters and spaces.'
     );
   } else if (!validateName(lastname)) {
     throw new Error(
-      'Lastname must contain only letters (A-Z, a-z) and spaces.'
+      'Lastname must contain only Vietnamese letters and spaces.'
     );
   } else if (!validateUsername(username)) {
     throw new Error(

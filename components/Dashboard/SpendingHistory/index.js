@@ -5,7 +5,6 @@ import moment from 'moment/moment';
 import { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
 import { useUserContext } from '../../../contexts/user';
-import FullScreenLoader from '../../FullScreenLoader';
 import Item from './Item';
 import styles from './SpendingHistory.module.scss';
 
@@ -52,7 +51,6 @@ export default function SpendingHistory(props) {
 
   return (
     <>
-      <FullScreenLoader open={loading}></FullScreenLoader>
       <Grid className={classNames(styles.section, styles.spendingHistory)}>
         <Typography className={classNames(styles.title)}>
           Spending History

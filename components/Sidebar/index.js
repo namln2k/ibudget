@@ -1,14 +1,18 @@
-import classNames from 'classnames';
-import SidebarItem from './SidebarItem';
-import styles from './Sidebar.module.scss';
 import { Grid } from '@mui/material';
+import classNames from 'classnames';
+import styles from './Sidebar.module.scss';
+import SidebarItem from './SidebarItem';
 
 function Sidebar() {
   return (
     <Grid className={classNames(styles.sidebar)}>
       <Grid className={classNames(styles.wrapper)}>
         <SidebarItem label="Dashboard" to="/dashboard"></SidebarItem>
-        <SidebarItem label="Trends (Charts)"></SidebarItem>
+        <SidebarItem
+          label="Trends (Charts)"
+          to="/charts"
+          as="/charts"
+        ></SidebarItem>
         <SidebarItem label="Account settings" as="/me" to="/me"></SidebarItem>
         <SidebarItem label="Team spending">
           <SidebarItem label="Create new event" to="/events"></SidebarItem>

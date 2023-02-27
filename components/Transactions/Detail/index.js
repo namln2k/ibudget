@@ -18,10 +18,8 @@ import { useLoadingContext } from '../../../contexts/loading';
 import { useUserContext } from '../../../contexts/user';
 import * as utilHelper from '../../../helpers/util';
 import ConfirmDialog from '../../ConfirmDialog';
-import FullScreenLoader from '../../FullScreenLoader';
 import MessageDialog from '../../MessageDialog';
 import styles from './Detail.module.scss';
-
 const renderField = (field, content) => (
   <tr>
     <td>
@@ -250,7 +248,6 @@ export default function TransactionDetail({ transactionId, callback }) {
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterMoment}>
-        <FullScreenLoader open={loading}></FullScreenLoader>
         <MessageDialog type="error" open={errorMessage != ''}>
           {errorMessage}
         </MessageDialog>
