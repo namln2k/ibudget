@@ -1,4 +1,4 @@
-import { Stack, TextField } from '@mui/material';
+import { Stack, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -30,6 +30,7 @@ const Daily = ({ data }) => {
   const [spendingType, setSpendingType] = useState(2);
   const [chartType, setChartType] = useState('bar');
   const [renderData, setRenderData] = useState([]);
+  const [userBalance, setUserBalance] = useState('0');
   const [date, setDate] = useState(moment(new Date()).subtract(1, 'day'));
 
   const handleChangeDate = (newValue) => {
@@ -54,7 +55,7 @@ const Daily = ({ data }) => {
       colors,
       plotOptions: {
         bar: {
-          borderRadius: 10,
+          // borderRadius: 10,
           columnWidth: '45%',
           distributed: true,
           dataLabels: {
@@ -127,7 +128,11 @@ const Daily = ({ data }) => {
       },
       legend: {
         formatter: function (val, opts) {
-          return val + ' - ' + opts.w.globals.series[opts.seriesIndex];
+          return (
+            val +
+            ' - ' +
+            formatCurrency(opts.w.globals.series[opts.seriesIndex])
+          );
         }
       },
       tooltip: {
@@ -178,6 +183,14 @@ const Daily = ({ data }) => {
           }
         })
     );
+    setUserBalance(
+      data.find(
+        (item) =>
+          item.spending_type === 3 &&
+          moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
+            date.format('DD/MM/YYYY')
+      )
+    );
   }, [spendingType, date]);
 
   return (
@@ -195,7 +208,6 @@ const Daily = ({ data }) => {
             >
               <MenuItem value={1}>Income</MenuItem>
               <MenuItem value={2}>Expense</MenuItem>
-              <MenuItem value={3}>User balance</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -250,6 +262,10 @@ const Daily = ({ data }) => {
             width="100%"
           />
         )}
+
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          User balance: {formatCurrency(userBalance?.amount?.$numberDecimal)}
+        </Typography>
       </Box>
     </>
   );
