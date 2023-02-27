@@ -12,10 +12,11 @@ export async function create(record) {
   return result;
 }
 
-export async function findByUserId(userId) {
+export async function findByUserId(userId, timeType = 1) {
   try {
     const records = await RecordModel.find({
-      user_id: userId
+      user_id: userId,
+      time_type: timeType
     })
       .populate('category_id')
       .lean()
