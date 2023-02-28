@@ -50,6 +50,18 @@ export async function findById(categoryId) {
   }
 }
 
+export async function findByManyIds(categoryIds) {
+  try {
+    const categories = await CategoryModel.find({
+      _id: { $in: categoryIds }
+    }).exec();
+
+    return categories;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
 export async function deleteManyByIds(ids) {
   try {
     const deletedCount = CategoryModel.deleteMany({ _id: { $in: ids } });

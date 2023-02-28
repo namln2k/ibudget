@@ -48,7 +48,7 @@ const RecordSchema = new Schema(
     amount: {
       type: mongoose.Types.Decimal128,
       required: true
-    },
+    }
   },
   {
     timestamps: {
@@ -58,5 +58,4 @@ const RecordSchema = new Schema(
   }
 );
 
-export default mongoose.models.Record ||
-  mongoose.model('Record', RecordSchema);
+export default mongoose.models.Record || mongoose.model('Record', RecordSchema);

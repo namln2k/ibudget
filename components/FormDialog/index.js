@@ -17,7 +17,9 @@ const FormDialog = ({
 }) => {
   return (
     <Dialog open={isOpen} onClose={handleClose}>
-      <DialogTitle sx={{ fontSize: '32px', marginTop: '24px' }}>{title}</DialogTitle>
+      <DialogTitle sx={{ fontSize: '32px', marginTop: '24px' }}>
+        {title}
+      </DialogTitle>
       <DialogContent sx={{ padding: '28px 120px 20px 32px !important' }}>
         <DialogContentText sx={{ fontSize: '16px' }}>
           {contentText}
@@ -28,7 +30,7 @@ const FormDialog = ({
         <Button variant="outlined" onClick={handleClose} color="error">
           Cancel
         </Button>
-        <Button variant="outlined" onClick={handleConfirm} color="success">
+        <Button variant="contained" onClick={handleConfirm} color="success">
           Submit
         </Button>
       </DialogActions>

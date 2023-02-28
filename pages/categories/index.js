@@ -15,15 +15,13 @@ import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import * as utilHelper from '../../helpers/util';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
-import FullScreenLoader from '../../components/FullScreenLoader';
 import Header from '../../components/Header';
 import MessageDialog from '../../components/MessageDialog';
 import Sidebar from '../../components/Sidebar';
 import { useLoadingContext } from '../../contexts/loading';
-import { useUserContext } from '../../contexts/user';
+import * as utilHelper from '../../helpers/util';
 import styles from './Categories.module.scss';
 
 const columns = [
@@ -69,8 +67,6 @@ export default function Categories(props) {
 
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [user, setUser] = useUserContext();
-
   const openDialogAddCate = () => {
     setCategory({
       name: '',
@@ -95,6 +91,7 @@ export default function Categories(props) {
   };
 
   const closeContextMenu = () => {
+    setSelectedCategoryId();
     setContextMenu(null);
   };
 
@@ -104,7 +101,7 @@ export default function Categories(props) {
     setLoading(true);
 
     const response = await axios.get(
-      '/api/categories/get?id=' + selectedCategoryId
+      `/api/categories/get/${selectedCategoryId}`
     );
     const responseData = response.data;
 
@@ -123,7 +120,22 @@ export default function Categories(props) {
   };
 
   const handleDelete = () => {
-    deleteCate([selectedCategoryId]);
+    if (selectedCategoryId && selectedCategoryIds.length) {
+      if (
+        selectedCategoryIds.length === 1 &&
+        selectedCategoryIds[0] === selectedCategoryId
+      ) {
+        deleteCate([selectedCategoryId]);
+      } else {
+        setErrorMessage(
+          'Please choose either to delete one category or many categories!'
+        );
+      }
+    } else if (selectedCategoryId) {
+      deleteCate([selectedCategoryId]);
+    } else if (selectedCategoryIds.length) {
+      deleteCate(selectedCategoryIds);
+    }
   };
 
   useEffect(() => {
@@ -176,10 +188,9 @@ export default function Categories(props) {
 
     if (isEdit) {
       const categoryToEdit = category;
-      delete categoryToEdit._id;
 
       response = await axios.post(
-        '/api/categories/edit?id=' + selectedCategoryId,
+        `/api/categories/edit/${category._id}`,
         categoryToEdit
       );
     } else {
@@ -189,8 +200,6 @@ export default function Categories(props) {
         setErrorMessage('Category name must be unique!');
         return;
       }
-
-      categoryToAdd.userId = user._id;
 
       response = await axios.post('/api/categories/add', categoryToAdd);
     }
@@ -208,7 +217,7 @@ export default function Categories(props) {
       );
       setIsDialogOpen(false);
       setCategory({});
-      persistUserAndGetCategories();
+      fetchCategories();
     } else {
       setErrorMessage('Something went wrong!');
     }
@@ -220,7 +229,7 @@ export default function Categories(props) {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/categories/delete/?ids=${JSON.stringify(cateIds)}`
+      `/api/categories/delete/${JSON.stringify(cateIds)}`
     );
     const responseData = response.data;
 
@@ -241,7 +250,7 @@ export default function Categories(props) {
         );
       }
 
-      persistUserAndGetCategories();
+      fetchCategories();
     } else {
       setErrorMessage('Something went wrong!');
     }
@@ -257,34 +266,19 @@ export default function Categories(props) {
     setIsConfirmDialogOpen(true);
   };
 
-  const persistUserAndGetCategories = async () => {
-    setLoading(true);
-    if (!!user) {
-      const response = await axios.post('/api/auth/persist-user');
-      const responseData = response.data;
+  const fetchCategories = async () => {
+    const response = await axios.get(`/api/categories/get`);
+    const responseData = response.data;
 
-      if (responseData.statusCode === 200) {
-        setUser(responseData.data);
-
-        const response = await axios.get(
-          `/api/categories/get?userId=${responseData.data._id}`
-        );
-
-        setCategories(response.data.data);
-      }
-    } else {
-      const response = await axios.get(
-        `/api/categories/get?userId=${user._id}`
-      );
-
-      setCategories(response.data.data);
+    if (responseData.statusCode === 200) {
+      setCategories(responseData.data);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    persistUserAndGetCategories();
+    fetchCategories();
   }, []);
 
   return (
@@ -295,7 +289,6 @@ export default function Categories(props) {
       <Header></Header>
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
-        <FullScreenLoader open={loading}></FullScreenLoader>
         <MessageDialog type="error" open={errorMessage != ''}>
           {errorMessage}
         </MessageDialog>

@@ -1,10 +1,10 @@
-import * as CategoryRepository from '../../../repository/category';
-import mongoose from 'mongoose';
+import * as utilHelper from '../../../../helpers/util';
+import * as CategoryRepository from '../../../../repository/category';
 
 export default async function (req, res) {
   try {
-    req.body.user_id = mongoose.Types.ObjectId(req.body.userId);
-    delete req.body.userId;
+    const userId = await utilHelper.getUserIdFromRequest(req);
+    req.body.user_id = userId;
 
     const addedCategory = await CategoryRepository.create(req.body);
 

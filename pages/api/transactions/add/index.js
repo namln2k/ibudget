@@ -1,13 +1,12 @@
-import * as TransactionRepository from '../../../repository/transaction';
-import * as UserRepository from '../../../repository/user';
 import mongoose from 'mongoose';
+import * as utilHelper from '../../../../helpers/util';
+import * as TransactionRepository from '../../../../repository/transaction';
+import * as UserRepository from '../../../../repository/user';
 
 export default async function (req, res) {
   try {
-    const userId = mongoose.Types.ObjectId(req.body.userId);
-    delete req.body.userId;
-
-    req.body.user_id = userId;
+    const userId = await utilHelper.getUserIdFromRequest(req);
+    req.body.user_id = mongoose.Types.ObjectId(userId);
 
     await TransactionRepository.create(req.body);
 
