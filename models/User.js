@@ -38,7 +38,7 @@ const UserSchema = new Schema(
 
           return !name || !name.trim().length || regex.test(formattedName);
         },
-        message: 'Firstname must contain only Vietnamese letters and spaces.'
+        message: 'First name must contain only Vietnamese letters and spaces.'
       },
       trim: true
     },
