@@ -15,11 +15,11 @@ import axios from 'axios';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
-import { useUserContext } from '../../../contexts/user';
 import * as utilHelper from '../../../helpers/util';
 import ConfirmDialog from '../../ConfirmDialog';
 import MessageDialog from '../../MessageDialog';
 import styles from './Detail.module.scss';
+
 const renderField = (field, content) => (
   <tr>
     <td>
@@ -44,8 +44,6 @@ export default function TransactionDetail({ transactionId, callback }) {
 
   const { _id, amount, detail, time, status, title } = transaction;
 
-  const [user, setUser] = useUserContext();
-
   const [categories, setCategories] = useState([]);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -56,41 +54,25 @@ export default function TransactionDetail({ transactionId, callback }) {
 
   const [loading, setLoading] = useLoadingContext();
 
+  const fetchCategories = async () => {
+    setLoading(true);
+
+    const response = await axios.get(`/api/categories/get`);
+
+    setCategories(response.data.data);
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    async function persistUserAndGetCategories() {
-      setLoading(true);
-      if (!!user) {
-        const response = await axios.post('/api/auth/persist-user');
-        const responseData = response.data;
-
-        if (responseData.statusCode === 200) {
-          setUser(responseData.data);
-
-          const response = await axios.get(
-            `/api/categories/get?userId=${responseData.data._id}`
-          );
-
-          setCategories(response.data.data);
-        }
-      } else {
-        const response = await axios.get(
-          `/api/categories/get?userId=${user._id}`
-        );
-
-        setCategories(response.data.data);
-      }
-
-      setLoading(false);
-    }
-
-    persistUserAndGetCategories();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
     setLoading(true);
     const getTransactionById = async () => {
       const response = await axios.get(
-        `/api/transactions/get?id=${transactionId}`
+        `/api/transactions/get/${transactionId}`
       );
 
       const transaction = response.data.data;
@@ -156,7 +138,7 @@ export default function TransactionDetail({ transactionId, callback }) {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/transactions/delete/?id=${transactionId}&userId=${user._id}`
+      `/api/transactions/delete/${transactionId}`
     );
     const responseData = response.data;
 
@@ -196,7 +178,7 @@ export default function TransactionDetail({ transactionId, callback }) {
     };
 
     const response = await axios.post(
-      `/api/transactions/edit/?id=${transactionId}`,
+      `/api/transactions/edit/${transactionId}`,
       transactionToUpdate
     );
 

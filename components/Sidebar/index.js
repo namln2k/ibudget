@@ -9,7 +9,7 @@ function Sidebar() {
       <Grid className={classNames(styles.wrapper)}>
         <SidebarItem label="Dashboard" to="/dashboard"></SidebarItem>
         <SidebarItem
-          label="Trends (Charts)"
+          label="Charts"
           to="/charts"
           as="/charts"
         ></SidebarItem>

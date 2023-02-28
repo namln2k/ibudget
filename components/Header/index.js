@@ -1,5 +1,4 @@
 import Logout from '@mui/icons-material/Logout';
-import Settings from '@mui/icons-material/Settings';
 import { Grid, IconButton, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -30,6 +29,7 @@ export default function Header() {
   const router = useRouter();
 
   const [anchorEl, setAnchorEl] = useState(null);
+
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
