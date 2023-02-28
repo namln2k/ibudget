@@ -1,3 +1,7 @@
+import * as jose from 'jose';
+
+const SECRET = process.env.JWT_SECRET;
+
 export function stringToColor(string) {
   let hash = 0;
   let i;
@@ -31,4 +35,19 @@ export function formatCurrency(amount) {
     style: 'currency',
     currency: 'VND'
   }).format(Math.abs(amount));
+}
+
+export async function getUserIdFromRequest(req) {
+  const jwt = req.cookies.JWT;
+
+  if (!jwt) {
+    throw new Error('Invalid request: Some cookies is missing!');
+  }
+
+  const { payload, protectedHeader } = await jose.jwtVerify(
+    jwt,
+    new TextEncoder().encode(SECRET)
+  );
+
+  return payload.userId;
 }

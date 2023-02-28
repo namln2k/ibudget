@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import moment from 'moment/moment';
 import { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
-import { useUserContext } from '../../../contexts/user';
 import Item from './Item';
 import styles from './SpendingHistory.module.scss';
 
@@ -22,31 +21,20 @@ const needLineBreak = (time1, time2) => {
 export default function SpendingHistory(props) {
   const [items, setItems] = useState([]);
 
-  const [user, setUser] = useUserContext();
-
   const [loading, setLoading] = useLoadingContext();
 
-  const persistUserAndGetTransactions = async () => {
-    if (!!user) {
-      setLoading(true);
-      const response = await axios.post('/api/auth/persist-user');
-      const responseData = response.data;
+  const fetchTransactions = async () => {
+    setLoading(true);
 
-      if (responseData.statusCode === 200) {
-        setUser(responseData.data);
+    const response = await axios.get(`/api/transactions/get`);
 
-        const response = await axios.get(
-          `/api/transactions/get?userId=${responseData.data._id}`
-        );
+    setItems(response.data.data);
 
-        setItems(response.data.data);
-        setLoading(false);
-      }
-    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    persistUserAndGetTransactions();
+    fetchTransactions();
   }, [props.needReload]);
 
   return (

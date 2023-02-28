@@ -1,20 +1,11 @@
-import * as jose from 'jose';
+import * as utilHelper from '../../../../helpers/util';
 import * as UserRepository from '../../../../repository/user';
-
-const secret = process.env.JWT_SECRET;
 
 export default async function (req, res) {
   try {
-    const jwt = req.cookies.JWT;
+    const userId = await utilHelper.getUserIdFromRequest(req);
 
-    const { payload, protectedHeader } = await jose.jwtVerify(
-      jwt,
-      new TextEncoder().encode(secret)
-    );
-
-    let user = await UserRepository.findByUsernameExcludePassword(payload.username);
-
-    delete user.password;
+    const user = await UserRepository.findByIdExcludePassword(userId);
 
     res.json({ statusCode: 200, data: user });
   } catch (error) {

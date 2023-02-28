@@ -15,7 +15,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
-import { useUserContext } from '../../../contexts/user';
 import MessageDialog from '../../MessageDialog';
 import styles from './AddTransaction.module.scss';
 
@@ -35,8 +34,6 @@ export default function FormAddTransaction(props) {
 
   const [transaction, setTransaction] = useState({ time: moment() });
 
-  const [user, setUser] = useUserContext();
-
   const [categories, setCategories] = useState([]);
 
   const fieldTransactionTime = useRef();
@@ -46,31 +43,15 @@ export default function FormAddTransaction(props) {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    persistUserAndGetCategories();
+    fetchCategories();
   }, []);
 
-  const persistUserAndGetCategories = async () => {
+  const fetchCategories = async () => {
     setLoading(true);
-    if (!!user) {
-      const response = await axios.post('/api/auth/persist-user');
-      const responseData = response.data;
 
-      if (responseData.statusCode === 200) {
-        setUser(responseData.data);
+    const response = await axios.get(`/api/categories/get`);
 
-        const response = await axios.get(
-          `/api/categories/get?userId=${responseData.data._id}`
-        );
-
-        setCategories(response.data.data);
-      }
-    } else {
-      const response = await axios.get(
-        `/api/categories/get?userId=${user._id}`
-      );
-
-      setCategories(response.data.data);
-    }
+    setCategories(response.data.data);
 
     setLoading(false);
   };
@@ -143,8 +124,6 @@ export default function FormAddTransaction(props) {
       setErrorMessage('Please enter a valid date!');
       return;
     }
-
-    transactionToAdd.userId = user._id;
 
     setLoading(true);
 

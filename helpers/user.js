@@ -13,7 +13,7 @@ const validateUsername = (username) => {
   return REGEX_USERNAME.test(username);
 };
 
-const validatePassword = (password) => {
+export function validatePassword(password) {
   return password.length > 7;
 };
 
@@ -31,7 +31,7 @@ export function validateSignupInfo(user) {
 
   if (!validateName(firstname)) {
     throw new Error(
-      'Firstname must contain only Vietnamese letters and spaces.'
+      'First name must contain only Vietnamese letters and spaces.'
     );
   } else if (!validateName(lastname)) {
     throw new Error(

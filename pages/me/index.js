@@ -22,6 +22,7 @@ import MessageDialog from '../../components/MessageDialog';
 import Sidebar from '../../components/Sidebar';
 import { useLoadingContext } from '../../contexts/loading';
 import { useUserContext } from '../../contexts/user';
+import * as userHelper from '../../helpers/user';
 import * as utilHelper from '../../helpers/util';
 import styles from './Me.module.scss';
 
@@ -65,7 +66,7 @@ export default function Me(props) {
       const responseData = userResponse.data;
 
       if (responseData.statusCode === 200) {
-        const fetchedUser = responseData.data;
+        let fetchedUser = responseData.data;
 
         if (!fetchedUser.quote) {
           const quoteResponse = await axios.get(
@@ -75,29 +76,33 @@ export default function Me(props) {
           if (quoteResponse?.data?.content) {
             const quote = quoteResponse?.data?.content;
 
-            setUserToEdit({ ...user, quote: quote });
+            fetchedUser = { ...fetchedUser, quote };
           }
-        } else {
-          setUserToEdit(fetchedUser);
         }
 
         setUser(fetchedUser);
+      } else {
+        setErrorMessage(
+          'Something went wrong while fetching user information!'
+        );
       }
     } else {
       if (!user.quote) {
         const quoteResponse = await axios.get('https://api.quotable.io/random');
 
+        let cloneData = user;
+
         if (quoteResponse?.data?.content) {
           const quote = quoteResponse?.data?.content;
 
-          setUserToEdit({ ...user, quote: quote });
+          cloneData = { ...user, quote };
         }
-      } else {
-        setUserToEdit(user);
       }
 
-      setUser(responseData.data);
+      setUser(cloneData);
     }
+
+    setUserToEdit(user);
   };
 
   const submitChanges = async () => {
@@ -249,16 +254,21 @@ export default function Me(props) {
   }, [errorMessage]);
 
   const submitSecureChanges = async () => {
-    setLoading(true);
-
     if (editPassword) {
-      if (password !== rePassword) {
+      if (newPassword !== rePassword) {
         setErrorMessage('Password not match!');
         return;
       }
 
+      if (!userHelper.validatePassword(newPassword)) {
+        setErrorMessage('Password must be at least 8 characters long!');
+        return;
+      }
+
+      setLoading(true);
+
       const response = await axios.post('/api/me/change-password', {
-        userId: user._id,
+        _id: user._id,
         newPassword,
         password
       });
@@ -284,11 +294,6 @@ export default function Me(props) {
         setErrorMessage('Unable to log user out!');
       }
     } else {
-      if (newPassword !== rePassword) {
-        setErrorMessage('Password not match!');
-        return;
-      }
-
       const response = await axios.post('/api/me/edit', {
         _id: user._id,
         balance: parseFloat(newBalance)
@@ -466,6 +471,46 @@ export default function Me(props) {
               >
                 <table>
                   <tbody>
+                    {renderField(
+                      'First name',
+                      <TextField
+                        required
+                        placeholder="First name"
+                        variant="standard"
+                        className={classNames(
+                          styles.textField,
+                          styles.longField
+                        )}
+                        value={userToEdit.firstname || ''}
+                        onChange={(event) =>
+                          setUserToEdit({
+                            ...userToEdit,
+                            firstname: event.target.value
+                          })
+                        }
+                        autoComplete="off"
+                      />
+                    )}
+                    {renderField(
+                      'Last name',
+                      <TextField
+                        required
+                        placeholder="Last name"
+                        variant="standard"
+                        className={classNames(
+                          styles.textField,
+                          styles.longField
+                        )}
+                        value={userToEdit.lastname || ''}
+                        onChange={(event) =>
+                          setUserToEdit({
+                            ...userToEdit,
+                            lastname: event.target.value
+                          })
+                        }
+                        autoComplete="off"
+                      />
+                    )}
                     {renderField(
                       'Email',
                       <TextField

@@ -29,9 +29,9 @@ export async function findByUsername(username) {
   }
 }
 
-export async function findByUsernameExcludePassword(username) {
+export async function findByIdExcludePassword(userId) {
   try {
-    const user = await UserModel.findOne({ username: username })
+    const user = await UserModel.findOne({ _id: userId })
       .select('-password')
       .exec();
 

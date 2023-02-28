@@ -8,8 +8,8 @@ import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import { useLoadingContext } from '../../contexts/loading';
-import { useUserContext } from '../../contexts/user';
 import styles from './Charts.module.scss';
+
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -43,42 +43,24 @@ export default function Categories(props) {
 
   const [loading, setLoading] = useLoadingContext();
 
-  const [user, setUser] = useUserContext();
-
-  const persistUserAndGetStatistics = async () => {
+  const fetchDailyStatistics = async () => {
     setLoading(true);
-    if (!!user) {
-      const response = await axios.post('/api/auth/persist-user');
-      const responseData = response.data;
 
-      if (responseData.statusCode === 200) {
-        setUser(responseData.data);
+    const response = await axios.get(`/api/statistics/get-daily`);
 
-        const response = await axios.get(
-          `/api/statistics/get-daily?userId=${responseData.data._id}`
-        );
-
-        setDailyStatistics(response.data.data);
-      }
-    } else {
-      const response = await axios.get(
-        `/api/statistics/get-daily?userId=${user._id}`
-      );
-
-      setDailyStatistics(response.data.data);
-    }
+    setDailyStatistics(response.data.data);
 
     setLoading(false);
   };
 
   useEffect(() => {
-    persistUserAndGetStatistics();
+    fetchDailyStatistics();
   }, []);
 
   return (
     <>
       <Head>
-        <title>Charts(Trends)</title>
+        <title>Charts</title>
       </Head>
       <Header></Header>
       <main className={classNames(styles.main)}>

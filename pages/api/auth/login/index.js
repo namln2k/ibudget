@@ -18,9 +18,11 @@ export default async function (req, res) {
         const iat = Math.floor(Date.now() / 1000);
         const exp = iat + 60 * 60 * 24 * 30;
 
+        delete user.password;
+
         const token = await new jose.SignJWT({
           exp,
-          username
+          userId: user._id
         })
           .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
           .setExpirationTime(exp)
@@ -32,7 +34,7 @@ export default async function (req, res) {
           httpOnly: true,
           secure: process.env.NODE_ENV !== 'development',
           sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 30,
+          maxAge: 60 * 24 * 30,
           path: '/'
         });
 
