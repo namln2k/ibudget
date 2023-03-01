@@ -6,9 +6,8 @@ import {
   HOLDER_VERIFIED,
   PARTICIPANT_ACCEPT,
   PARTICIPANT_REQUEST,
-  SELF_VERIFY,
   PARTICIPANT_VERIFIED,
-  HOLDER_VERIFIED
+  SELF_VERIFY
 } from '../../../../../helpers/group';
 import * as utilHelper from '../../../../../helpers/util';
 import * as GroupRepository from '../../../../../repository/group';
@@ -46,7 +45,7 @@ export default async function (req, res) {
             updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
               ...detail,
               ...req.body,
-              verified: HOLDER_VERIFIED
+              verified: BOTH_VERIFIED
             });
             res.json({ statusCode: 200, data: updatedDetail });
           } else {
@@ -63,7 +62,7 @@ export default async function (req, res) {
             updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
               ...detail,
               ...req.body,
-              verified: HOLDER_VERIFIED
+              verified: BOTH_VERIFIED
             });
             res.json({ statusCode: 200, data: updatedDetail });
           } else {
