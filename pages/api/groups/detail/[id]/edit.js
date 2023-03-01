@@ -6,6 +6,7 @@ import {
   HOLDER_VERIFIED,
   PARTICIPANT_ACCEPT,
   PARTICIPANT_REQUEST,
+  PARTICIPANT_VERIFIED,
   SELF_VERIFY
 } from '../../../../../helpers/group';
 import * as utilHelper from '../../../../../helpers/util';
@@ -40,20 +41,38 @@ export default async function (req, res) {
           res.json({ statusCode: 200, data: updatedDetail });
           return;
         case HOLDER_REQUEST:
-          updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
-            ...detail,
-            ...req.body,
-            verified: HOLDER_VERIFIED
-          });
-          res.json({ statusCode: 200, data: updatedDetail });
+          if (detail.verified === PARTICIPANT_VERIFIED) {
+            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+              ...detail,
+              ...req.body,
+              verified: BOTH_VERIFIED
+            });
+            res.json({ statusCode: 200, data: updatedDetail });
+          } else {
+            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+              ...detail,
+              ...req.body,
+              verified: HOLDER_VERIFIED
+            });
+            res.json({ statusCode: 200, data: updatedDetail });
+          }
           return;
         case PARTICIPANT_REQUEST:
-          updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
-            ...detail,
-            ...req.body,
-            verified: HOLDER_VERIFIED
-          });
-          res.json({ statusCode: 200, data: updatedDetail });
+          if (detail.verified === HOLDER_VERIFIED) {
+            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+              ...detail,
+              ...req.body,
+              verified: BOTH_VERIFIED
+            });
+            res.json({ statusCode: 200, data: updatedDetail });
+          } else {
+            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+              ...detail,
+              ...req.body,
+              verified: PARTICIPANT_VERIFIED
+            });
+            res.json({ statusCode: 200, data: updatedDetail });
+          }
           return;
         default:
           res.json({
