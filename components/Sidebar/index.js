@@ -8,26 +8,17 @@ function Sidebar() {
     <Grid className={classNames(styles.sidebar)}>
       <Grid className={classNames(styles.wrapper)}>
         <SidebarItem label="Dashboard" to="/dashboard"></SidebarItem>
-        <SidebarItem
-          label="Charts"
-          to="/charts"
-          as="/charts"
-        ></SidebarItem>
+        <SidebarItem label="Charts" to="/charts" as="/charts"></SidebarItem>
         <SidebarItem label="Account settings" as="/me" to="/me"></SidebarItem>
-        <SidebarItem label="Team spending">
-          <SidebarItem label="Create new event"></SidebarItem>
-          <SidebarItem label="View all events"></SidebarItem>
-          <SidebarItem label="Join an event"></SidebarItem>
-        </SidebarItem>
+        <SidebarItem label="Groups" to="/groups"></SidebarItem>
         <SidebarItem label="Personal budget">
-          <SidebarItem label="Plan new budget"></SidebarItem>
           <SidebarItem
-            label="All categories"
+            label="Categories"
             to="/categories"
             as="/categories"
           ></SidebarItem>
           <SidebarItem
-            label="All transactions"
+            label="Transactions"
             to="/transactions"
             as="/transactions"
             options={{ action: 'no-action' }}

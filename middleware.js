@@ -3,7 +3,14 @@ import * as jose from 'jose';
 
 const secret = process.env.JWT_SECRET;
 
-const PROTECT_ROUTES = ['/dashboard', '/transactions', '/categories', '/me'];
+const PROTECT_ROUTES = [
+  '/dashboard',
+  '/transactions',
+  '/categories',
+  '/me',
+  '/charts',
+  '/groups'
+];
 
 export default async function middleware(req) {
   const { cookies } = req;
