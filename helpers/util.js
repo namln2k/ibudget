@@ -1,4 +1,6 @@
 import * as jose from 'jose';
+import moment from 'moment/moment';
+import mongoose from 'mongoose';
 
 const SECRET = process.env.JWT_SECRET;
 
@@ -50,4 +52,12 @@ export async function getUserIdFromRequest(req) {
   );
 
   return payload.userId;
+}
+
+export function formatDate(date, format) {
+  return moment(date).format(format);
+}
+
+export function isValidObjectId(string) {
+  return mongoose.Types.ObjectId.isValid(string);
 }
