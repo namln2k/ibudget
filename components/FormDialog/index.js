@@ -13,7 +13,8 @@ const FormDialog = ({
   form,
   isOpen,
   handleClose,
-  handleConfirm
+  handleConfirm,
+  hideSubmitButton = false
 }) => {
   return (
     <Dialog open={isOpen} onClose={handleClose}>
@@ -30,9 +31,11 @@ const FormDialog = ({
         <Button variant="outlined" onClick={handleClose} color="error">
           Cancel
         </Button>
-        <Button variant="contained" onClick={handleConfirm} color="success">
-          Submit
-        </Button>
+        {!hideSubmitButton && (
+          <Button variant="contained" onClick={handleConfirm} color="success">
+            Submit
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
