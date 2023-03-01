@@ -9,7 +9,7 @@ export default async function (req, res) {
     const detailForThisUser = await GroupRepository.findDetail(userId, groupId);
 
     if (detailForThisUser) {
-      res.json({ statusCode: 400, data: 'You are already in this group!' });
+      res.json({ statusCode: 400, error: 'You are already in this group!' });
     } else {
       const detail = await GroupRepository.createNewEmptyDetail(
         groupId,

@@ -116,6 +116,7 @@ export default function Categories(props) {
   };
 
   const openConfirmDialog = () => {
+    closeContextMenu();
     setIsConfirmDialogOpen(true);
   };
 

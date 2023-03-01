@@ -27,6 +27,11 @@ const GroupUserSchema = new Schema(
       type: mongoose.Types.Decimal128,
       required: true
     },
+    /**
+     * 1 - Holder verified
+     * 2 - Participant verified
+     * 3 - Both verified
+     */
     verified: {
       type: Number,
       required: true

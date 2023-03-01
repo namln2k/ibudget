@@ -15,6 +15,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
@@ -27,12 +28,13 @@ import * as utilHelper from '../../helpers/util';
 import styles from './Groups.module.scss';
 
 const columns = [
+  { field: 'index', headerName: 'Index', minWidth: 60 },
   { field: 'id', headerName: 'Group ID', minWidth: 280 },
   { field: 'name', headerName: 'Group name', minWidth: 240 },
-  { field: 'description', headerName: 'Description', minWidth: 320 },
-  { field: 'role', headerName: 'Role', width: 180 },
-  { field: 'due_date_display', headerName: 'Due date', width: 180 },
-  { field: 'budget_display', headerName: 'Current budget', width: 180 },
+  { field: 'description', headerName: 'Description', minWidth: 300 },
+  { field: 'role', headerName: 'Role', width: 160 },
+  { field: 'due_date_display', headerName: 'Due date', width: 160 },
+  { field: 'budget_display', headerName: 'Current budget', width: 160 },
   {
     field: 'expected_budget_display',
     headerName: 'Expected budget',
@@ -43,11 +45,11 @@ const columns = [
 const formatGroupDataForDisplay = (group) => {
   group.budget_display = group.budget
     ? utilHelper.formatCurrency(group.budget)
-    : '';
+    : utilHelper.formatCurrency(0);
 
   group.expected_budget_display = group.expected_budget
     ? utilHelper.formatCurrency(group.expected_budget)
-    : '';
+    : utilHelper.formatCurrency(0);
 
   group.due_date_display = utilHelper.formatDate(group.due_date, 'DD-MM-YYYY');
 
@@ -71,11 +73,15 @@ export default function Groups(props) {
 
   const [groupIdToJoin, setGroupIdToJoin] = useState();
 
-  const [isFormCreateOpen, setIsFormCreateOpen] = useState(false);
+  const [isFormInfoOpen, setIsFormInfoOpen] = useState(false);
 
-  const [groupToCreate, setGroupToCreate] = useState({ due_date: new Date() });
+  const [groupToSubmit, setGroupToSubmit] = useState({ due_date: new Date() });
 
   const [selectedGroupId, setSelectedGroupId] = useState();
+
+  const [isEdit, setIsEdit] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     let timeoutId;
@@ -134,11 +140,31 @@ export default function Groups(props) {
   };
 
   const closeContextMenu = () => {
-    setSelectedGroupId();
     setContextMenu(null);
   };
 
-  const viewGroup = async () => {};
+  const viewGroup = () => {
+    closeContextMenu();
+    router.push(`groups/${selectedGroupId}/detail`);
+  };
+
+  const viewFormGroupInfo = async () => {
+    setContextMenu(null);
+    setLoading(true);
+    setIsEdit(true);
+
+    const response = await axios.get(`/api/groups/${selectedGroupId}/info`);
+    const responseData = response.data;
+
+    setLoading(false);
+
+    if (responseData.statusCode === 200) {
+      setGroupToSubmit(responseData.data);
+      setIsFormInfoOpen(true);
+    } else {
+      setErrorMessage(responseData.error.toString());
+    }
+  };
 
   const joinGroup = async () => {
     setLoading(true);
@@ -150,6 +176,7 @@ export default function Groups(props) {
 
     if (responseData.statusCode === 200) {
       setSuccessMessage('You have joined a new group!');
+      setGroupIdToJoin();
       closeFormJoin();
       fetchGroups();
     } else {
@@ -164,18 +191,35 @@ export default function Groups(props) {
     setIsFormJoinOpen(false);
   };
 
-  const createGroup = async () => {
-    const response = await axios.post(`api/groups/add`, groupToCreate);
+  const submitFormGroupInfo = async () => {
+    setLoading(true);
+    if (!isEdit) {
+      const response = await axios.post(`api/groups/add`, groupToSubmit);
+      setLoading(false);
 
-    if (response.data?.statusCode === 200) {
-      setSuccessMessage('You have created a new group');
-      closeFormCreate();
-      fetchGroups();
+      if (response.data?.statusCode === 200) {
+        setSuccessMessage('You have created a new group');
+        setGroupToSubmit({ due_date: new Date() });
+        closeFormGroupInfo();
+        fetchGroups();
+      }
+    } else {
+      const response = await axios.post(
+        `api/groups/${selectedGroupId}/edit`,
+        groupToSubmit
+      );
+      setLoading(false);
+
+      if (response.data?.statusCode === 200) {
+        setSuccessMessage('Your changes have been submitted');
+        closeFormGroupInfo();
+        fetchGroups();
+      }
     }
   };
 
-  const closeFormCreate = () => {
-    setIsFormCreateOpen(false);
+  const closeFormGroupInfo = () => {
+    setIsFormInfoOpen(false);
   };
 
   const processToLeaveGroup = async () => {
@@ -258,7 +302,7 @@ export default function Groups(props) {
         <FormDialog
           title="Create a new group"
           contentText="Please fill in required fields"
-          isOpen={isFormCreateOpen}
+          isOpen={isFormInfoOpen}
           form={
             <>
               <FormControl
@@ -270,9 +314,9 @@ export default function Groups(props) {
                 <InputLabel htmlFor="group-name">Group name</InputLabel>
                 <Input
                   id="group-name"
-                  value={groupToCreate.name || ''}
+                  value={groupToSubmit.name || ''}
                   onChange={(e) =>
-                    setGroupToCreate({ ...groupToCreate, name: e.target.value })
+                    setGroupToSubmit({ ...groupToSubmit, name: e.target.value })
                   }
                 />
               </FormControl>
@@ -287,10 +331,10 @@ export default function Groups(props) {
                 </InputLabel>
                 <Input
                   id="group-description"
-                  value={groupToCreate.description || ''}
+                  value={groupToSubmit.description || ''}
                   onChange={(e) =>
-                    setGroupToCreate({
-                      ...groupToCreate,
+                    setGroupToSubmit({
+                      ...groupToSubmit,
                       description: e.target.value
                     })
                   }
@@ -306,9 +350,9 @@ export default function Groups(props) {
                   <DesktopDatePicker
                     label="Due date"
                     inputFormat="DD/MM/YYYY"
-                    value={groupToCreate.due_date}
+                    value={groupToSubmit.due_date}
                     onChange={(newValue) =>
-                      setGroupToCreate({ ...groupToCreate, due_date: newValue })
+                      setGroupToSubmit({ ...groupToSubmit, due_date: newValue })
                     }
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -316,8 +360,8 @@ export default function Groups(props) {
               </FormControl>
             </>
           }
-          handleConfirm={createGroup}
-          handleClose={closeFormCreate}
+          handleConfirm={submitFormGroupInfo}
+          handleClose={closeFormGroupInfo}
         ></FormDialog>
         <ConfirmDialog
           title="Are you sure?"
@@ -344,7 +388,8 @@ export default function Groups(props) {
             <Grid
               className={classNames(styles.btn, styles.btnAdd)}
               onClick={() => {
-                setIsFormCreateOpen(true);
+                setIsFormInfoOpen(true);
+                setIsEdit(false);
               }}
             >
               <Typography variant="h6">Create a new group</Typography>
@@ -358,7 +403,7 @@ export default function Groups(props) {
               marginRight: 0
             }}
           >
-            Note: Right click to edit
+            Note: Right click for actions
           </Typography>
           <DataGrid
             rows={groups.map((group) => formatGroupDataForDisplay(group))}
@@ -388,6 +433,7 @@ export default function Groups(props) {
               }
             }}
           >
+            <MenuItem onClick={viewFormGroupInfo}>Edit general detail</MenuItem>
             <MenuItem onClick={viewGroup}>View detail</MenuItem>
             <MenuItem onClick={leaveGroup}>Leave</MenuItem>
           </Menu>

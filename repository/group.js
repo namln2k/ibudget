@@ -17,6 +17,33 @@ export async function create(group) {
   }
 }
 
+export async function findById(id) {
+  try {
+    const group = await GroupModel.findOne({
+      _id: id
+    });
+
+    return group;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function updateOne(groupInfo) {
+  try {
+    const updatedGroup = await GroupModel.findOneAndUpdate(
+      {
+        _id: groupInfo._id
+      },
+      groupInfo
+    );
+
+    return updatedGroup;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
 export async function createNewEmptyDetail(groupId, userId) {
   try {
     const addedRecord = await GroupUserModel.create({
@@ -28,6 +55,21 @@ export async function createNewEmptyDetail(groupId, userId) {
     });
 
     return addedRecord;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
+}
+
+export async function updateOneDetail(detailId, newDetail) {
+  try {
+    const updatedDetail = await GroupUserModel.updateOne(
+      {
+        _id: detailId
+      },
+      newDetail
+    );
+
+    return updatedDetail;
   } catch (error) {
     throw new Error(error.toString());
   }
@@ -111,6 +153,14 @@ export async function findDetailsByGroupId(groupId, excludeUserId = null) {
       .lean()
       .exec();
 
+    for (let i = 0; i < groupDetails.length; i++) {
+      const groupInfo = groupDetails[i].group;
+
+      const budgetInfo = await getBudgetInfo(groupInfo._id);
+
+      groupDetails[i].group = { ...groupInfo, ...budgetInfo };
+    }
+
     return groupDetails;
   } catch (error) {
     throw new Error(error.toString());
@@ -126,9 +176,17 @@ export async function findDetail(userId, groupId) {
 
     const groupDetail = await GroupUserModel.find(query)
       .populate('group')
+      .populate('user')
+      .lean()
       .exec();
 
     if (groupDetail.length === 1) {
+      const groupInfo = groupDetail[0].group;
+
+      const budgetInfo = await getBudgetInfo(groupInfo._id);
+
+      groupDetail[0].group = { ...groupInfo, ...budgetInfo };
+
       return groupDetail[0];
     } else if (groupDetail.length === 0) {
       return null;
@@ -184,4 +242,18 @@ export async function canLeave(userId, groupId) {
   }
 
   return 'Either some transactions have not been verified or someone has not completed their payments yet. ';
+}
+
+export async function findDetailById(detailId) {
+  try {
+    const result = await GroupUserModel.findOne({ _id: detailId })
+      .populate('group')
+      .populate('user')
+      .lean()
+      .exec();
+
+    return result;
+  } catch (error) {
+    throw new Error(error.toString());
+  }
 }

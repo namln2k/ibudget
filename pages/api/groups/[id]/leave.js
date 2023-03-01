@@ -6,11 +6,11 @@ export default async function (req, res) {
     const { id: groupId } = req.query;
     const userId = await utilHelper.getUserIdFromRequest(req);
 
-    const details = await GroupRepository.findDetailsByGroupId(groupId);
-
     const canLeave = await GroupRepository.canLeave(userId, groupId);
 
     if (utilHelper.isValidObjectId(canLeave)) {
+      const details = await GroupRepository.findDetailsByGroupId(groupId);
+
       const deletedCount = await GroupRepository.deleteDetailById(
         details[0]._id
       );
@@ -29,8 +29,6 @@ export default async function (req, res) {
         error: canLeave
       });
     }
-
-    res.json({ statusCode: 200, data: false });
   } catch (error) {
     res.json({ statusCode: 400, error: error.toString() });
   }
