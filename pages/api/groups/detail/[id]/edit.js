@@ -6,9 +6,8 @@ import {
   HOLDER_VERIFIED,
   PARTICIPANT_ACCEPT,
   PARTICIPANT_REQUEST,
-  SELF_VERIFY,
   PARTICIPANT_VERIFIED,
-  HOLDER_VERIFIED
+  SELF_VERIFY
 } from '../../../../../helpers/group';
 import * as utilHelper from '../../../../../helpers/util';
 import * as GroupRepository from '../../../../../repository/group';
@@ -35,20 +34,16 @@ export default async function (req, res) {
         case HOLDER_ACCEPT:
         case PARTICIPANT_ACCEPT:
           updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
-            ...detail,
-            ...req.body,
             verified: BOTH_VERIFIED
           });
           res.json({ statusCode: 200, data: updatedDetail });
           return;
         case HOLDER_REQUEST:
           if (detail.verified === PARTICIPANT_VERIFIED) {
-            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
-              ...detail,
-              ...req.body,
-              verified: HOLDER_VERIFIED
+            res.json({
+              statusCode: 400,
+              error: 'There may have some changes. Please reload and try again!'
             });
-            res.json({ statusCode: 200, data: updatedDetail });
           } else {
             updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
               ...detail,
@@ -60,12 +55,10 @@ export default async function (req, res) {
           return;
         case PARTICIPANT_REQUEST:
           if (detail.verified === HOLDER_VERIFIED) {
-            updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
-              ...detail,
-              ...req.body,
-              verified: HOLDER_VERIFIED
+            res.json({
+              statusCode: 400,
+              error: 'There may have some changes. Please reload and try again!'
             });
-            res.json({ statusCode: 200, data: updatedDetail });
           } else {
             updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
               ...detail,

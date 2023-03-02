@@ -241,6 +241,16 @@ export default function Categories(props) {
                     amount_paid: { $numberDecimal: event.target.value }
                   });
                 }}
+                InputProps={{
+                  readOnly:
+                    editMode === HOLDER_ACCEPT ||
+                    editMode === PARTICIPANT_ACCEPT
+                }}
+                variant={
+                  editMode === HOLDER_ACCEPT || editMode === PARTICIPANT_ACCEPT
+                    ? 'filled'
+                    : 'standard'
+                }
               />
               <TextField
                 label="Expected to pay"
