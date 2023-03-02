@@ -261,6 +261,16 @@ export default function Categories(props) {
                     amount_to_pay: { $numberDecimal: event.target.value }
                   });
                 }}
+                InputProps={{
+                  readOnly:
+                    editMode === HOLDER_ACCEPT ||
+                    editMode === PARTICIPANT_ACCEPT
+                }}
+                variant={
+                  editMode === HOLDER_ACCEPT || editMode === PARTICIPANT_ACCEPT
+                    ? 'filled'
+                    : 'standard'
+                }
               />
               <Button
                 type="submit"
