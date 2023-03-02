@@ -11,7 +11,7 @@ export default async function (req, res) {
       group.index = index + 1;
       group.id = group._id;
       
-      if (group.holder = userId) {
+      if (group.holder == userId) {
         group.role = 'Holder'
       } else {
         group.role = 'Participant'
