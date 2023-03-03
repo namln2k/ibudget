@@ -172,17 +172,11 @@
   }
 
   .features {
-    padding: 120px 160px 200px 160px;
+    padding: 120px 240px 200px 240px;
 
     .feature {
-      .thumbnail {
-        .image {
-          border-radius: 50%;
-        }
-      }
-
       .description {
-        width: calc(68% - 120px);
+        width: calc(68% - 160px);
 
         h6 {
           display: -webkit-box;
