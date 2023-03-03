@@ -138,7 +138,7 @@ export default function Home() {
               className={classNames(styles.item, styles.thumbnail)}
             >
               <Image
-                src="/images/home01.png"
+                src="/images/01.jpg"
                 fill
                 className={classNames(styles.image)}
                 alt="feature-thumbnail"
@@ -146,13 +146,13 @@ export default function Home() {
             </Grid>
             <Grid className={classNames(styles.item, styles.description)}>
               <Typography variant="h3" sx={{ marginBottom: '20px' }}>
-                Manage your wallet with Transactions and Categories
+                For those about to rock
               </Typography>
               <Typography variant="h6">
-                We'll help you track where your money is going: Categorizing
-                your expenses can give you a clearer picture of how much you're
-                spending in each area of your life, such as housing,
-                transportation, groceries, and entertainment.
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
             </Grid>
           </Grid>
@@ -165,14 +165,13 @@ export default function Home() {
           >
             <Grid className={classNames(styles.item, styles.description)}>
               <Typography variant="h3" sx={{ marginBottom: '20px' }}>
-                Easy budgeting
+                We salute you!
               </Typography>
               <Typography variant="h6">
-                We help make budgeting easier: Categorizing your expenses can
-                help you create a budget by allowing you to see how much you're
-                spending in each category and how it compares to your income.
-                This can help you identify areas where you may be overspending
-                or where you can cut back.
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
             </Grid>
             <Grid
@@ -185,7 +184,7 @@ export default function Home() {
               className={classNames(styles.item, styles.thumbnail)}
             >
               <Image
-                src="/images/home02.png"
+                src="/images/02.jpg"
                 fill
                 className={classNames(styles.image)}
                 alt="feature-thumbnail"
@@ -209,7 +208,7 @@ export default function Home() {
               className={classNames(styles.item, styles.thumbnail)}
             >
               <Image
-                src="/images/home03.png"
+                src="/images/03.jpg"
                 fill
                 className={classNames(styles.image)}
                 alt="feature-thumbnail"
@@ -217,47 +216,14 @@ export default function Home() {
             </Grid>
             <Grid className={classNames(styles.item, styles.description)}>
               <Typography variant="h3" sx={{ marginBottom: '20px' }}>
-                Visualization with colorful charts
+                Let there be rock!
               </Typography>
               <Typography variant="h6">
-                We draw your pictures in one place. With colorful and
-                multi-functional charts. You can get a quick overview about your
-                incomes and expenses at a glance and in one place.
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod
+                aliquid, mollitia odio veniam sit iste esse assumenda amet
+                aperiam exercitationem, ea animi blanditiis recusandae! Ratione
+                voluptatum molestiae adipisci, beatae obcaecati.
               </Typography>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            className={classNames(styles.feature)}
-          >
-            <Grid className={classNames(styles.item, styles.description)}>
-              <Typography variant="h3" sx={{ marginBottom: '20px' }}>
-                Manage your spending groups
-              </Typography>
-              <Typography variant="h6">
-                Loans, debts are all managed in one function. You can be a pro
-                event holder if you can use this with full potential. Experience
-                and enjoy the convenience.
-              </Typography>
-            </Grid>
-            <Grid
-              sx={{
-                width: '32%',
-                aspectRatio: '1/1',
-                position: 'relative'
-              }}
-              container
-              className={classNames(styles.item, styles.thumbnail)}
-            >
-              <Image
-                src="/images/home04.png"
-                fill
-                className={classNames(styles.image)}
-                alt="feature-thumbnail"
-              ></Image>
             </Grid>
           </Grid>
         </Grid>
