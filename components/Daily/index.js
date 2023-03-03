@@ -172,12 +172,12 @@ const Daily = ({ data }) => {
         .map((item) => {
           if (item.category_type === 2) {
             return {
-              data: Number(item.amount.$numberDecimal),
+              data: Math.abs(Number(item.amount.$numberDecimal)),
               name: item.category_id.name
             };
           } else {
             return {
-              data: Number(item.amount.$numberDecimal),
+              data: Math.abs(Number(item.amount.$numberDecimal)),
               name: 'Other'
             };
           }

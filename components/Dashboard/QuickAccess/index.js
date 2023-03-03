@@ -1,3 +1,6 @@
+import BugReportIcon from '@mui/icons-material/BugReport';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import PaidIcon from '@mui/icons-material/Paid';
 import { Box, Grid, Typography } from '@mui/material';
 import classNames from 'classnames';
 import React from 'react';
@@ -20,18 +23,19 @@ export default function QuickAccess() {
         >
           <Typography className={classNames(styles.item, styles.button)}>
             Add expense
+            <PaidIcon sx={{ marginLeft: '12px' }}></PaidIcon>
           </Typography>
           <Typography className={classNames(styles.item, styles.button)}>
             Add income
-          </Typography>
-          <Typography className={classNames(styles.item, styles.button)}>
-            Team spending
-          </Typography>
-          <Typography className={classNames(styles.item, styles.button)}>
-            List debtors
+            <PaidIcon sx={{ marginLeft: '12px' }}></PaidIcon>
           </Typography>
           <Typography className={classNames(styles.item, styles.button)}>
             Report a bug
+            <BugReportIcon sx={{ marginLeft: '12px' }}></BugReportIcon>
+          </Typography>
+          <Typography className={classNames(styles.item, styles.button)}>
+            Support me on Github
+            <GitHubIcon sx={{ marginLeft: '12px' }}></GitHubIcon>
           </Typography>
         </Box>
       </Grid>
