@@ -81,10 +81,6 @@ export default function Me(props) {
         }
 
         setUser(fetchedUser);
-      } else {
-        setErrorMessage(
-          'Something went wrong while fetching user information!'
-        );
       }
     } else {
       if (!user.quote) {

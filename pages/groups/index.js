@@ -300,7 +300,7 @@ export default function Groups(props) {
           handleClose={closeFormJoin}
         ></FormDialog>
         <FormDialog
-          title="Create a new group"
+          title={isEdit ? 'Edit group info then press submit' : 'Create a new group'}
           contentText="Please fill in required fields"
           isOpen={isFormInfoOpen}
           form={
