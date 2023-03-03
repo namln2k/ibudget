@@ -2,8 +2,8 @@ import { Grid } from '@mui/material';
 import classNames from 'classnames';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import BudgetLimits from '../../components/Dashboard/BudgetLimits';
 import QuickAccess from '../../components/Dashboard/QuickAccess';
-import RandomQuote from '../../components/Dashboard/RandomQuote';
 import SpendingHistory from '../../components/Dashboard/SpendingHistory';
 import Totals from '../../components/Dashboard/Totals';
 import Footer from '../../components/Footer';
@@ -34,9 +34,6 @@ export default function Dashboard(props) {
       <main className={classNames(styles.main)}>
         <Sidebar></Sidebar>
         <Grid className={classNames(styles.sections)}>
-          <SpendingHistory
-            callbackViewTransaction={viewTransactionDetail}
-          ></SpendingHistory>
           <Grid
             sx={{
               display: 'flex',
@@ -45,9 +42,12 @@ export default function Dashboard(props) {
             }}
           >
             <Totals></Totals>
-            <RandomQuote></RandomQuote>
+            <QuickAccess></QuickAccess>
           </Grid>
-          <QuickAccess></QuickAccess>
+          <BudgetLimits></BudgetLimits>
+          <SpendingHistory
+            callbackViewTransaction={viewTransactionDetail}
+          ></SpendingHistory>
         </Grid>
       </main>
       <Footer sx={{ background: '#808080' }}></Footer>

@@ -1,5 +1,5 @@
 .section {
-  background: linear-gradient(to right, #cecece, #e1d28f);
+  background: rgba(255, 223, 193, 0.6);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
   padding: 24px;
@@ -16,9 +16,10 @@
   }
 
   .item {
-    min-width: 128px;
+    width: 128px;
+    height: 64px;
     margin: 16px;
-    padding: 14px 28px;
+    padding: 10px 24px;
     text-align: center;
     line-height: 21px;
     font-weight: 500;
@@ -33,10 +34,10 @@
 
   .button {
     cursor: pointer;
-    transition: 0.4s;
+    transition: .4s;
     border: 2px solid rgba(255, 163, 78, 1);
     box-shadow: 5px 10px #888888;
-
+    
     &:hover {
       background-color: rgba(255, 147, 46, 0.6);
     }
