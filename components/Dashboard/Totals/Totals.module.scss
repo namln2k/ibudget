@@ -1,73 +1,99 @@
 .section {
-  background: linear-gradient(to right, #64c98d, #709dc9);
+  background: rgba(255, 223, 193, 0.6);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
   padding: 24px;
   height: max-content;
-  width: 100%;
-  color: rgba(255, 255, 255, 0.9) !important;
 
-  .title {
+  & > .title {
     font-weight: 500;
     font-size: 28px;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     text-transform: uppercase;
     text-align: center;
+    width: 100%;
   }
 
   &.totals {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-left: 80px;
-    padding-right: 80px;
-
-    .content {
-      margin-top: 24px;
+    .filterSelect {
+      margin-top: 20px;
     }
 
-    .titleContainer {
+    .part {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-    }
-
-    .amount {
-      padding: 0 12px 12px 12px;
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      box-shadow: 3px 5px 0 rgba(0, 0, 0, 0.2);
+      padding: 24px;
+      width: 48%;
       border-radius: 10px;
-      margin-bottom: 20px;
-      margin-top: 24px;
       cursor: pointer;
-      transition-duration: 0.4s;
-      background: linear-gradient(to right, #e6b95f, #e77353);
+      transition-duration: 0.6s;
 
       &:hover {
-        background: rgb(230, 112, 69);
+        background-color: rgba(78, 207, 86, 0.6);
       }
 
       &:active {
-        background: rgba(221, 77, 45, 0.99);
-        box-shadow: none;
-        transform: translate(3px, 5px);
+        background-color: rgba(17, 118, 24, 0.6);
       }
 
-      .number {
-        margin-top: 20px;
-        margin-right: 12px;
-        font-weight: 400;
-        font-size: 28px;
-        line-height: 24px;
-        letter-spacing: 0.05em;
-        display: inline-block;
+      & ~ .part {
+        &:hover {
+          background-color: rgba(238, 95, 79, 0.6);
+        }
+
+        &:active {
+          background-color: rgba(255, 51, 40, 0.6);
+        }
       }
 
-      .currency {
-        font-weight: 400;
-        font-size: 28px;
-        line-height: 24px;
-        display: inline-block;
+      .titleContainer {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+
+        .title {
+          text-transform: uppercase;
+          font-weight: 500;
+          font-size: 16px;
+          display: inline-block;
+          margin-right: 12px;
+          line-height: 36px;
+        }
+      }
+
+      .amount {
+        .number {
+          margin-top: 20px;
+          margin-right: 12px;
+          font-weight: 400;
+          font-size: 28px;
+          line-height: 24px;
+          letter-spacing: 0.05em;
+          display: inline-block;
+        }
+
+        .currency {
+          font-weight: 400;
+          font-size: 28px;
+          line-height: 24px;
+          display: inline-block;
+        }
+      }
+
+      .compare {
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+
+        .icon {
+          margin-right: 8px;
+        }
+
+        .amount {
+          line-height: 24px;
+        }
       }
     }
   }
