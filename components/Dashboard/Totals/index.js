@@ -1,91 +1,72 @@
-import { Grid, Typography, Box, Divider } from '@mui/material';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import { Box, Grid, TextField, Typography } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
 import classNames from 'classnames';
-import { useState } from 'react';
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
-import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import moment from 'moment';
+import { useEffect } from 'react';
+import { useLoadingContext } from '../../../contexts/loading';
+import { useUserContext } from '../../../contexts/user';
 import styles from './Totals.module.scss';
-import Select from '../../Select';
 import * as utilHelper from '../../../helpers/util';
 
 export default function Totals() {
-  const filterOptions = [
-    { value: 0, label: 'Today' },
-    { value: 1, label: 'This week' },
-    { value: 2, label: 'This month' },
-    { value: 4, label: 'This year' }
-  ];
+  const [user, setUser] = useUserContext();
 
-  const defaultFilterOption = filterOptions[0];
+  const [loading, setLoading] = useLoadingContext();
 
-  const [filterOption, setFilterOption] = useState(defaultFilterOption.value);
+  useEffect(() => {
+    async function persistUser() {
+      if (!!user) {
+        setLoading(true);
+        const response = await axios.post('/api/auth/persist-user');
+        const responseData = response.data;
 
-  const handleChange = (value) => {
-    setFilterOption(value);
-  };
+        if (responseData.statusCode === 200) {
+          setUser(responseData.data);
+        }
+      }
+
+      setLoading(false);
+    }
+
+    persistUser();
+  }, []);
 
   return (
     <>
       <Grid className={classNames(styles.section, styles.totals)}>
-        <Typography className={classNames(styles.title)}>Totals</Typography>
-        <Grid className={classNames(styles.filterSelect)}>
-          <Select
-            width="100%"
-            options={filterOptions}
-            onChange={(value) => handleChange(value)}
-            defaultValue={defaultFilterOption}
-          />
+        <Grid className={classNames(styles.title)}>
+          <Box className={classNames(styles.titleContainer)}>
+            <Typography className={classNames(styles.title)}>
+              Your balance
+            </Typography>
+            <AccountBalanceWalletIcon
+              fontSize="large"
+              color="success"
+              sx={{ marginLeft: '12px', marginTop: '4px' }}
+            ></AccountBalanceWalletIcon>
+          </Box>
         </Grid>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: '12px'
-          }}
-        >
-          <Grid className={classNames(styles.part)}>
-            <Box className={classNames(styles.titleContainer)}>
-              <Typography className={classNames(styles.title)}>
-                Earnings
-              </Typography>
-              <AddBoxOutlinedIcon
-                fontSize="large"
-                color="success"
-              ></AddBoxOutlinedIcon>
-            </Box>
+        <Grid className={classNames(styles.content)}>
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <DatePicker
+              readOnly
+              value={moment()}
+              label="Today"
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+          {user?.balance && (
             <Grid className={classNames(styles.amount)}>
               <Typography className={classNames(styles.number)}>
-                {utilHelper.formatCurrency(1234567)}
+                {utilHelper.formatCurrency(user?.balance?.$numberDecimal)}
               </Typography>
             </Grid>
-            <Grid className={classNames(styles.compare)}>
-              <KeyboardDoubleArrowDownIcon className={classNames(styles.icon)}></KeyboardDoubleArrowDownIcon>
-              <Typography className={classNames(styles.amount)}>12% from last month</Typography>
-            </Grid>
-          </Grid>
-          <Divider orientation="vertical" flexItem />
-          <Grid className={classNames(styles.part)}>
-            <Box className={classNames(styles.titleContainer)}>
-              <Typography className={classNames(styles.title)}>
-                Expenses
-              </Typography>
-              <IndeterminateCheckBoxOutlinedIcon
-                fontSize="large"
-                color="error"
-              ></IndeterminateCheckBoxOutlinedIcon>
-            </Box>
-            <Grid className={classNames(styles.amount)}>
-              <Typography className={classNames(styles.number)}>
-              {utilHelper.formatCurrency(1234)}
-              </Typography>
-            </Grid>
-            <Grid className={classNames(styles.compare)}>
-              <KeyboardDoubleArrowUpIcon className={classNames(styles.icon)}></KeyboardDoubleArrowUpIcon>
-              <Typography className={classNames(styles.amount)}>12% from last month</Typography>
-            </Grid>
-          </Grid>
-        </Box>
+          )}
+        </Grid>
       </Grid>
     </>
   );

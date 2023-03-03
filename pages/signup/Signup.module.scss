@@ -17,7 +17,7 @@
 
       .formWrapper {
         width: 100%;
-        max-height: 60vh;
+        max-height: calc(100vh - 180px);
         overflow-y: auto;
 
         .imageWrapper {
