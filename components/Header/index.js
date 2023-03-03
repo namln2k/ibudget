@@ -26,6 +26,8 @@ export default function Header() {
 
   const [errorMessage, setErrorMessage] = useState();
 
+  const [title, setTitle] = useState('');
+
   const router = useRouter();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -96,6 +98,22 @@ export default function Header() {
     closeMenu();
   };
 
+  useEffect(() => {
+    if (router?.pathname.includes('/me')) {
+      setTitle('My account');
+    } else if (router.pathname.includes('/dashboard')) {
+      setTitle('Dashboard');
+    } else if (router.pathname.includes('/categories')) {
+      setTitle('Categories');
+    } else if (router.pathname.includes('/transactions')) {
+      setTitle('Transactions');
+    } else if (router.pathname.includes('/groups')) {
+      setTitle('Groups');
+    } else if (router.pathname.includes('/charts')) {
+      setTitle('Charts');
+    }
+  }, [router]);
+
   return (
     <>
       <FullScreenLoader open={loading}></FullScreenLoader>
@@ -138,7 +156,7 @@ export default function Header() {
           </form>
         </Grid>
         <Grid>
-          <Typography className={styles.pageTitle}>Dashboard</Typography>
+          <Typography className={styles.pageTitle}>{title}</Typography>
         </Grid>
         <Grid
           sx={{ visibility: loading ? 'hidden' : 'visible' }}
