@@ -173,10 +173,11 @@ export default function FormAddTransaction(props) {
                   <DateTimePicker
                     className={classNames(styles.timePicker, styles.shortField)}
                     value={transaction.time}
+                    inputFormat="DD/MM/YYYY hh:mm"
                     onChange={(value) =>
                       setTransaction({
                         ...transaction,
-                        time: moment(value).format('DD/MM/YYYY hh:mm')
+                        time: moment(value)
                       })
                     }
                     renderInput={(params) => <TextField {...params} />}
