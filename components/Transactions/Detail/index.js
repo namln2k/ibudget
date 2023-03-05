@@ -13,6 +13,7 @@ import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import axios from 'axios';
 import classNames from 'classnames';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
 import * as utilHelper from '../../../helpers/util';
@@ -331,7 +332,7 @@ export default function TransactionDetail({ transactionId, callback }) {
                       'Time',
                       <DateTimePicker
                         className={classNames(styles.timePicker)}
-                        value={time}
+                        value={moment(time).format('DD/MM/YYYY hh:mm')}
                         onChange={(value) =>
                           setTransaction({
                             ...transaction,
