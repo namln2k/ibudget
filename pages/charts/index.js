@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Daily from '../../components/Daily';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
+import Monthly from '../../components/Monthly';
 import Sidebar from '../../components/Sidebar';
 import Weekly from '../../components/Weekly';
 import { useLoadingContext } from '../../contexts/loading';
@@ -114,7 +115,7 @@ export default function Categories(props) {
               <Weekly data={dailyStatistics} />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              Monthly
+              <Monthly data={dailyStatistics} />
             </TabPanel>
             <TabPanel value={value} index={3}>
               Yearly
