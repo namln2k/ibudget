@@ -31,7 +31,6 @@ const Weekly = ({ data }) => {
   const [endDate, setEndDate] = useState(moment(new Date()).subtract(1, 'day'));
   const [series, setSeries] = useState([]);
   const [chartCategories, setChartCategories] = useState([]);
-  const [userBalances, setUserBalances] = useState([]);
 
   const handleChangeEndDate = (newValue) => {
     setEndDate(newValue);
@@ -42,32 +41,88 @@ const Weekly = ({ data }) => {
   };
 
   const chartOptions = {
-    series: [
-      ...series.map((item) => ({
-        ...item,
-        type: 'column'
-      })),
-      {
-        name: 'User Balance',
-        data: userBalances,
-        type: 'line'
-      }
-    ],
+    series,
     options: {
       chart: {
+        type: 'bar',
         height: 450,
-        type: 'line',
         stacked: true,
         toolbar: {
           show: false
         }
       },
       colors: chartColors,
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          dataLabels: {
+            total: {
+              enabled: true,
+              style: {
+                fontSize: '13px',
+                fontWeight: 900
+              }
+            }
+          }
+        }
+      },
       dataLabels: {
-        enabled: false
+        enabled: true,
+        formatter: (val) => formatCurrency(val)
+      },
+      xaxis: { categories: chartCategories },
+      yaxis: {
+        title: {
+          text: 'VND'
+        }
+      },
+      legend: {
+        position: 'right',
+        offsetY: 40
+      },
+      fill: {
+        opacity: 1
+      },
+      tooltip: {
+        y: {
+          formatter: (val) => formatCurrency(val)
+        }
+      },
+      title: {
+        text: 'Chart title',
+        align: 'center',
+        style: {
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }
+      }
+    }
+  };
+
+  const lineChartOptions = {
+    series,
+    options: {
+      chart: {
+        height: 500,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: chartColors,
+      dataLabels: {
+        enabled: true
       },
       stroke: {
-        width: [1, 1, 1, 1, 1, 1, 1, 4]
+        curve: 'smooth'
       },
       title: {
         text: 'Chart title',
@@ -77,158 +132,98 @@ const Weekly = ({ data }) => {
           fontWeight: 'bold'
         }
       },
-      plotOptions: {
-        bar: {
-          dataLabels: {
-            total: {
-              enabled: true,
-              style: {
-                fontSize: '13px',
-                fontWeight: 900
-              },
-              formatter: (val) => formatCurrency(val)
-            }
-          }
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
         }
       },
-      xaxis: {
-        categories: chartCategories
+      markers: {
+        size: 1
       },
-      yaxis: [
-        {
-          seriesName: series[0]?.name,
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: chartColors[0]
-          },
-          labels: {
-            style: {
-              colors: chartColors[0]
-            },
-            formatter: (val) => formatCurrency(val)
-          },
-          title: {
-            text: 'Money by day (VND)',
-            style: {
-              color: chartColors[0],
-              fontSize: '14px'
-            }
-          },
-          tooltip: {
-            enabled: true
-          }
-        },
-        ...series.slice(0, series.length - 1).map(() => ({
-          seriesName: series[0]?.name,
-          show: false,
-          labels: {
-            formatter: (val) => formatCurrency(val)
-          }
-        })),
-        {
-          seriesName: 'User Balance',
-          opposite: true,
-          axisTicks: {
-            show: true
-          },
-          axisBorder: {
-            show: true,
-            color: chartColors.slice(-1)[0]
-          },
-          labels: {
-            style: {
-              colors: chartColors.slice(-1)
-            },
-            formatter: (val) => formatCurrency(val)
-          },
-          title: {
-            text: 'User Balance (VND)',
-            style: {
-              color: chartColors.slice(-1)[0],
-              fontSize: '14px'
-            }
-          }
-        }
-      ],
-      tooltip: {
-        fixed: {
-          enabled: true,
-          position: 'topRight',
-          offsetY: 30,
-          offsetX: 100
+      xaxis: { categories: chartCategories },
+      yaxis: {
+        title: {
+          text: 'User Balance (VND)'
         }
       },
       legend: {
-        horizontalAlign: 'left',
-        offsetX: 40
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
       }
     }
   };
 
   useEffect(() => {
     const rawData = Array.from({ length: dayCount }, (_, i) => {
-      return data
-        .filter(
+      if ([1, 2].includes(spendingType)) {
+        return data
+          .filter(
+            (item) =>
+              [1, 2].includes(item.category_type) &&
+              item.spending_type === spendingType &&
+              moment(item.created_at)
+                .subtract(1, 'day')
+                .format('DD/MM/YYYY') ===
+                moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
+          )
+          .map((item) => {
+            if (item.category_type === 2) {
+              return {
+                data: Math.abs(Number(item.amount.$numberDecimal)),
+                name: item.category_id.name
+              };
+            } else {
+              return {
+                data: Math.abs(Number(item.amount.$numberDecimal)),
+                name: 'Other'
+              };
+            }
+          })
+          .sort((a, b) => (a.name > b.name ? 1 : -1));
+      } else {
+        return +data.filter(
           (item) =>
-            [1, 2].includes(item.category_type) &&
             item.spending_type === spendingType &&
             moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
               moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
-        )
-        .map((item) => {
-          if (item.category_type === 2) {
-            return {
-              data: Math.abs(Number(item.amount.$numberDecimal)),
-              name: item.category_id.name
-            };
-          } else {
-            return {
-              data: Math.abs(Number(item.amount.$numberDecimal)),
-              name: 'Other'
-            };
-          }
-        })
-        .sort((a, b) => (a.name > b.name ? 1 : -1));
+        )[0]?.amount?.$numberDecimal;
+      }
     }).reverse();
 
     const categoriesList = getUniqueNames(
       rawData.reduce((a, b) => a.concat(b), [])
     );
-    setSeries(
-      categoriesList.map((category) => ({
-        name: category,
-        data: rawData.map((item) => {
-          const found = item.find((el) => el.name === category);
-          if (found) {
-            return found.data;
-          }
-          return 0;
-        })
-      }))
-    );
+    if ([1, 2].includes(spendingType)) {
+      setSeries(
+        categoriesList.map((category) => ({
+          name: category,
+          data: rawData.map((item) => {
+            const found = item.find((el) => el.name === category);
+            if (found) {
+              return found.data;
+            }
+            return 0;
+          })
+        }))
+      );
+    } else {
+      setSeries([
+        {
+          name: 'User Balance',
+          data: rawData
+        }
+      ]);
+    }
 
     setChartCategories(
       Array.from({ length: dayCount }, (_, i) =>
         moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
       ).reverse()
-    );
-
-    setUserBalances(
-      Array.from({ length: dayCount }, (_, i) => {
-        const found = data.find(
-          (item) =>
-            item.spending_type === 3 &&
-            moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
-              moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
-        );
-        if (found) {
-          return Number(found.amount.$numberDecimal);
-        }
-        return 0;
-      }).reverse()
     );
   }, [spendingType, endDate]);
 
@@ -247,6 +242,7 @@ const Weekly = ({ data }) => {
             >
               <MenuItem value={1}>Income</MenuItem>
               <MenuItem value={2}>Expense</MenuItem>
+              <MenuItem value={3}>User Balance</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -268,13 +264,24 @@ const Weekly = ({ data }) => {
           mt: 5
         }}
       >
-        <Chart
-          options={chartOptions.options}
-          series={chartOptions.series}
-          type="line"
-          height={500}
-          width="100%"
-        />
+        {[1, 2].includes(spendingType) && (
+          <Chart
+            options={chartOptions.options}
+            series={chartOptions.series}
+            type="bar"
+            height={500}
+            width="100%"
+          />
+        )}
+        {spendingType === 3 && (
+          <Chart
+            options={lineChartOptions.options}
+            series={lineChartOptions.series}
+            type="line"
+            height={500}
+            width="100%"
+          />
+        )}
       </Box>
     </>
   );
