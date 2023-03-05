@@ -40,7 +40,18 @@ const Monthly = ({ data }) => {
     series: [
       {
         name: 'amount',
-        data: renderData.map((item) => item.data)
+        data: renderData.map((item) => ({
+          x: item.name,
+          y: item.data === 0 ? 3000000 : item.data * 10,
+          goals: [
+            {
+              name: 'Monthly Target',
+              value: item.target,
+              strokeHeight: 5,
+              strokeColor: chartColors[6]
+            }
+          ]
+        }))
       }
     ],
     options: {
@@ -51,54 +62,29 @@ const Monthly = ({ data }) => {
           show: false
         }
       },
-      colors: chartColors,
-      plotOptions: {
-        bar: {
-          // borderRadius: 10,
-          columnWidth: '45%',
-          distributed: true,
-          dataLabels: {
-            position: 'top'
-          }
-        }
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: (val) => formatCurrency(val),
-        offsetY: -20,
-        style: {
-          fontSize: '12px',
-          colors: ['#000']
-        }
-      },
-      legend: {
-        show: false
-      },
-      xaxis: {
-        categories: renderData.map((item) => item.name),
-        labels: {
-          style: {
-            colors: chartColors,
-            fontSize: '14px'
-          }
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'VND'
-        }
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => formatCurrency(val)
-        }
-      },
       title: {
         text: 'Chart title',
         align: 'center',
         style: {
           fontSize: '24px',
           fontWeight: 'bold'
+        }
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: '60%'
+        }
+      },
+      colors: chartColors,
+      dataLabels: {
+        enabled: false
+      },
+      legend: {
+        show: true,
+        showForSingleSeries: true,
+        customLegendItems: ['Actual', 'Expected'],
+        markers: {
+          fillColors: ['#00E396', '#775DD0']
         }
       }
     }
@@ -151,30 +137,24 @@ const Monthly = ({ data }) => {
   };
 
   useEffect(() => {
-    setRenderData([
-      {
-        name: 'Income',
-        data: 10000000
-      },
-      {
-        name: 'Income',
-        data: 20000000
-      },
-      {
-        name: 'Income',
-        data: 30000000
-      },
-      {
-        name: 'Income',
-        data: 15000000
-      },
-      {
-        name: 'Income',
-        data: 12000000
-      }
-    ]);
+    setRenderData(
+      data
+        .filter(
+          (item) =>
+            item.category_type === 2 &&
+            item.spending_type === spendingType &&
+            moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
+              moment().subtract(10, 'd').format('DD/MM/YYYY')
+        )
+        .map((item) => ({
+          data: Math.abs(Number(item.amount.$numberDecimal)),
+          name: item.category_id.name,
+          target: Number(item.category_id.monthly_target.$numberDecimal)
+        }))
+        .sort((a, b) => (a.name > b.name ? 1 : -1))
+    );
     setUserBalance({ amount: { $numberDecimal: 12000000 } });
-  }, [data, spendingType, date]);
+  }, [data, spendingType]);
 
   return (
     <>
