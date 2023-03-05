@@ -31,6 +31,7 @@ const Weekly = ({ data }) => {
   const [endDate, setEndDate] = useState(moment(new Date()).subtract(1, 'day'));
   const [series, setSeries] = useState([]);
   const [chartCategories, setChartCategories] = useState([]);
+  const [userBalances, setUserBalances] = useState([]);
 
   const handleChangeEndDate = (newValue) => {
     setEndDate(newValue);
@@ -41,52 +42,32 @@ const Weekly = ({ data }) => {
   };
 
   const chartOptions = {
-    series,
+    series: [
+      ...series.map((item) => ({
+        ...item,
+        type: 'column'
+      })),
+      {
+        name: 'User Balance',
+        data: userBalances,
+        type: 'line'
+      }
+    ],
     options: {
       chart: {
-        type: 'bar',
         height: 450,
+        type: 'line',
         stacked: true,
         toolbar: {
           show: false
         }
       },
       colors: chartColors,
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          dataLabels: {
-            total: {
-              enabled: true,
-              style: {
-                fontSize: '13px',
-                fontWeight: 900
-              }
-            }
-          }
-        }
-      },
       dataLabels: {
-        enabled: true,
-        formatter: (val) => formatCurrency(val)
+        enabled: false
       },
-      xaxis: { categories: chartCategories },
-      yaxis: {
-        title: {
-          text: 'VND'
-        }
-      },
-      legend: {
-        position: 'right',
-        offsetY: 40
-      },
-      fill: {
-        opacity: 1
-      },
-      tooltip: {
-        y: {
-          formatter: (val) => formatCurrency(val)
-        }
+      stroke: {
+        width: [1, 1, 1, 1, 1, 1, 1, 4]
       },
       title: {
         text: 'Chart title',
@@ -95,6 +76,94 @@ const Weekly = ({ data }) => {
           fontSize: '24px',
           fontWeight: 'bold'
         }
+      },
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            total: {
+              enabled: true,
+              style: {
+                fontSize: '13px',
+                fontWeight: 900
+              },
+              formatter: (val) => formatCurrency(val)
+            }
+          }
+        }
+      },
+      xaxis: {
+        categories: chartCategories
+      },
+      yaxis: [
+        {
+          seriesName: series[0]?.name,
+          axisTicks: {
+            show: true
+          },
+          axisBorder: {
+            show: true,
+            color: chartColors[0]
+          },
+          labels: {
+            style: {
+              colors: chartColors[0]
+            },
+            formatter: (val) => formatCurrency(val)
+          },
+          title: {
+            text: 'Money by day (VND)',
+            style: {
+              color: chartColors[0],
+              fontSize: '14px'
+            }
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        ...series.slice(0, series.length - 1).map(() => ({
+          seriesName: series[0]?.name,
+          show: false,
+          labels: {
+            formatter: (val) => formatCurrency(val)
+          }
+        })),
+        {
+          seriesName: 'User Balance',
+          opposite: true,
+          axisTicks: {
+            show: true
+          },
+          axisBorder: {
+            show: true,
+            color: chartColors.slice(-1)[0]
+          },
+          labels: {
+            style: {
+              colors: chartColors.slice(-1)
+            },
+            formatter: (val) => formatCurrency(val)
+          },
+          title: {
+            text: 'User Balance (VND)',
+            style: {
+              color: chartColors.slice(-1)[0],
+              fontSize: '14px'
+            }
+          }
+        }
+      ],
+      tooltip: {
+        fixed: {
+          enabled: true,
+          position: 'topRight',
+          offsetY: 30,
+          offsetX: 100
+        }
+      },
+      legend: {
+        horizontalAlign: 'left',
+        offsetX: 40
       }
     }
   };
@@ -146,6 +215,21 @@ const Weekly = ({ data }) => {
         moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
       ).reverse()
     );
+
+    setUserBalances(
+      Array.from({ length: dayCount }, (_, i) => {
+        const found = data.find(
+          (item) =>
+            item.spending_type === 3 &&
+            moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
+              moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
+        );
+        if (found) {
+          return Number(found.amount.$numberDecimal);
+        }
+        return 0;
+      }).reverse()
+    );
   }, [spendingType, endDate]);
 
   return (
@@ -187,7 +271,7 @@ const Weekly = ({ data }) => {
         <Chart
           options={chartOptions.options}
           series={chartOptions.series}
-          type="bar"
+          type="line"
           height={500}
           width="100%"
         />

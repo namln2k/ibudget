@@ -18,7 +18,8 @@ export const chartColors = [
   '#008E00',
   '#00C0C0',
   '#400098',
-  '#8E008E'
+  '#8E008E',
+  '#FEB019'
 ];
 
 const TabPanel = (props) => {
