@@ -11,20 +11,11 @@ import moment from 'moment';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { formatCurrency } from '../../helpers/util';
+import { chartColors } from '../../pages/charts';
 
-const ReactApexChart = dynamic(() => import('react-apexcharts'), {
+const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false
 });
-
-const colors = [
-  '#FF0000',
-  '#FF8E00',
-  '#FFD700',
-  '#008E00',
-  '#00C0C0',
-  '#400098',
-  '#8E008E'
-];
 
 const Daily = ({ data }) => {
   const [spendingType, setSpendingType] = useState(2);
@@ -52,7 +43,7 @@ const Daily = ({ data }) => {
           show: false
         }
       },
-      colors,
+      colors: chartColors,
       plotOptions: {
         bar: {
           // borderRadius: 10,
@@ -79,7 +70,7 @@ const Daily = ({ data }) => {
         categories: renderData.map((item) => item.name),
         labels: {
           style: {
-            colors,
+            colors: chartColors,
             fontSize: '14px'
           }
         }
@@ -113,7 +104,7 @@ const Daily = ({ data }) => {
         type: 'donut'
       },
       labels: renderData.map((item) => item.name),
-      colors,
+      colors: chartColors,
       dataLabels: {
         enabled: true,
         formatter: (val) => val.toFixed(2) + ' %',
@@ -182,7 +173,9 @@ const Daily = ({ data }) => {
             };
           }
         })
+        .sort((a, b) => (a.name > b.name ? 1 : -1))
     );
+
     setUserBalance(
       data.find(
         (item) =>
@@ -191,7 +184,7 @@ const Daily = ({ data }) => {
             date.format('DD/MM/YYYY')
       )
     );
-  }, [spendingType, date]);
+  }, [data, spendingType, date]);
 
   return (
     <>
@@ -244,27 +237,41 @@ const Daily = ({ data }) => {
           mt: 5
         }}
       >
-        {chartType === 'bar' && (
-          <ReactApexChart
+        {renderData.length === 0 && (
+          <Typography
+            variant="h6"
+            minHeight={350}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            No chart data
+          </Typography>
+        )}
+        {chartType === 'bar' && renderData.length ? (
+          <Chart
             options={barOptions.options}
             series={barOptions.series}
             type="bar"
             height={380}
             width="100%"
           />
-        )}
-        {chartType === 'donut' && (
-          <ReactApexChart
+        ) : null}
+        {chartType === 'donut' && renderData.length ? (
+          <Chart
             options={donutOptions.options}
             series={donutOptions.series}
             type="donut"
             height={380}
             width="100%"
           />
-        )}
+        ) : null}
 
         <Typography variant="h6" sx={{ mt: 2 }}>
-          User balance: {formatCurrency(userBalance?.amount?.$numberDecimal)}
+          User balance:{' '}
+          {userBalance?.amount?.$numberDecimal
+            ? formatCurrency(userBalance?.amount?.$numberDecimal)
+            : 'No data'}
         </Typography>
       </Box>
     </>

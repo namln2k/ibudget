@@ -7,8 +7,19 @@ import Daily from '../../components/Daily';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
+import Weekly from '../../components/Weekly';
 import { useLoadingContext } from '../../contexts/loading';
 import styles from './Charts.module.scss';
+
+export const chartColors = [
+  '#FF0000',
+  '#FF8E00',
+  '#FFD700',
+  '#008E00',
+  '#00C0C0',
+  '#400098',
+  '#8E008E'
+];
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -85,12 +96,12 @@ export default function Categories(props) {
                 />
                 <Tab
                   className={classNames(styles.tab)}
-                  label="Month"
+                  label="Monthly"
                   {...a11yProps(2)}
                 />
                 <Tab
                   className={classNames(styles.tab)}
-                  label="Year"
+                  label="Yearly"
                   {...a11yProps(3)}
                 />
               </Tabs>
@@ -99,7 +110,7 @@ export default function Categories(props) {
               <Daily data={dailyStatistics} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              Weekly
+              <Weekly data={dailyStatistics} />
             </TabPanel>
             <TabPanel value={value} index={2}>
               Monthly
