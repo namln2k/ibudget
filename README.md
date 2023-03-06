@@ -1,7 +1,4 @@
 ## About The Project
-
-<br/>
-![logo](https://github.com/namln2k/ibudget/raw/main/public/images/logo.png)
 <br/>
 
 ### Built With
