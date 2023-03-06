@@ -1,7 +1,7 @@
 ## About The Project
 
 <br/>
-![logo](https://ibudget-eight.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=256&q=75)
+![logo](https://github.com/namln2k/ibudget/raw/main/public/images/logo.png)
 <br/>
 
 ### Built With
