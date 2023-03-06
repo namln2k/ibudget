@@ -99,47 +99,126 @@ const Weekly = ({ data }) => {
     }
   };
 
+  const lineChartOptions = {
+    series,
+    options: {
+      chart: {
+        height: 500,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: chartColors,
+      dataLabels: {
+        enabled: true
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      title: {
+        text: 'Chart title',
+        align: 'center',
+        style: {
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: { categories: chartCategories },
+      yaxis: {
+        title: {
+          text: 'User Balance (VND)'
+        }
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      }
+    }
+  };
+
   useEffect(() => {
     const rawData = Array.from({ length: dayCount }, (_, i) => {
-      return data
-        .filter(
+      if ([1, 2].includes(spendingType)) {
+        return data
+          .filter(
+            (item) =>
+              [1, 2].includes(item.category_type) &&
+              item.spending_type === spendingType &&
+              moment(item.created_at)
+                .subtract(1, 'day')
+                .format('DD/MM/YYYY') ===
+                moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
+          )
+          .map((item) => {
+            if (item.category_type === 2) {
+              return {
+                data: Math.abs(Number(item.amount.$numberDecimal)),
+                name: item.category_id.name
+              };
+            } else {
+              return {
+                data: Math.abs(Number(item.amount.$numberDecimal)),
+                name: 'Other'
+              };
+            }
+          })
+          .sort((a, b) => (a.name > b.name ? 1 : -1));
+      } else {
+        return +data.filter(
           (item) =>
-            [1, 2].includes(item.category_type) &&
             item.spending_type === spendingType &&
             moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
               moment(endDate).subtract(i, 'day').format('DD/MM/YYYY')
-        )
-        .map((item) => {
-          if (item.category_type === 2) {
-            return {
-              data: Math.abs(Number(item.amount.$numberDecimal)),
-              name: item.category_id.name
-            };
-          } else {
-            return {
-              data: Math.abs(Number(item.amount.$numberDecimal)),
-              name: 'Other'
-            };
-          }
-        })
-        .sort((a, b) => (a.name > b.name ? 1 : -1));
+        )[0]?.amount?.$numberDecimal;
+      }
     }).reverse();
 
     const categoriesList = getUniqueNames(
       rawData.reduce((a, b) => a.concat(b), [])
     );
-    setSeries(
-      categoriesList.map((category) => ({
-        name: category,
-        data: rawData.map((item) => {
-          const found = item.find((el) => el.name === category);
-          if (found) {
-            return found.data;
-          }
-          return 0;
-        })
-      }))
-    );
+    if ([1, 2].includes(spendingType)) {
+      setSeries(
+        categoriesList.map((category) => ({
+          name: category,
+          data: rawData.map((item) => {
+            const found = item.find((el) => el.name === category);
+            if (found) {
+              return found.data;
+            }
+            return 0;
+          })
+        }))
+      );
+    } else {
+      setSeries([
+        {
+          name: 'User Balance',
+          data: rawData
+        }
+      ]);
+    }
 
     setChartCategories(
       Array.from({ length: dayCount }, (_, i) =>
@@ -163,6 +242,7 @@ const Weekly = ({ data }) => {
             >
               <MenuItem value={1}>Income</MenuItem>
               <MenuItem value={2}>Expense</MenuItem>
+              <MenuItem value={3}>User Balance</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -184,13 +264,24 @@ const Weekly = ({ data }) => {
           mt: 5
         }}
       >
-        <Chart
-          options={chartOptions.options}
-          series={chartOptions.series}
-          type="bar"
-          height={500}
-          width="100%"
-        />
+        {[1, 2].includes(spendingType) && (
+          <Chart
+            options={chartOptions.options}
+            series={chartOptions.series}
+            type="bar"
+            height={500}
+            width="100%"
+          />
+        )}
+        {spendingType === 3 && (
+          <Chart
+            options={lineChartOptions.options}
+            series={lineChartOptions.series}
+            type="line"
+            height={500}
+            width="100%"
+          />
+        )}
       </Box>
     </>
   );
