@@ -42,18 +42,24 @@ const columns = [
   }
 ];
 
-const formatGroupDataForDisplay = (group) => {
-  group.budget_display = group.budget
-    ? utilHelper.formatCurrency(group.budget)
+const formatGroupDataForDisplay = (groupData) => {
+  groupData.name = groupData.group.name;
+  groupData.description = groupData.group.description;
+
+  groupData.budget_display = groupData.group.budget
+    ? utilHelper.formatCurrency(groupData.group.budget.$numberDecimal)
     : utilHelper.formatCurrency(0);
 
-  group.expected_budget_display = group.expected_budget
-    ? utilHelper.formatCurrency(group.expected_budget)
+  groupData.expected_budget_display = groupData.group.expected_budget
+    ? utilHelper.formatCurrency(groupData.group.expected_budget.$numberDecimal)
     : utilHelper.formatCurrency(0);
 
-  group.due_date_display = utilHelper.formatDate(group.due_date, 'DD-MM-YYYY');
+  groupData.due_date_display = utilHelper.formatDate(
+    groupData.group.due_date,
+    'DD-MM-YYYY'
+  );
 
-  return group;
+  return groupData;
 };
 
 export default function Groups(props) {

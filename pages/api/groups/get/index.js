@@ -7,14 +7,14 @@ export default async function (req, res) {
 
     const responseData = await GroupRepository.findGroupsForUser(userId);
 
-    responseData.forEach((group, index) => {
-      group.index = index + 1;
-      group.id = group._id;
+    responseData.forEach((groupData, index) => {
+      groupData.index = index + 1;
+      groupData.id = groupData.group._id;
       
-      if (group.holder == userId) {
-        group.role = 'Holder'
+      if (groupData.group.holder == userId) {
+        groupData.role = 'Holder'
       } else {
-        group.role = 'Participant'
+        groupData.role = 'Participant'
       }
     })
 

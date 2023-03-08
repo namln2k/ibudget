@@ -33,9 +33,31 @@ export default async function (req, res) {
         case SELF_VERIFY:
         case HOLDER_ACCEPT:
         case PARTICIPANT_ACCEPT:
-          updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+          let toUpdate = {
             verified: BOTH_VERIFIED
+          };
+
+          if (editMode === SELF_VERIFY) {
+            toUpdate = { ...detail, ...req.body, ...toUpdate };
+          }
+
+          updatedDetail = await GroupRepository.updateOneDetail(
+            detail._id,
+            toUpdate
+          );
+
+          await GroupRepository.updateOne({
+            ...detail.group,
+            budget:
+              parseFloat(detail.group.budget) +
+              parseFloat(req.body.amount_paid.$numberDecimal) -
+              parseFloat(detail.amount_paid),
+            expected_budget:
+              parseFloat(detail.group.expected_budget) +
+              parseFloat(req.body.amount_to_pay.$numberDecimal) -
+              parseFloat(detail.amount_to_pay)
           });
+
           res.json({ statusCode: 200, data: updatedDetail });
           return;
         case HOLDER_REQUEST:
