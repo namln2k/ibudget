@@ -333,7 +333,7 @@ export default function TransactionDetail({ transactionId, callback }) {
                       <DateTimePicker
                         className={classNames(styles.timePicker)}
                         value={time}
-                        inputFormat="DD/MM/YYYY hh:mm"
+                        inputFormat="DD/MM/YYYY hh:mm A"
                         onChange={(value) =>
                           setTransaction({
                             ...transaction,

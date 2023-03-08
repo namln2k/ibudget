@@ -57,6 +57,8 @@ export default function Totals() {
               value={moment()}
               label="Today"
               renderInput={(params) => <TextField {...params} />}
+              onChange={() => {}}
+              inputFormat="DD/MM/YYYY"
             />
           </LocalizationProvider>
           {user?.balance && (
