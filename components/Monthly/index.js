@@ -63,7 +63,7 @@ const Monthly = ({ data }) => {
         }
       },
       title: {
-        text: 'Chart title',
+        text: 'Monthly summarize',
         align: 'center',
         style: {
           fontSize: '24px',
@@ -126,7 +126,7 @@ const Monthly = ({ data }) => {
         }
       },
       title: {
-        text: 'Chart title',
+        text: 'Monthly summarize',
         align: 'center',
         style: {
           fontSize: '24px',

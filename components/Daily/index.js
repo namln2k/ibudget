@@ -86,7 +86,7 @@ const Daily = ({ data }) => {
         }
       },
       title: {
-        text: 'Chart title',
+        text: 'Daily summarize',
         align: 'center',
         style: {
           fontSize: '24px',
@@ -132,7 +132,7 @@ const Daily = ({ data }) => {
         }
       },
       title: {
-        text: 'Chart title',
+        text: 'Daily summarize',
         align: 'center',
         style: {
           fontSize: '24px',

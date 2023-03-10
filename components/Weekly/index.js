@@ -89,7 +89,7 @@ const Weekly = ({ data }) => {
         }
       },
       title: {
-        text: 'Chart title',
+        text: 'Weekly summarize',
         align: 'center',
         style: {
           fontSize: '24px',
@@ -125,7 +125,7 @@ const Weekly = ({ data }) => {
         curve: 'smooth'
       },
       title: {
-        text: 'Chart title',
+        text: 'Weekly summarize',
         align: 'center',
         style: {
           fontSize: '24px',
