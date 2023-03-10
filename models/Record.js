@@ -15,8 +15,8 @@ const RecordSchema = new Schema(
     },
     /**
      * 1 - Daily
-     * 2 - Monthly
-     * 3 - Yearly
+     * 2 - Weekly
+     * 3 - Monthly
      */
     time_type: {
       type: Number,

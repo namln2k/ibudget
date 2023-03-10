@@ -13,13 +13,14 @@ import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import axios from 'axios';
 import classNames from 'classnames';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useLoadingContext } from '../../../contexts/loading';
 import * as utilHelper from '../../../helpers/util';
 import ConfirmDialog from '../../ConfirmDialog';
 import MessageDialog from '../../MessageDialog';
 import styles from './Detail.module.scss';
+
+const parseLines = (text) => text.replace(/(\\n)/g, '\n');
 
 const renderField = (field, content) => (
   <tr>
@@ -333,7 +334,7 @@ export default function TransactionDetail({ transactionId, callback }) {
                       <DateTimePicker
                         className={classNames(styles.timePicker)}
                         value={time}
-                        inputFormat="DD/MM/YYYY hh:mm"
+                        inputFormat="DD/MM/YYYY hh:mm A"
                         onChange={(value) =>
                           setTransaction({
                             ...transaction,
@@ -388,7 +389,7 @@ export default function TransactionDetail({ transactionId, callback }) {
                         placeholder="Transaction detail"
                         variant="standard"
                         className={classNames(styles.textArea)}
-                        value={detail || ''}
+                        value={detail ? parseLines(detail) : ''}
                         onChange={(event) =>
                           setTransaction({
                             ...transaction,

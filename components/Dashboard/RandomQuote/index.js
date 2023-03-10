@@ -31,7 +31,7 @@ export default function RandomQuote() {
             <Grid className={classNames(styles.content)}>
               <blockquote className={classNames(styles.blockQuote)}>
                 {quote?.content}
-                <span>{quote?.author}</span>
+                <span>--- {quote?.author} ---</span>
               </blockquote>
             </Grid>
           </>

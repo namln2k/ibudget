@@ -11,6 +11,56 @@ import {
 } from '../../../../../helpers/group';
 import * as utilHelper from '../../../../../helpers/util';
 import * as GroupRepository from '../../../../../repository/group';
+import * as TransactionRepository from '../../../../../repository/transaction';
+import * as UserRepository from '../../../../../repository/user';
+
+/**
+ * Create a transaction representing that {user} has deposited/withdraw {amount} into/from group {group.name}
+ *
+ * @param {UUID} userId
+ * @param {float/Decimal128} amount
+ * @param {object} group
+ * @param {int} verifyStatus
+ * @returns
+ */
+const createTransaction = async (userId, amount, group, verifyStatus) => {
+  if (amount == 0) {
+    return true;
+  }
+
+  let title = '';
+
+  if (amount > 0) {
+    title = `Deposite money to group "${group.name}"`;
+  } else {
+    title = `Withdraw money from group "${group.name}"`;
+  }
+
+  amount = -1 * amount;
+
+  const detail = `GroupID: ${group._id}\nVerify status: ${
+    verifyStatus === PARTICIPANT_REQUEST || verifyStatus === HOLDER_REQUEST
+      ? 'Pending'
+      : 'Verified'
+  }`;
+
+  try {
+    let transaction = {
+      user_id: userId,
+      amount,
+      title,
+      detail
+    };
+
+    await TransactionRepository.create(transaction);
+
+    await UserRepository.updateBalance(userId, amount);
+
+    return true;
+  } catch (e) {
+    throw new Error(e.toString());
+  }
+};
 
 export default async function (req, res) {
   try {
@@ -33,9 +83,34 @@ export default async function (req, res) {
         case SELF_VERIFY:
         case HOLDER_ACCEPT:
         case PARTICIPANT_ACCEPT:
-          updatedDetail = await GroupRepository.updateOneDetail(detail._id, {
+          let toUpdate = {
             verified: BOTH_VERIFIED
+          };
+
+          const payChange =
+            parseFloat(req.body.amount_paid.$numberDecimal) -
+            parseFloat(detail.amount_paid);
+
+          if (editMode === SELF_VERIFY) {
+            toUpdate = { ...detail, ...req.body, ...toUpdate };
+
+            createTransaction(userId, payChange, detail.group);
+          }
+
+          updatedDetail = await GroupRepository.updateOneDetail(
+            detail._id,
+            toUpdate
+          );
+
+          await GroupRepository.updateOne({
+            ...detail.group,
+            budget: parseFloat(detail.group.budget) + payChange,
+            expected_budget:
+              parseFloat(detail.group.expected_budget) +
+              parseFloat(req.body.amount_to_pay.$numberDecimal) -
+              parseFloat(detail.amount_to_pay)
           });
+
           res.json({ statusCode: 200, data: updatedDetail });
           return;
         case HOLDER_REQUEST:
@@ -50,6 +125,12 @@ export default async function (req, res) {
               ...req.body,
               verified: HOLDER_VERIFIED
             });
+
+            const payChange =
+              parseFloat(req.body.amount_paid.$numberDecimal) -
+              parseFloat(detail.amount_paid);
+            createTransaction(userId, payChange, detail.group, HOLDER_VERIFIED);
+
             res.json({ statusCode: 200, data: updatedDetail });
           }
           return;
@@ -65,6 +146,17 @@ export default async function (req, res) {
               ...req.body,
               verified: PARTICIPANT_VERIFIED
             });
+
+            const payChange =
+              parseFloat(req.body.amount_paid.$numberDecimal) -
+              parseFloat(detail.amount_paid);
+            createTransaction(
+              userId,
+              payChange,
+              detail.group,
+              PARTICIPANT_VERIFIED
+            );
+
             res.json({ statusCode: 200, data: updatedDetail });
           }
           return;

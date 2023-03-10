@@ -27,6 +27,16 @@ const GroupSchema = new Schema(
       type: Date,
       required: true,
       default: Date.now
+    },
+    budget: {
+      type: mongoose.Types.Decimal128,
+      required: true,
+      default: 0
+    },
+    expected_budget: {
+      type: mongoose.Types.Decimal128,
+      required: true,
+      default: 0
     }
   },
   {
