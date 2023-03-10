@@ -29,6 +29,8 @@ const renderField = (field, content) => (
   </tr>
 );
 
+const parseLines = (text) => text.replace(/(\\n)/g, '\n');
+
 export default function FormAddTransaction(props) {
   const [loading, setLoading] = useLoadingContext();
 
@@ -257,7 +259,9 @@ export default function FormAddTransaction(props) {
                       styles.extraLongField,
                       styles.fieldDetail
                     )}
-                    value={transaction.detail || ''}
+                    value={
+                      transaction.detail ? parseLines(transaction.detail) : ''
+                    }
                     onChange={(event) =>
                       setTransaction({
                         ...transaction,
