@@ -19,22 +19,21 @@
     margin-top: 28px;
 
     .blockQuote {
-      font-weight: 700px;
       text-align: justify;
       font-style: italic;
       line-height: 1.6;
       color: #555555;
       margin: 50px auto;
       position: relative;
-      padding: 0 36px;
+      padding: 0 54px;
 
       &::before {
         content: '\201C';
         color: #1d986f;
         font-size: 4em;
         position: absolute;
-        left: 0;
-        top: -36px;
+        left: 10px;
+        top: -30px;
       }
 
       &::after {
@@ -42,15 +41,17 @@
         color: #3ba17f;
         font-size: 4em;
         position: absolute;
-        right: 8px;
-        top: -36px;
+        right: 26px;
+        top: -30px;
       }
 
       span {
         display: block;
         color: #333333;
         font-weight: bold;
+        font-size: 20px;
         margin-top: 1em;
+        float: right;
       }
     }
   }
