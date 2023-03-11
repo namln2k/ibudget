@@ -29,6 +29,8 @@ const renderField = (field, content) => (
   </tr>
 );
 
+const parseLines = (text) => text.replace(/(\\n)/g, '\n');
+
 export default function FormAddTransaction(props) {
   const [loading, setLoading] = useLoadingContext();
 
@@ -173,7 +175,7 @@ export default function FormAddTransaction(props) {
                   <DateTimePicker
                     className={classNames(styles.timePicker, styles.shortField)}
                     value={transaction.time}
-                    inputFormat="DD/MM/YYYY hh:mm"
+                    inputFormat="DD/MM/YYYY hh:mm A"
                     onChange={(value) =>
                       setTransaction({
                         ...transaction,
@@ -257,7 +259,9 @@ export default function FormAddTransaction(props) {
                       styles.extraLongField,
                       styles.fieldDetail
                     )}
-                    value={transaction.detail || ''}
+                    value={
+                      transaction.detail ? parseLines(transaction.detail) : ''
+                    }
                     onChange={(event) =>
                       setTransaction({
                         ...transaction,

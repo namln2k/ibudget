@@ -75,25 +75,6 @@ export async function updateOneDetail(detailId, newDetail) {
   }
 }
 
-export async function getBudgetInfo(groupId) {
-  const details = await GroupUserModel.find({
-    group: groupId
-  }).exec();
-
-  let currentBudget = 0;
-  let expectedBudget = 0;
-
-  details.forEach((detail) => {
-    currentBudget += parseFloat(detail.amount_paid);
-    expectedBudget += parseFloat(detail.amount_to_pay);
-  });
-
-  return {
-    budget: currentBudget,
-    expected_budget: expectedBudget
-  };
-}
-
 export async function findGroupsForUser(userId) {
   try {
     const details = await GroupUserModel.find({
@@ -103,19 +84,7 @@ export async function findGroupsForUser(userId) {
       .lean()
       .exec();
 
-    const response = [];
-
-    for (let i = 0; i < details.length; i++) {
-      let groupInfo = details[i].group;
-
-      const budgetInfo = await getBudgetInfo(groupInfo._id);
-
-      groupInfo = { ...groupInfo, ...budgetInfo };
-
-      response.push(groupInfo);
-    }
-
-    return response;
+    return details;
   } catch (error) {
     throw new Error(error.toString());
   }
@@ -153,14 +122,6 @@ export async function findDetailsByGroupId(groupId, excludeUserId = null) {
       .lean()
       .exec();
 
-    for (let i = 0; i < groupDetails.length; i++) {
-      const groupInfo = groupDetails[i].group;
-
-      const budgetInfo = await getBudgetInfo(groupInfo._id);
-
-      groupDetails[i].group = { ...groupInfo, ...budgetInfo };
-    }
-
     return groupDetails;
   } catch (error) {
     throw new Error(error.toString());
@@ -181,12 +142,6 @@ export async function findDetail(userId, groupId) {
       .exec();
 
     if (groupDetail.length === 1) {
-      const groupInfo = groupDetail[0].group;
-
-      const budgetInfo = await getBudgetInfo(groupInfo._id);
-
-      groupDetail[0].group = { ...groupInfo, ...budgetInfo };
-
       return groupDetail[0];
     } else if (groupDetail.length === 0) {
       return null;

@@ -101,11 +101,6 @@ export default function Categories(props) {
                   label="Monthly"
                   {...a11yProps(2)}
                 />
-                <Tab
-                  className={classNames(styles.tab)}
-                  label="Yearly"
-                  {...a11yProps(3)}
-                />
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
@@ -116,9 +111,6 @@ export default function Categories(props) {
             </TabPanel>
             <TabPanel value={value} index={2}>
               <Monthly data={dailyStatistics} />
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-              Yearly
             </TabPanel>
           </Box>
         </Grid>

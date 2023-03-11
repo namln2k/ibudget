@@ -1,9 +1,9 @@
-import React from 'react';
 import { Grid, Typography } from '@mui/material';
 import classNames from 'classnames';
-import styles from './Item.module.scss';
-import Icon from './Icon';
+import React from 'react';
 import * as utilHelper from '../../../../helpers/util';
+import Icon from './Icon';
+import styles from './Item.module.scss';
 
 const renderAmount = (amount) => {
   const amountToString = utilHelper.formatCurrency(amount);
@@ -75,6 +75,8 @@ const renderAmount = (amount) => {
   }
 };
 
+const parseLines = (text) => text.replace(/(\\n)/g, '\n');
+
 export default function Item({ amount, title, detail, callback, itemId }) {
   return (
     <>
@@ -88,7 +90,7 @@ export default function Item({ amount, title, detail, callback, itemId }) {
         <Grid className={classNames(styles.content)}>
           <Typography className={classNames(styles.title)}>{title}</Typography>
           <Typography className={classNames(styles.detail)}>
-            {detail}
+            {detail && parseLines(detail)}
           </Typography>
         </Grid>
       </Grid>
