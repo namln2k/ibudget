@@ -1,9 +1,5 @@
 .section {
-  background: linear-gradient(
-    to right,
-    #e7e367,
-    #ecefb9
-  );
+  background: linear-gradient(to right, #e7e367, #ecefb9);
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
@@ -24,6 +20,21 @@
     padding: 0 30px;
     max-height: calc(100vh - 400px);
     overflow: auto;
+
+    .datePicker {
+      background: linear-gradient(to left, #e6b95f, #e77353);
+      border-radius: 12px;
+
+      div,
+      input {
+        border-radius: 12px;
+        color: #fff;
+      }
+
+      label {
+        z-index: 1000;
+      }
+    }
 
     .noItem {
       width: 488px;
