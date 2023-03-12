@@ -7,9 +7,11 @@ import Select from '@mui/material/Select';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../contexts/loading';
 import { formatCurrency } from '../../helpers/util';
 import { chartColors } from '../../pages/charts';
 
@@ -17,12 +19,28 @@ const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false
 });
 
-const Daily = ({ data }) => {
+const Daily = () => {
+  const [data, setData] = useState([]);
   const [spendingType, setSpendingType] = useState(2);
   const [chartType, setChartType] = useState('bar');
   const [renderData, setRenderData] = useState([]);
   const [userBalance, setUserBalance] = useState('0');
   const [date, setDate] = useState(moment(new Date()).subtract(1, 'day'));
+  const [loading, setLoading] = useLoadingContext();
+
+  const fetchDailyStatistics = async () => {
+    setLoading(true);
+
+    const response = await axios.get(`/api/statistics/get-daily`);
+
+    setData(response.data.data);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDailyStatistics();
+  }, []);
 
   const handleChangeDate = (newValue) => {
     setDate(newValue);
@@ -186,7 +204,11 @@ const Daily = ({ data }) => {
     );
   }, [data, spendingType, date]);
 
-  return (
+  return data.length == 0 ? (
+    <>
+      <Typography>No data</Typography>
+    </>
+  ) : (
     <>
       <Stack direction="row" spacing={2} alignItems="center">
         <Box sx={{ minWidth: 120 }}>

@@ -5,13 +5,16 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import axios from 'axios';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../contexts/loading';
 import { formatCurrency } from '../../helpers/util';
 import { chartColors } from '../../pages/charts';
 
@@ -26,11 +29,27 @@ const getUniqueNames = (data) => {
 
 const dayCount = 7;
 
-const Weekly = ({ data }) => {
+const Weekly = () => {
+  const [data, setData] = useState([]);
   const [spendingType, setSpendingType] = useState(2);
   const [endDate, setEndDate] = useState(moment(new Date()).subtract(1, 'day'));
   const [series, setSeries] = useState([]);
   const [chartCategories, setChartCategories] = useState([]);
+  const [loading, setLoading] = useLoadingContext();
+
+  const fetchDailyStatistics = async () => {
+    setLoading(true);
+
+    const response = await axios.get(`/api/statistics/get-daily`);
+
+    setData(response.data.data);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDailyStatistics();
+  }, []);
 
   const handleChangeEndDate = (newValue) => {
     setEndDate(newValue);
@@ -103,7 +122,7 @@ const Weekly = ({ data }) => {
     series,
     options: {
       chart: {
-        height: 500,
+        height: 480,
         type: 'line',
         dropShadow: {
           enabled: true,
@@ -227,7 +246,11 @@ const Weekly = ({ data }) => {
     );
   }, [spendingType, endDate]);
 
-  return (
+  return data.length == 0 ? (
+    <>
+      <Typography>No data</Typography>
+    </>
+  ) : (
     <>
       <Stack direction="row" spacing={2} alignItems="center">
         <Box sx={{ minWidth: 120 }}>
@@ -269,7 +292,7 @@ const Weekly = ({ data }) => {
             options={chartOptions.options}
             series={chartOptions.series}
             type="bar"
-            height={500}
+            height={480}
             width="100%"
           />
         )}
@@ -278,7 +301,7 @@ const Weekly = ({ data }) => {
             options={lineChartOptions.options}
             series={lineChartOptions.series}
             type="line"
-            height={500}
+            height={480}
             width="100%"
           />
         )}

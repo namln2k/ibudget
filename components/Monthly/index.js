@@ -7,9 +7,11 @@ import Select from '@mui/material/Select';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../contexts/loading';
 import { formatCurrency } from '../../helpers/util';
 import { chartColors } from '../../pages/charts';
 
@@ -17,15 +19,38 @@ const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false
 });
 
-const Monthly = ({ data }) => {
+const Monthly = () => {
+  const [data, setData] = useState([]);
+  const [fullMonthData, setFullMonthData] = useState([]);
+  const [fullMonthRender, setFullMonthRender] = useState([]);
+  const [chartCategories, setChartCategories] = useState([]);
   const [spendingType, setSpendingType] = useState(2);
   const [chartType, setChartType] = useState('bar');
   const [renderData, setRenderData] = useState([]);
   const [userBalance, setUserBalance] = useState('0');
-  const [date, setDate] = useState(moment(new Date()).subtract(1, 'month'));
+  const [month, setMonth] = useState(moment(new Date()).subtract(1, 'month'));
+  const [loading, setLoading] = useLoadingContext();
+
+  const fetchMonthlyStatistics = async () => {
+    setLoading(true);
+
+    const response = await axios.get(`/api/statistics/get-monthly`);
+
+    setData(response.data.data);
+
+    const fullMonthResponse = await axios.get(`/api/statistics/get-daily`);
+
+    setFullMonthData(fullMonthResponse.data.data);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchMonthlyStatistics();
+  }, []);
 
   const handleChangeDate = (newValue) => {
-    setDate(newValue);
+    setMonth(newValue);
   };
 
   const handleChangeSpending = (e) => {
@@ -42,7 +67,7 @@ const Monthly = ({ data }) => {
         name: 'amount',
         data: renderData.map((item) => ({
           x: item.name,
-          y: item.data === 0 ? 3000000 : item.data * 10,
+          y: item.data,
           goals: [
             {
               name: 'Monthly Target',
@@ -84,7 +109,7 @@ const Monthly = ({ data }) => {
         showForSingleSeries: true,
         customLegendItems: ['Actual', 'Expected'],
         markers: {
-          fillColors: ['#00E396', '#775DD0']
+          fillColors: ['#FF0000', '#775DD0']
         }
       }
     }
@@ -136,6 +161,72 @@ const Monthly = ({ data }) => {
     }
   };
 
+  const lineChartOptions = {
+    series: [
+      {
+        name: 'User Balance',
+        data: fullMonthRender
+      }
+    ],
+    options: {
+      chart: {
+        height: 480,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: chartColors,
+      dataLabels: {
+        enabled: true
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      title: {
+        text: 'Monthly summarize',
+        align: 'center',
+        style: {
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: {
+        categories: chartCategories
+      },
+      yaxis: {
+        title: {
+          text: 'User Balance (VND)'
+        }
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      }
+    }
+  };
+
   useEffect(() => {
     setRenderData(
       data
@@ -143,8 +234,8 @@ const Monthly = ({ data }) => {
           (item) =>
             item.category_type === 2 &&
             item.spending_type === spendingType &&
-            moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
-              moment().subtract(10, 'd').format('DD/MM/YYYY')
+            moment(item.created_at).subtract(1, 'day').format('MM/YYYY') ===
+              month.format('MM/YYYY')
         )
         .map((item) => ({
           data: Math.abs(Number(item.amount.$numberDecimal)),
@@ -153,10 +244,43 @@ const Monthly = ({ data }) => {
         }))
         .sort((a, b) => (a.name > b.name ? 1 : -1))
     );
-    setUserBalance({ amount: { $numberDecimal: 12000000 } });
-  }, [data, spendingType]);
+    setUserBalance(
+      data.find(
+        (item) =>
+          item.spending_type === 3 &&
+          moment(item.created_at).subtract(1, 'day').format('MM/YYYY') ===
+            month.format('MM/YYYY')
+      )
+    );
+    setFullMonthRender(
+      Array.from({ length: moment(month).daysInMonth() }, (_, i) => {
+        return (
+          +fullMonthData.filter(
+            (item) =>
+              item.spending_type === 3 &&
+              moment(item.created_at)
+                .subtract(1, 'day')
+                .format('DD/MM/YYYY') ===
+                moment(month)
+                  .startOf('month')
+                  .add(i, 'day')
+                  .format('DD/MM/YYYY')
+          )[0]?.amount?.$numberDecimal || null
+        );
+      })
+    );
+    setChartCategories(
+      Array.from({ length: moment(month).daysInMonth() }, (_, i) =>
+        moment(month).startOf('month').add(i, 'day').format('DD/MM/YYYY')
+      )
+    );
+  }, [data, spendingType, month, fullMonthData]);
 
-  return (
+  return data.length == 0 ? (
+    <>
+      <Typography>No data</Typography>
+    </>
+  ) : (
     <>
       <Stack direction="row" spacing={2} alignItems="center">
         <Box sx={{ minWidth: 120 }}>
@@ -171,6 +295,7 @@ const Monthly = ({ data }) => {
             >
               <MenuItem value={1}>Income</MenuItem>
               <MenuItem value={2}>Expense</MenuItem>
+              <MenuItem value={3}>User Balance</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -195,7 +320,7 @@ const Monthly = ({ data }) => {
               label="Month"
               views={['year', 'month']}
               inputFormat="MM/YYYY"
-              value={date}
+              value={month}
               onChange={handleChangeDate}
               renderInput={(params) => <TextField {...params} />}
             />
@@ -208,7 +333,7 @@ const Monthly = ({ data }) => {
           mt: 5
         }}
       >
-        {renderData.length === 0 && (
+        {[1, 2].includes(spendingType) && renderData.length === 0 && (
           <Typography
             variant="h6"
             minHeight={350}
@@ -219,31 +344,37 @@ const Monthly = ({ data }) => {
             No chart data
           </Typography>
         )}
-        {chartType === 'bar' && renderData.length ? (
+        {[1, 2].includes(spendingType) &&
+        chartType === 'bar' &&
+        renderData.length ? (
           <Chart
             options={barOptions.options}
             series={barOptions.series}
             type="bar"
-            height={380}
+            height={480}
             width="100%"
           />
         ) : null}
-        {chartType === 'donut' && renderData.length ? (
+        {[1, 2].includes(spendingType) &&
+        chartType === 'donut' &&
+        renderData.length ? (
           <Chart
             options={donutOptions.options}
             series={donutOptions.series}
             type="donut"
-            height={380}
+            height={480}
             width="100%"
           />
         ) : null}
-
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          User balance:{' '}
-          {userBalance?.amount?.$numberDecimal
-            ? formatCurrency(userBalance?.amount?.$numberDecimal)
-            : 'No data'}
-        </Typography>
+        {spendingType === 3 ? (
+          <Chart
+            options={lineChartOptions.options}
+            series={lineChartOptions.series}
+            type="line"
+            height={480}
+            width="100%"
+          />
+        ) : null}
       </Box>
     </>
   );

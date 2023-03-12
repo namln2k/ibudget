@@ -26,7 +26,7 @@ const prepareRecord = async (
   let transactions = [];
 
   if (categoryType === 1) {
-    transactions = await TransactionRepository.findForRecordWeek(
+    transactions = await TransactionRepository.findForRecordMonth(
       userId,
       spendingType,
       'none'
@@ -37,13 +37,13 @@ const prepareRecord = async (
       category_id: categoryId
     };
 
-    transactions = await TransactionRepository.findForRecordWeek(
+    transactions = await TransactionRepository.findForRecordMonth(
       userId,
       spendingType,
       categoryId
     );
   } else if (categoryType === 3) {
-    transactions = await TransactionRepository.findForRecordWeek(
+    transactions = await TransactionRepository.findForRecordMonth(
       userId,
       spendingType
     );
@@ -62,10 +62,10 @@ export default async function (req, res) {
     let recordsToAdd = [];
     let addedCount = 0;
     /**
-     * Set time type of record: 2 - Weekly
+     * Set time type of record: 3 - Monthly
      */
     let recordToAdd = {
-      time_type: 2
+      time_type: 3
     };
 
     const users = await UserRepository.getAllUserIds();

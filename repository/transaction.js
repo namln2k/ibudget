@@ -119,7 +119,7 @@ export async function findForRecordDay(userId, spendingType, categoryId) {
   }
 }
 
-export async function findForRecordWeek(userId, spendingType, categoryId) {
+export async function findForRecordMonth(userId, spendingType, categoryId) {
   try {
     let query = { user_id: userId };
 
@@ -149,16 +149,16 @@ export async function findForRecordWeek(userId, spendingType, categoryId) {
       if (query.amount) delete query.amount;
     }
 
-    const startWeek = moment().subtract(7, 'days');
-    const startOfWeek = moment(startWeek).startOf('day');
-    const endWeek = moment().subtract(1, 'days');
-    const endOfWeek = moment(endWeek).endOf('day');
+    const startMonth = moment().subtract(1, 'months');
+    const startOfMonth = moment(startMonth).startOf('day');
+    const endMonth = moment().subtract(1, 'days');
+    const endOfMonth = moment(endMonth).endOf('day');
 
     query = {
       ...query,
       time: {
-        $gte: startOfWeek.toDate(),
-        $lt: endOfWeek.toDate()
+        $gte: startOfMonth.toDate(),
+        $lt: endOfMonth.toDate()
       }
     };
 
