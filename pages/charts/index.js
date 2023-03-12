@@ -1,15 +1,13 @@
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import axios from 'axios';
 import classNames from 'classnames';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Daily from '../../components/Daily';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Monthly from '../../components/Monthly';
 import Sidebar from '../../components/Sidebar';
 import Weekly from '../../components/Weekly';
-import { useLoadingContext } from '../../contexts/loading';
 import styles from './Charts.module.scss';
 
 export const chartColors = [
@@ -46,29 +44,12 @@ const a11yProps = (index) => {
   };
 };
 
-export default function Categories(props) {
-  const [dailyStatistics, setDailyStatistics] = useState([]);
+export default function Charts() {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  const [loading, setLoading] = useLoadingContext();
-
-  const fetchDailyStatistics = async () => {
-    setLoading(true);
-
-    const response = await axios.get(`/api/statistics/get-daily`);
-
-    setDailyStatistics(response.data.data);
-
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchDailyStatistics();
-  }, []);
 
   return (
     <>
@@ -104,13 +85,13 @@ export default function Categories(props) {
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-              <Daily data={dailyStatistics} />
+              <Daily />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <Weekly data={dailyStatistics} />
+              <Weekly />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              <Monthly data={dailyStatistics} />
+              <Monthly />
             </TabPanel>
           </Box>
         </Grid>

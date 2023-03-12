@@ -7,9 +7,11 @@ import Select from '@mui/material/Select';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
 import moment from 'moment';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
+import { useLoadingContext } from '../../contexts/loading';
 import { formatCurrency } from '../../helpers/util';
 import { chartColors } from '../../pages/charts';
 
@@ -17,15 +19,31 @@ const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false
 });
 
-const Monthly = ({ data }) => {
+const Monthly = () => {
+  const [data, setData] = useState([]);
   const [spendingType, setSpendingType] = useState(2);
   const [chartType, setChartType] = useState('bar');
   const [renderData, setRenderData] = useState([]);
   const [userBalance, setUserBalance] = useState('0');
-  const [date, setDate] = useState(moment(new Date()).subtract(1, 'month'));
+  const [month, setMonth] = useState(moment(new Date()).subtract(1, 'month'));
+  const [loading, setLoading] = useLoadingContext();
+
+  const fetchMonthlyStatistics = async () => {
+    setLoading(true);
+
+    const response = await axios.get(`/api/statistics/get-monthly`);
+
+    setData(response.data.data);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchMonthlyStatistics();
+  }, []);
 
   const handleChangeDate = (newValue) => {
-    setDate(newValue);
+    setMonth(newValue);
   };
 
   const handleChangeSpending = (e) => {
@@ -42,7 +60,7 @@ const Monthly = ({ data }) => {
         name: 'amount',
         data: renderData.map((item) => ({
           x: item.name,
-          y: item.data === 0 ? 3000000 : item.data * 10,
+          y: item.data,
           goals: [
             {
               name: 'Monthly Target',
@@ -84,7 +102,7 @@ const Monthly = ({ data }) => {
         showForSingleSeries: true,
         customLegendItems: ['Actual', 'Expected'],
         markers: {
-          fillColors: ['#00E396', '#775DD0']
+          fillColors: ['#FF0000', '#775DD0']
         }
       }
     }
@@ -143,8 +161,8 @@ const Monthly = ({ data }) => {
           (item) =>
             item.category_type === 2 &&
             item.spending_type === spendingType &&
-            moment(item.created_at).subtract(1, 'day').format('DD/MM/YYYY') ===
-              moment().subtract(10, 'd').format('DD/MM/YYYY')
+            moment(item.created_at).subtract(1, 'day').format('MM/YYYY') ===
+              month.format('MM/YYYY')
         )
         .map((item) => ({
           data: Math.abs(Number(item.amount.$numberDecimal)),
@@ -153,10 +171,21 @@ const Monthly = ({ data }) => {
         }))
         .sort((a, b) => (a.name > b.name ? 1 : -1))
     );
-    setUserBalance({ amount: { $numberDecimal: 12000000 } });
-  }, [data, spendingType]);
+    setUserBalance(
+      data.find(
+        (item) =>
+          item.spending_type === 3 &&
+          moment(item.created_at).subtract(1, 'day').format('MM/YYYY') ===
+            month.format('MM/YYYY')
+      )
+    );
+  }, [data, spendingType, month]);
 
-  return (
+  return data.length == 0 ? (
+    <>
+      <Typography>No data</Typography>
+    </>
+  ) : (
     <>
       <Stack direction="row" spacing={2} alignItems="center">
         <Box sx={{ minWidth: 120 }}>
@@ -195,7 +224,7 @@ const Monthly = ({ data }) => {
               label="Month"
               views={['year', 'month']}
               inputFormat="MM/YYYY"
-              value={date}
+              value={month}
               onChange={handleChangeDate}
               renderInput={(params) => <TextField {...params} />}
             />
