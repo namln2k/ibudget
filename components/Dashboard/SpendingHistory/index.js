@@ -1,4 +1,7 @@
-import { Divider, Grid, Typography } from '@mui/material';
+import { Button, Divider, Grid, TextField, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import axios from 'axios';
 import classNames from 'classnames';
 import moment from 'moment/moment';
@@ -21,7 +24,12 @@ const needLineBreak = (time1, time2) => {
 export default function SpendingHistory(props) {
   const [items, setItems] = useState([]);
 
+  const [renderItems, setRenderItems] = useState([]);
+
   const [loading, setLoading] = useLoadingContext();
+
+  const [from, setFrom] = useState(null);
+  const [to, setTo] = useState(null);
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -37,6 +45,20 @@ export default function SpendingHistory(props) {
     fetchTransactions();
   }, [props.needReload]);
 
+  useEffect(() => {
+    if (from && to) {
+      setRenderItems(
+        items.filter((e) => moment(e.time).isBetween(from, to, 'days', '[]'))
+      );
+    } else if (from) {
+      setRenderItems(items.filter((e) => moment(e.time).isSameOrAfter(from)));
+    } else if (to) {
+      setRenderItems(items.filter((e) => moment(e.time).isSameOrBefore(to)));
+    } else {
+      setRenderItems(items);
+    }
+  }, [from, to, items]);
+
   return (
     <>
       <Grid className={classNames(styles.section, styles.spendingHistory)}>
@@ -44,14 +66,55 @@ export default function SpendingHistory(props) {
           Spending History
         </Typography>
         <Grid className={classNames(styles.container)}>
-          {items.length > 0 && (
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <Grid
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                gap: '20px',
+                marginBottom: '20px'
+              }}
+            >
+              <Box>
+                <Typography>From</Typography>
+                <DesktopDatePicker
+                  inputFormat="DD/MM/YYYY"
+                  value={from}
+                  onChange={(newValue) => setFrom(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                  className={classNames(styles.datePicker)}
+                />
+              </Box>
+              <Box>
+                <Typography>To</Typography>
+                <DesktopDatePicker
+                  inputFormat="DD/MM/YYYY"
+                  value={to}
+                  onChange={(newValue) => setTo(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                  className={classNames(styles.datePicker)}
+                />
+              </Box>
+              <Button
+                onClick={() => {
+                  setFrom(null);
+                  setTo(null);
+                }}
+                variant="outlined"
+                sx={{ height: '50%', margin: 'auto' }}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </LocalizationProvider>
+          {renderItems.length > 0 && (
             <>
               <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
                 <Typography variant="h6">
-                  {moment(items[0].time).format('MM-YYYY')}
+                  {moment(renderItems[0].time).format('MM-YYYY')}
                 </Typography>
               </Divider>
-              {items.map((item, index) => (
+              {renderItems.map((item, index) => (
                 <Grid key={item._id}>
                   <Item
                     key={item._id}
@@ -61,10 +124,10 @@ export default function SpendingHistory(props) {
                     callback={props.callbackViewTransaction}
                     itemId={item._id}
                   ></Item>
-                  {needLineBreak(item.time, items[index + 1]?.time) && (
+                  {needLineBreak(item.time, renderItems[index + 1]?.time) && (
                     <Divider textAlign="left" sx={{ marginBottom: '6px' }}>
                       <Typography variant="h6">
-                        {needLineBreak(item.time, items[index + 1]?.time)}
+                        {needLineBreak(item.time, renderItems[index + 1]?.time)}
                       </Typography>
                     </Divider>
                   )}
@@ -72,7 +135,7 @@ export default function SpendingHistory(props) {
               ))}
             </>
           )}
-          {items.length <= 0 && (
+          {renderItems.length <= 0 && (
             <Grid
               className={classNames(styles.noItem)}
               flex={true}
