@@ -5,7 +5,8 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -121,7 +122,7 @@ const Weekly = () => {
     series,
     options: {
       chart: {
-        height: 500,
+        height: 480,
         type: 'line',
         dropShadow: {
           enabled: true,
@@ -291,7 +292,7 @@ const Weekly = () => {
             options={chartOptions.options}
             series={chartOptions.series}
             type="bar"
-            height={500}
+            height={480}
             width="100%"
           />
         )}
@@ -300,7 +301,7 @@ const Weekly = () => {
             options={lineChartOptions.options}
             series={lineChartOptions.series}
             type="line"
-            height={500}
+            height={480}
             width="100%"
           />
         )}

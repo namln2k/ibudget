@@ -21,6 +21,9 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 const Monthly = () => {
   const [data, setData] = useState([]);
+  const [fullMonthData, setFullMonthData] = useState([]);
+  const [fullMonthRender, setFullMonthRender] = useState([]);
+  const [chartCategories, setChartCategories] = useState([]);
   const [spendingType, setSpendingType] = useState(2);
   const [chartType, setChartType] = useState('bar');
   const [renderData, setRenderData] = useState([]);
@@ -34,6 +37,10 @@ const Monthly = () => {
     const response = await axios.get(`/api/statistics/get-monthly`);
 
     setData(response.data.data);
+
+    const fullMonthResponse = await axios.get(`/api/statistics/get-daily`);
+
+    setFullMonthData(fullMonthResponse.data.data);
 
     setLoading(false);
   };
@@ -154,6 +161,72 @@ const Monthly = () => {
     }
   };
 
+  const lineChartOptions = {
+    series: [
+      {
+        name: 'User Balance',
+        data: fullMonthRender
+      }
+    ],
+    options: {
+      chart: {
+        height: 480,
+        type: 'line',
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2
+        },
+        toolbar: {
+          show: false
+        }
+      },
+      colors: chartColors,
+      dataLabels: {
+        enabled: true
+      },
+      stroke: {
+        curve: 'smooth'
+      },
+      title: {
+        text: 'Monthly summarize',
+        align: 'center',
+        style: {
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }
+      },
+      grid: {
+        borderColor: '#e7e7e7',
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        }
+      },
+      markers: {
+        size: 1
+      },
+      xaxis: {
+        categories: chartCategories
+      },
+      yaxis: {
+        title: {
+          text: 'User Balance (VND)'
+        }
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5
+      }
+    }
+  };
+
   useEffect(() => {
     setRenderData(
       data
@@ -179,7 +252,29 @@ const Monthly = () => {
             month.format('MM/YYYY')
       )
     );
-  }, [data, spendingType, month]);
+    setFullMonthRender(
+      Array.from({ length: moment(month).daysInMonth() }, (_, i) => {
+        return (
+          +fullMonthData.filter(
+            (item) =>
+              item.spending_type === 3 &&
+              moment(item.created_at)
+                .subtract(1, 'day')
+                .format('DD/MM/YYYY') ===
+                moment(month)
+                  .startOf('month')
+                  .add(i, 'day')
+                  .format('DD/MM/YYYY')
+          )[0]?.amount?.$numberDecimal || null
+        );
+      })
+    );
+    setChartCategories(
+      Array.from({ length: moment(month).daysInMonth() }, (_, i) =>
+        moment(month).startOf('month').add(i, 'day').format('DD/MM/YYYY')
+      )
+    );
+  }, [data, spendingType, month, fullMonthData]);
 
   return data.length == 0 ? (
     <>
@@ -200,6 +295,7 @@ const Monthly = () => {
             >
               <MenuItem value={1}>Income</MenuItem>
               <MenuItem value={2}>Expense</MenuItem>
+              <MenuItem value={3}>User Balance</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -237,7 +333,7 @@ const Monthly = () => {
           mt: 5
         }}
       >
-        {renderData.length === 0 && (
+        {[1, 2].includes(spendingType) && renderData.length === 0 && (
           <Typography
             variant="h6"
             minHeight={350}
@@ -248,31 +344,37 @@ const Monthly = () => {
             No chart data
           </Typography>
         )}
-        {chartType === 'bar' && renderData.length ? (
+        {[1, 2].includes(spendingType) &&
+        chartType === 'bar' &&
+        renderData.length ? (
           <Chart
             options={barOptions.options}
             series={barOptions.series}
             type="bar"
-            height={380}
+            height={480}
             width="100%"
           />
         ) : null}
-        {chartType === 'donut' && renderData.length ? (
+        {[1, 2].includes(spendingType) &&
+        chartType === 'donut' &&
+        renderData.length ? (
           <Chart
             options={donutOptions.options}
             series={donutOptions.series}
             type="donut"
-            height={380}
+            height={480}
             width="100%"
           />
         ) : null}
-
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          User balance:{' '}
-          {userBalance?.amount?.$numberDecimal
-            ? formatCurrency(userBalance?.amount?.$numberDecimal)
-            : 'No data'}
-        </Typography>
+        {spendingType === 3 ? (
+          <Chart
+            options={lineChartOptions.options}
+            series={lineChartOptions.series}
+            type="line"
+            height={480}
+            width="100%"
+          />
+        ) : null}
       </Box>
     </>
   );
